@@ -2,6 +2,7 @@
 import { TFile, Plugin, Notice, MarkdownView } from "obsidian";
 import { LayoutService } from "./layoutService";
 import { LayoutRenderer } from "./layoutRenderer";
+import { parseHeadingsInFile } from "./sectionParser";
 
 export class ModelDetector {
   private fallbackModel: string;
@@ -33,7 +34,7 @@ export class ModelDetector {
 
   private layoutRenderer = new LayoutRenderer();
 
-  private applyModelForFile(file: TFile) {
+  private async applyModelForFile(file: TFile) {
     const cache = this.plugin.app.metadataCache.getFileCache(file);
     const modelName = (cache?.frontmatter?.["agile-board"] as string) || this.fallbackModel;
     const model = this.layoutService.getModel(modelName);
@@ -44,17 +45,15 @@ export class ModelDetector {
     }
 
     const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!view || !view.file) {
-        console.warn("⛔ Vue Markdown inactive ou fichier null");
-        return;
-    }
-    
-    this.layoutRenderer.renderLayout(model, view);
+    if (!view || !view.file) return;
 
-    console.log("📄 Fichier détecté :", file.path);
-    console.log("🧠 Frontmatter :", cache?.frontmatter);
+    const sections = await parseHeadingsInFile(this.plugin.app, file);
+    console.log("📑 Sections trouvées :", Object.keys(sections));
 
+    // Rendu (on y passera les sections plus tard)
+    this.layoutRenderer.renderLayout(model, view, sections);
   }
+
 
   setFallbackModel(name: string) {
     this.fallbackModel = name;
