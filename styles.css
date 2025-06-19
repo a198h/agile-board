@@ -1,8 +1,21 @@
-/*
+.agile-board-grid {
+  width: 100%;
+  box-sizing: border-box;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.agile-board-frame {
+  transition: all 0.2s ease-in-out;
+}
 
-If your plugin does not need CSS, delete this file.
+@media (max-width: 640px) {
+  .agile-board-grid {
+    display: flex;
+    flex-direction: column;
+  }
 
-*/
+  .agile-board-frame {
+    width: 100% !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+}

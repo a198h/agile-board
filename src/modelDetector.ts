@@ -1,6 +1,7 @@
 // src/modelDetector.ts
-import { TFile, Plugin, Notice } from "obsidian";
+import { TFile, Plugin, Notice, MarkdownView } from "obsidian";
 import { LayoutService } from "./layoutService";
+import { LayoutRenderer } from "./layoutRenderer";
 
 export class ModelDetector {
   private fallbackModel: string;
@@ -30,22 +31,34 @@ export class ModelDetector {
     this.applyModelForFile(file);
   };
 
+  private layoutRenderer = new LayoutRenderer();
+
   private applyModelForFile(file: TFile) {
     const cache = this.plugin.app.metadataCache.getFileCache(file);
-    const fm = cache?.frontmatter;
-    const modelName = (fm?.["agile-board"] as string) || this.fallbackModel;
-
+    const modelName = (cache?.frontmatter?.["agile-board"] as string) || this.fallbackModel;
     const model = this.layoutService.getModel(modelName);
+
     if (!model) {
       new Notice(`❌ Modèle "${modelName}" introuvable`);
       return;
     }
 
-    console.log(`📄 Modèle "${modelName}" appliqué à ${file.path}`);
-    // 👉 C’est ici que tu appelleras le layout renderer plus tard
+    const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!view || !view.file) {
+        console.warn("⛔ Vue Markdown inactive ou fichier null");
+        return;
+    }
+    
+    this.layoutRenderer.renderLayout(model, view);
+
+    console.log("📄 Fichier détecté :", file.path);
+    console.log("🧠 Frontmatter :", cache?.frontmatter);
+
   }
 
   setFallbackModel(name: string) {
     this.fallbackModel = name;
   }
+
+  
 }
