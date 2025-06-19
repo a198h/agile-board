@@ -1,0 +1,49 @@
+"model": "layout_one"
+[
+  {
+    "title": "# Agenda",
+    "x": 0,
+    "y": 0,
+    "w": 12,
+    "h": 12
+  },
+  {
+    "title": "# Tâches",
+    "x": 12,
+    "y": 0,
+    "w": 12,
+    "h": 12
+  },
+  {
+    "title": "# Objectifs",
+    "x": 0,
+    "y": 12,
+    "w": 24,
+    "h": 12
+  }
+]
+
+"model": "layout_two"
+[
+  {
+    "title": "# Tâches",
+    "x": 0,
+    "y": 0,
+    "w": 6,
+    "h": 6
+  },
+  {
+    "title": "# Today",
+    "x": 6,
+    "y": 0,
+    "w": 6,
+    "h": 6
+  },
+  {
+    "title": "# Reccurent",
+    "x": 6,
+    "y": 6,
+    "w": 18,
+    "h": 18
+  }
+]
