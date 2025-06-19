@@ -1,9 +1,11 @@
 // src/layoutRenderer.ts
-import { MarkdownView } from "obsidian";
-import { LayoutBlock } from "./types";
+import { App, MarkdownView, TFile } from "obsidian";import { LayoutBlock } from "./types";
 import { SectionInfo } from "./sectionParser";
+import { InlineEditor } from "./inlineEditor";
 
 export class LayoutRenderer {
+  constructor(private app: App) {}
+  
   renderLayout(blocks: LayoutBlock[], view: MarkdownView, sections: Record<string, SectionInfo>) {
     const container = view.contentEl;
     const existing = container.querySelector(".agile-board-grid");
@@ -39,6 +41,21 @@ export class LayoutRenderer {
         <strong style="display: block; margin-bottom: 0.5em;">${block.title}</strong>
         <pre style="white-space: pre-wrap;">${content}</pre>
       `;
+      
+      const sectionInfo = sections[block.title];
+      if (sectionInfo && view.file) {
+        // Nettoyer l’intérieur du bloc
+        section.innerHTML = "";
+
+        new InlineEditor(
+          section,
+          sectionInfo.lines.join("\n"),
+          this.app,
+          view.file,
+          sectionInfo.start,
+          sectionInfo.end
+        );
+      }
 
       grid.appendChild(section);
     }

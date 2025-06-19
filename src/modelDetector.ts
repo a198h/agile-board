@@ -32,7 +32,7 @@ export class ModelDetector {
     this.applyModelForFile(file);
   };
 
-  private layoutRenderer = new LayoutRenderer();
+  private layoutRenderer = new LayoutRenderer(this.plugin.app);
 
   private async applyModelForFile(file: TFile) {
     const cache = this.plugin.app.metadataCache.getFileCache(file);
