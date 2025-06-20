@@ -1,3 +1,58 @@
+/* Couleurs par défaut (si aucune classe thème active) */
+:root {
+  --agile-board-primary-color: var(--interactive-accent, #0077b5);
+  --agile-board-text-color: var(--text-on-accent, white);
+}
+
+
+/* === Thème sombre === */
+.theme-dark {
+  --agile-board-primary-color: #0077b5;  /* Bleu pro */
+  --agile-board-text-color: white;
+}
+
+/* === Thème clair === */
+.theme-light {
+  --agile-board-primary-color: #dba134;  /* Orange doux */
+  --agile-board-text-color: #1a1a1a;
+}
+
+
+/* === Cadres === */
+.agile-board-frame {
+  background-color: var(--agile-board-primary-color);
+  color: var(--agile-board-text-color);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: block;
+  overflow: visible;
+  min-height: 80px;
+  min-width: 100px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  outline: 1px solid var(--agile-board-primary-color);
+  border: 1px solid var(--interactive-accent);
+}
+
+
+/* Sur hover : éclaircissement subtil */
+.agile-board-frame:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+/* === Grille === */
+.agile-board-grid {
+  min-height: 70vh;
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 12px;
+  padding: 12px;
+}
+
+
+/* === Éditeur === */
 .box {
   height: 100%;
 }
@@ -7,13 +62,13 @@
   min-height: 6em;
   overflow: auto;
   display: none;
-  background: var(--background-primary);
   color: var(--text-normal);
   font-size: var(--font-text-size);
   font-family: inherit;
   border: 1px solid var(--background-modifier-border);
   padding: 0.5em;
   border-radius: 4px;
+  background: var(--background-primary);
 }
 
 .box .preview {
@@ -21,16 +76,15 @@
   white-space: pre-wrap;
 }
 
-.agile-board-grid {
-  min-height: 70vh;
-}
-.agile-board-frame {
-  min-height: 100px;
-}
 
+/* === Message d'erreur === */
 .agile-board-error button {
   margin-top: 1em;
   padding: 0.5em 1em;
   font-weight: bold;
   cursor: pointer;
+  background-color: var(--interactive-accent, #cc0000);
+  color: white;
+  border: none;
+  border-radius: 4px;
 }
