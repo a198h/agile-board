@@ -7,6 +7,15 @@ export interface SectionInfo {
   lines: string[];    // contenu brut entre les titres
 }
 
+export async function insertSectionIfMissing(app: App, file: TFile, title: string): Promise<void> {
+  const content = await app.vault.read(file);
+  if (content.includes(`# ${title}`)) return;
+
+  const toAdd = `\n\n# ${title}\n\n`;
+  await app.vault.modify(file, content + toAdd);
+}
+
+
 export async function parseHeadingsInFile(app: App, file: TFile): Promise<Record<string, SectionInfo>> {
   const raw = await app.vault.read(file);
   const lines = raw.split("\n");

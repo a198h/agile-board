@@ -5,5 +5,23 @@
   ],
   "layout_full": [
     { "title": "Global", "x": 0, "y": 0, "w": 24, "h": 10 }
+  ],
+  "layout_quad": [
+    { "title": "Notes",   "x": 0,  "y": 0,  "w": 12, "h": 6 },
+    { "title": "Tâches",  "x": 12, "y": 0,  "w": 12, "h": 6 },
+    { "title": "Idées",   "x": 0,  "y": 6,  "w": 12, "h": 6 },
+    { "title": "Références", "x": 12, "y": 6, "w": 12, "h": 6 }
+  ],  
+  "layout_dashboard": [
+    { "title": "Aujourd'hui",         "x": 0,  "y": 0,  "w": 12,  "h": 2 },
+    { "title": "Objectifs",                "x": 12,  "y": 0,  "w": 12, "h": 2 },
+
+    { "title": "Planning",            "x": 0,  "y": 2,  "w": 8, "h": 30 },
+    { "title": "Rendez-vous semaine", "x": 0,  "y": 32, "w": 8, "h": 20 },
+
+    { "title": "Tâches",              "x": 8,  "y": 2,  "w": 16, "h": 50 },
+
+    { "title": "Ce jour là",          "x": 0,  "y": 52, "w": 12, "h": 5 },
+    { "title": "Réalisé aujourd’hui", "x": 12, "y": 52, "w": 12, "h": 5 }
   ]
 }

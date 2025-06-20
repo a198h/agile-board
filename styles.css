@@ -1,21 +1,29 @@
-.agile-board-grid {
+.box {
+  height: 100%;
+}
+
+.box .editor {
   width: 100%;
-  box-sizing: border-box;
+  min-height: 6em;
+  overflow: auto;
+  display: none;
+  background: var(--background-primary);
+  color: var(--text-normal);
+  font-size: var(--font-text-size);
+  font-family: inherit;
+  border: 1px solid var(--background-modifier-border);
+  padding: 0.5em;
+  border-radius: 4px;
 }
 
+.box .preview {
+  cursor: text;
+  white-space: pre-wrap;
+}
+
+.agile-board-grid {
+  min-height: 70vh;
+}
 .agile-board-frame {
-  transition: all 0.2s ease-in-out;
-}
-
-@media (max-width: 640px) {
-  .agile-board-grid {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .agile-board-frame {
-    width: 100% !important;
-    grid-column: auto !important;
-    grid-row: auto !important;
-  }
+  min-height: 100px;
 }
