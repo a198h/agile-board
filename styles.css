@@ -27,3 +27,10 @@
 .agile-board-frame {
   min-height: 100px;
 }
+
+.agile-board-error button {
+  margin-top: 1em;
+  padding: 0.5em 1em;
+  font-weight: bold;
+  cursor: pointer;
+}

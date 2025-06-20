@@ -5,22 +5,29 @@ import { LayoutRenderer } from "./layoutRenderer";
 import { parseHeadingsInFile } from "./sectionParser";
 
 export class ModelDetector {
-  private fallbackModel: string;
+  private layoutRenderer = new LayoutRenderer(this.plugin.app);
 
   constructor(
     private plugin: Plugin,
     private layoutService: LayoutService
-  ) {
-    this.fallbackModel = "layout_one"; // Tu peux rendre cela configurable plus tard
-  }
+  ) {}
 
   onLoad(): void {
+    // Événements : ouverture de fichier, changement de feuille, métadonnées résolues
     this.plugin.app.workspace.on("file-open", this.handleFileOpen);
+    this.plugin.app.workspace.on("active-leaf-change", this.handleActiveLeafChange);
     (this.plugin.app.metadataCache.on as any)("resolved", this.handleMetadataResolved);
+
+    // Au démarrage, appliquer sur la note active si présent
+    const activeFile = this.plugin.app.workspace.getActiveFile();
+    if (activeFile) {
+      this.applyModelForFile(activeFile);
+    }
   }
 
   onUnload(): void {
     this.plugin.app.workspace.off("file-open", this.handleFileOpen);
+    this.plugin.app.workspace.off("active-leaf-change", this.handleActiveLeafChange);
     this.plugin.app.metadataCache.off("resolved", this.handleMetadataResolved);
   }
 
@@ -28,36 +35,59 @@ export class ModelDetector {
     if (file) this.applyModelForFile(file);
   };
 
+  private handleActiveLeafChange = () => {
+    const active = this.plugin.app.workspace.getActiveFile();
+    if (active) this.applyModelForFile(active);
+  };
+
   private handleMetadataResolved = (file: TFile) => {
     this.applyModelForFile(file);
   };
 
-  private layoutRenderer = new LayoutRenderer(this.plugin.app);
-
   private async applyModelForFile(file: TFile) {
-    const cache = this.plugin.app.metadataCache.getFileCache(file);
-    const modelName = (cache?.frontmatter?.["agile-board"] as string) || this.fallbackModel;
-    const model = this.layoutService.getModel(modelName);
+    // Ne traiter que les .md
+    if (!file.path.endsWith(".md")) {
+      this.cleanupContainer();
+      return;
+    }
 
+    // Lire le frontmatter
+    const cache = this.plugin.app.metadataCache.getFileCache(file);
+    const modelName = cache?.frontmatter?.["agile-board"] as string | undefined;
+
+    // Récupérer la vue Markdown active
+    const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
+    // Nettoyer si pas de vue ou fichier différent
+    if (!view || !view.file || view.file.path !== file.path) {
+      this.cleanupContainer();
+      return;
+    }
+
+    // Si pas de propriété agile-board, on nettoie et on arrête
+    if (!modelName) {
+      this.cleanupContainer();
+      return;
+    }
+
+    // Chercher le modèle déclaré
+    const model = this.layoutService.getModel(modelName);
     if (!model) {
       new Notice(`❌ Modèle "${modelName}" introuvable`);
       return;
     }
 
-    const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!view || !view.file) return;
-
+    // Parser les sections existantes
     const sections = await parseHeadingsInFile(this.plugin.app, file);
     console.log("📑 Sections trouvées :", Object.keys(sections));
 
-    // Rendu (on y passera les sections plus tard)
+    // Enfin, rendre le layout
     this.layoutRenderer.renderLayout(model, view, sections);
   }
 
-
-  setFallbackModel(name: string) {
-    this.fallbackModel = name;
+  private cleanupContainer() {
+    const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!view) return;
+    const old = view.contentEl.querySelector(".agile-board-container");
+    if (old) old.remove();
   }
-
-  
 }
