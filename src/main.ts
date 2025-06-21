@@ -1,3 +1,4 @@
+//src/main.ts
 import { Plugin, Notice } from "obsidian";
 import { LayoutService } from "./layoutService";
 import { ModelDetector } from "./modelDetector";

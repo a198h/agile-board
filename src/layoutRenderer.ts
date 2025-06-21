@@ -15,8 +15,16 @@ export class LayoutRenderer {
     // Si view.file est null, on ne fait rien
     if (!view.file) return;
 
-    console.log("🔧 Layout blocks:", blocks.map(b => b.title));
-    console.log("🧩 Sections:", Object.keys(sections));
+    // 📋 Récupère l'état courant de la vue
+    const state = (view as any).getState();
+    console.log("🔍 getState() →", state);
+    
+    // ✅ Live Preview = mode "source" + source:false
+    const isLivePreview = state.mode === "source" && state.source === false;
+    if (!isLivePreview) {
+      return;
+    }
+
 
     // Repérage des titres manquants
     const missingTitles = blocks
