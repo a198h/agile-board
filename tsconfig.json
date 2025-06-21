@@ -3,16 +3,19 @@
     "baseUrl": ".",
     "inlineSourceMap": true,
     "inlineSources": true,
-    "module": "CommonJS",
-    "target": "es5",
+    "module": "ESNext",
+    "target": "ES6",
     "allowJs": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
+    "importHelpers": true,
+    "isolatedModules": true,
+    "strictNullChecks": true,
     "lib": [
-      "dom",
-      "es5",
-      "scripthost",
-      "es2015"
+      "DOM",
+      "ES5",
+      "ES6",
+      "ES7"
     ]
   },
   "include": [
