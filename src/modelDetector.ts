@@ -2,6 +2,7 @@
 import { TFile, Plugin, Notice, MarkdownView } from "obsidian";
 import { LayoutService } from "./layoutService";
 import { LayoutRenderer } from "./layoutRenderer";
+import { LayoutBlock } from "./types";
 import { parseHeadingsInFile } from "./sectionParser";
 
 export class ModelDetector {
@@ -13,22 +14,24 @@ export class ModelDetector {
   ) {}
 
   onLoad(): void {
-    // Événements : ouverture de fichier, changement de feuille, métadonnées résolues
+    // Événements initiaux
     this.plugin.app.workspace.on("file-open", this.handleFileOpen);
     this.plugin.app.workspace.on("active-leaf-change", this.handleActiveLeafChange);
     (this.plugin.app.metadataCache.on as any)("resolved", this.handleMetadataResolved);
 
-    // Au démarrage, appliquer sur la note active si présent
-    const activeFile = this.plugin.app.workspace.getActiveFile();
-    if (activeFile) {
-      this.applyModelForFile(activeFile);
-    }
+    // Écoute du basculement Source↔LivePreview
+    this.plugin.app.workspace.on("layout-change", this.handleLayoutChange);
+
+    // Premier rendu si note déjà active
+    const active = this.plugin.app.workspace.getActiveFile();
+    if (active) this.applyModelForFile(active);
   }
 
   onUnload(): void {
     this.plugin.app.workspace.off("file-open", this.handleFileOpen);
     this.plugin.app.workspace.off("active-leaf-change", this.handleActiveLeafChange);
-    this.plugin.app.metadataCache.off("resolved", this.handleMetadataResolved);
+    (this.plugin.app.metadataCache.off as any)("resolved", this.handleMetadataResolved);
+    this.plugin.app.workspace.off("layout-change", this.handleLayoutChange);
   }
 
   private handleFileOpen = (file: TFile | null) => {
@@ -36,12 +39,17 @@ export class ModelDetector {
   };
 
   private handleActiveLeafChange = () => {
-    const active = this.plugin.app.workspace.getActiveFile();
-    if (active) this.applyModelForFile(active);
+    const file = this.plugin.app.workspace.getActiveFile();
+    if (file) this.applyModelForFile(file);
   };
 
   private handleMetadataResolved = (file: TFile) => {
     this.applyModelForFile(file);
+  };
+
+  private handleLayoutChange = () => {
+    const file = this.plugin.app.workspace.getActiveFile();
+    if (file) this.applyModelForFile(file);
   };
 
   private async applyModelForFile(file: TFile) {
@@ -51,36 +59,44 @@ export class ModelDetector {
       return;
     }
 
-    // Lire le frontmatter
+    // Lecture du frontmatter
     const cache = this.plugin.app.metadataCache.getFileCache(file);
     const modelName = cache?.frontmatter?.["agile-board"] as string | undefined;
 
-    // Récupérer la vue Markdown active
+    // Récupération de la vue active
     const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
-    // Nettoyer si pas de vue ou fichier différent
-    if (!view || !view.file || view.file.path !== file.path) {
+    if (!view || view.file?.path !== file.path) {
       this.cleanupContainer();
       return;
     }
 
-    // Si pas de propriété agile-board, on nettoie et on arrête
+    // 🚦 Test immédiat du mode Live Preview vs Source
+    const state = (view as any).getState?.();
+    const isLivePreview = state?.mode === "source" && state?.source === false;
+    if (!isLivePreview) {
+      console.log("✋ Passage en mode Source détecté → suppression des cadres");
+      this.cleanupContainer();
+      return;
+    }
+
+    // Si pas de modèle déclaré
     if (!modelName) {
       this.cleanupContainer();
       return;
     }
 
-    // Chercher le modèle déclaré
+    // Récupération du modèle
     const model = this.layoutService.getModel(modelName);
     if (!model) {
       new Notice(`❌ Modèle "${modelName}" introuvable`);
       return;
     }
 
-    // Parser les sections existantes
+    // Parsing des sections existantes
     const sections = await parseHeadingsInFile(this.plugin.app, file);
     console.log("📑 Sections trouvées :", Object.keys(sections));
 
-    // Enfin, rendre le layout
+    // Rendu du layout
     this.layoutRenderer.renderLayout(model, view, sections);
   }
 
@@ -91,3 +107,4 @@ export class ModelDetector {
     if (old) old.remove();
   }
 }
+
