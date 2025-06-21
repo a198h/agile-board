@@ -19,10 +19,10 @@ export class MarkdownBox {
     this.boxEl = container.createDiv("box");
     this.boxEl.style.overflow = "auto";            // scroll seulement si besoin
     this.boxEl.style.maxHeight = "90%";           // ne dépasse pas le cadre parent
-    this.boxEl.style.scrollbarWidth = "thin";      // Firefox
+    // this.boxEl.style.scrollbarWidth = "thin";      // Firefox
     this.boxEl.style.padding = "0.25rem";
-    this.boxEl.style.border = "1px solid var(--interactive-accent)";
-    this.boxEl.style.borderRadius = "0.5rem";
+    // this.boxEl.style.border = "";
+    // this.boxEl.style.borderRadius = "0.5rem";
     this.boxEl.style.backgroundColor = "var(--background-primary)";
     this.previewEl = this.boxEl.createDiv("preview");
     this.previewEl.style.overflow = "auto";
