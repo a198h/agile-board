@@ -1,41 +1,36 @@
 /* Couleurs par défaut (si aucune classe thème active) */
 :root {
-  --agile-board-primary-color: var(--interactive-accent, #0077b5);
-  --agile-board-text-color: var(--text-on-accent, white);
+
 }
 
 
 /* === Thème sombre === */
-.theme-dark {
-  --agile-board-primary-color: #0077b5;  /* Bleu pro */
-  --agile-board-text-color: white;
-}
 
-/* === Thème clair === */
-.theme-light {
-  --agile-board-primary-color: #dba134;  /* Orange doux */
-  --agile-board-text-color: #1a1a1a;
-}
 
 
 /* === Cadres === */
-.agile-board-frame {
-  background-color: var(--agile-board-primary-color);
-  color: var(--agile-board-text-color);
+.agile-board-frame > strong{
+  display: block;
+  font-size: 1.1rem;
+  padding: 0.3em 0.5em;
+  margin-bottom: 0.5em;
+  font-weight: bold;
+  color: var(--text-normal);
+  border-bottom: 1px solid var(--background-modifier-border);
+  border-radius: 4px 4px 0 0;
+}
+
+section.agile-board-frame {
+  outline: 1px solid var(--interactive-accent);
   border-radius: 8px;
-  padding: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  padding: 1em;
   display: block;
   overflow: visible;
   min-height: 80px;
   min-width: 100px;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
-  outline: 1px solid var(--agile-board-primary-color);
-  border: 1px solid var(--interactive-accent);
 }
 
-
-/* Sur hover : éclaircissement subtil */
 .agile-board-frame:hover {
   filter: brightness(1.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -57,7 +52,7 @@
   height: 100%;
 }
 
-.box .editor {
+.editor {
   width: 100%;
   min-height: 6em;
   overflow: auto;
@@ -71,7 +66,7 @@
   background: var(--background-primary);
 }
 
-.box .preview {
+.preview {
   cursor: text;
   white-space: pre-wrap;
 }
