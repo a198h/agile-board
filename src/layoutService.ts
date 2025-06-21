@@ -1,3 +1,4 @@
+// src/layoutService.ts
 import { LayoutBlock } from "./types";
 import { Plugin, Notice, FileSystemAdapter } from "obsidian";
 import * as fs from "fs/promises";
