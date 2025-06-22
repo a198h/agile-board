@@ -1,15 +1,7 @@
-/* Couleurs par défaut (si aucune classe thème active) */
-:root {
-
-}
-
-
-/* === Thème sombre === */
-
-
+/* style.css */
 
 /* === Cadres === */
-.agile-board-frame > strong{
+.agile-board-frame > strong {
   display: block;
   font-size: 1.1rem;
   padding: 0.3em 0.5em;
@@ -28,7 +20,7 @@ section.agile-board-frame {
   display: block;
   overflow: visible;
   min-height: 80px;
-  min-width: 100px;
+  box-sizing: border-box;
 }
 
 .agile-board-frame:hover {
@@ -36,28 +28,18 @@ section.agile-board-frame {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-
 /* === Grille === */
 .agile-board-grid {
   min-height: 70vh;
+  height: 100vh;
   display: grid;
   grid-template-columns: repeat(24, 1fr);
   gap: 12px;
   padding: 12px;
 }
 
-
 /* === Éditeur === */
-.box {
-  height: 100%;
-  overflow: hidden; /* Ajoute ceci */
-}
-
 .editor {
-  width: 100%;
-  min-height: 0; /* <-- change ici */
-  overflow: auto;
-  display: none;
   color: var(--text-normal);
   font-size: var(--font-text-size);
   font-family: inherit;
@@ -71,7 +53,6 @@ section.agile-board-frame {
   cursor: text;
   white-space: pre-wrap;
 }
-
 
 /* === Message d'erreur === */
 .agile-board-error button {

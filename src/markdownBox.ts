@@ -15,29 +15,43 @@ export class MarkdownBox {
   ) {
     this.content = initial;
 
+    // Contrôle la hauteur du cadre parent (agile-board-frame)
+    if (container.classList.contains("agile-board-frame")) {
+      container.style.display = "flex";
+      container.style.flexDirection = "column";
+      container.style.height = "100%";
+      container.style.minHeight = "100px";
+      container.style.maxHeight = "100%";
+      container.style.boxSizing = "border-box";
+      container.style.overflow = "hidden"; // ← important ici aussi
+    }
+
+
     // Création de la boîte
     this.boxEl = container.createDiv("box");
-    this.boxEl.style.overflow = "auto";
-    this.boxEl.style.maxHeight = "90%";
-    this.boxEl.style.height = "100%"; // <-- Ajoute ceci pour forcer la hauteur
-    // this.boxEl.style.scrollbarWidth = "thin";      // Firefox
+    this.boxEl.style.display = "flex";
+    this.boxEl.style.flexDirection = "column";
+    this.boxEl.style.overflow = "hidden"; // Important : empêche tout débordement
+    this.boxEl.style.height = "100%";
+    this.boxEl.style.maxHeight = "100%";
+    this.boxEl.style.boxSizing = "border-box";
     this.boxEl.style.padding = "0.25rem";
-    // this.boxEl.style.border = "";
-    // this.boxEl.style.borderRadius = "0.5rem";
-    this.boxEl.style.backgroundColor = "var(--background-primary)";
+    this.boxEl.style.border = "solid";
+
+    // Éléments de prévisualisation
     this.previewEl = this.boxEl.createDiv("preview");
-    this.previewEl.style.overflow = "auto";
-    this.previewEl.style.maxHeight = "90%";
-    this.previewEl.style.scrollbarWidth = "thin";
+    this.previewEl.style.flex = "1";
+    this.previewEl.style.overflow = "auto"; // permet le scroll interne si besoin
 
+    // Zone d'édition
     this.editorEl = this.boxEl.createEl("textarea", { cls: "editor" });
-
-    // Ajoute ces styles pour occuper tout l'espace
     this.editorEl.style.width = "100%";
-    this.editorEl.style.height = "100%";
-    this.editorEl.style.minHeight = "0"; // déjà présent
+    this.editorEl.style.flex = "1"; // prend tout l'espace vertical
+    this.editorEl.style.minHeight = "0";
     this.editorEl.style.boxSizing = "border-box";
-    this.editorEl.style.resize = "none"; // optionnel, pour éviter le redimensionnement manuel
+    this.editorEl.style.resize = "none";
+    this.editorEl.style.overflow = "auto";
+    this.editorEl.style.display = "none"; // masqué par défaut
 
     this.renderPreview();
 
@@ -58,6 +72,8 @@ export class MarkdownBox {
       this.content = this.editorEl.value;
       this.renderPreview();
     });
+
+
   }
 
   async renderPreview() {
