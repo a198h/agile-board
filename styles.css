@@ -50,11 +50,12 @@ section.agile-board-frame {
 /* === Éditeur === */
 .box {
   height: 100%;
+  overflow: hidden; /* Ajoute ceci */
 }
 
 .editor {
   width: 100%;
-  min-height: 6em;
+  min-height: 0; /* <-- change ici */
   overflow: auto;
   display: none;
   color: var(--text-normal);

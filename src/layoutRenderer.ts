@@ -187,3 +187,26 @@ export class LayoutRenderer {
     await this.app.vault.modify(file, final.trimStart());
   }
 }
+
+function renderFrame(markdown: string): string {
+  // Sépare le Markdown en lignes
+  const lines = markdown.split('\n');
+  let output: string[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    output.push(lines[i]);
+    // Si c'est un titre de cadre
+    if (lines[i].match(/^# .+/)) {
+      // Si la ligne suivante n'existe pas ou est un autre titre
+      if (!lines[i + 1] || lines[i + 1].match(/^# /)) {
+        // Ajoute un placeholder invisible
+        output.push('<span style="display:none" data-placeholder="true"></span>');
+      }
+    }
+  }
+  return output.join('\n');
+}
+
+function cleanPlaceholders(markdown: string): string {
+  // Supprime tous les placeholders invisibles
+  return markdown.replace(/<span style="display:none" data-placeholder="true"><\/span>\n?/g, '');
+}

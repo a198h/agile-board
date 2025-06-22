@@ -17,8 +17,9 @@ export class MarkdownBox {
 
     // Création de la boîte
     this.boxEl = container.createDiv("box");
-    this.boxEl.style.overflow = "auto";            // scroll seulement si besoin
-    this.boxEl.style.maxHeight = "90%";           // ne dépasse pas le cadre parent
+    this.boxEl.style.overflow = "auto";
+    this.boxEl.style.maxHeight = "90%";
+    this.boxEl.style.height = "100%"; // <-- Ajoute ceci pour forcer la hauteur
     // this.boxEl.style.scrollbarWidth = "thin";      // Firefox
     this.boxEl.style.padding = "0.25rem";
     // this.boxEl.style.border = "";
@@ -30,6 +31,13 @@ export class MarkdownBox {
     this.previewEl.style.scrollbarWidth = "thin";
 
     this.editorEl = this.boxEl.createEl("textarea", { cls: "editor" });
+
+    // Ajoute ces styles pour occuper tout l'espace
+    this.editorEl.style.width = "100%";
+    this.editorEl.style.height = "100%";
+    this.editorEl.style.minHeight = "0"; // déjà présent
+    this.editorEl.style.boxSizing = "border-box";
+    this.editorEl.style.resize = "none"; // optionnel, pour éviter le redimensionnement manuel
 
     this.renderPreview();
 
@@ -54,12 +62,44 @@ export class MarkdownBox {
 
   async renderPreview() {
     this.previewEl.empty();
-    await MarkdownRenderer.renderMarkdown(
-      this.content,
-      this.previewEl,
-      this.app.workspace.getActiveFile()?.path ?? "",
-      null
-    );
+
+    // Force le conteneur à occuper tout l'espace disponible
+    this.previewEl.style.position = "relative";
+    this.previewEl.style.width = "100%";
+    this.previewEl.style.height = "100%";
+    this.previewEl.style.minHeight = "60px"; // adapte si besoin
+
+    if (!this.content.trim()) {
+      const placeholder = document.createElement("div");
+      placeholder.innerText = "Cliquez pour éditer…";
+      // Styles en dur pour occuper tout l'espace et centrer le texte
+      placeholder.style.position = "absolute";
+      placeholder.style.top = "0";
+      placeholder.style.left = "0";
+      placeholder.style.right = "0";
+      placeholder.style.bottom = "0";
+      placeholder.style.width = "100%";
+      placeholder.style.height = "100%";
+      placeholder.style.display = "flex";
+      placeholder.style.alignItems = "center";
+      placeholder.style.justifyContent = "center";
+      placeholder.style.opacity = "0.5";
+      placeholder.style.cursor = "pointer";
+      placeholder.style.userSelect = "none";
+      placeholder.style.fontStyle = "italic";
+      placeholder.addEventListener("click", () => this.openEditor());
+      this.previewEl.appendChild(placeholder);
+    } else {
+      // Nettoie le style si contenu non vide
+      this.previewEl.style.position = "";
+      this.previewEl.style.minHeight = "";
+      await MarkdownRenderer.renderMarkdown(
+        this.content,
+        this.previewEl,
+        this.app.workspace.getActiveFile()?.path ?? "",
+        null
+      );
+    }
   }
 
   openEditor() {
