@@ -46,6 +46,12 @@ Pour le moment, il est possible d'ajouter :
 3. Vous pouvez maintenant ajouter du contenu dans chaque cadre ou le modifier en mode Source.
 
 ***
+
+## Dossier exemple
+
+Vous pouvez télécharger le dossier exemple `Exemple-Agile-Board.zip`
+
+
 ## Contribuez !
 
 Vous pouvez reporter les problèmes ou les suggestions ici : https://github.com/a198h/agile-board/issues
