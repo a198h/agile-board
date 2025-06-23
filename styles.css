@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
 
 This CSS file will be included with your plugin, and
@@ -6,3 +7,72 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+=======
+/* style.css */
+
+/* === Cadres === */
+.agile-board-frame > strong {
+  display: block;
+  font-size: 1.1rem;
+  padding: 0.3em 0.5em;
+  margin-bottom: 0.5em;
+  font-weight: bold;
+  color: var(--text-normal);
+  border-bottom: 1px solid var(--background-modifier-border);
+  border-radius: 4px 4px 0 0;
+}
+
+section.agile-board-frame {
+  outline: 1px solid var(--interactive-accent);
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  padding: 1em;
+  display: block;
+  overflow: visible;
+  min-height: 80px;
+  box-sizing: border-box;
+}
+
+.agile-board-frame:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* === Grille === */
+.agile-board-grid {
+  min-height: 70vh;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 12px;
+  padding: 12px;
+}
+
+/* === Éditeur === */
+.editor {
+  color: var(--text-normal);
+  font-size: var(--font-text-size);
+  font-family: inherit;
+  border: 1px solid var(--background-modifier-border);
+  padding: 0.5em;
+  border-radius: 4px;
+  background: var(--background-primary);
+}
+
+.preview {
+  cursor: text;
+  white-space: pre-wrap;
+}
+
+/* === Message d'erreur === */
+.agile-board-error button {
+  margin-top: 1em;
+  padding: 0.5em 1em;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: var(--interactive-accent, #cc0000);
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+>>>>>>> feature/layout-base

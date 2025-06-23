@@ -1,0 +1,56 @@
+{
+  "layout_one": [
+    { "title": "Agenda", "x": 0, "y": 0, "w": 12, "h": 8 },
+    { "title": "Tâches", "x": 12, "y": 0, "w": 12, "h": 16 }
+  ],
+  "layout_full": [
+    { "title": "Global", "x": 0, "y": 0, "w": 24, "h": 10 }
+  ],
+  "layout_quad": [
+    { "title": "Notes",   "x": 0,  "y": 0,  "w": 12, "h": 6 },
+    { "title": "Tâches",  "x": 12, "y": 0,  "w": 12, "h": 6 },
+    { "title": "Idées",   "x": 0,  "y": 6,  "w": 12, "h": 6 },
+    { "title": "Références", "x": 12, "y": 6, "w": 12, "h": 6 }
+  ],  
+  "layout_dashboard": [
+    { "title": "Aujourd'hui",         "x": 0,  "y": 0,  "w": 12,  "h": 2 },
+    { "title": "Objectifs",                "x": 12,  "y": 0,  "w": 12, "h": 2 },
+
+    { "title": "Planning",            "x": 0,  "y": 2,  "w": 8, "h": 30 },
+    { "title": "Rendez-vous semaine", "x": 0,  "y": 32, "w": 8, "h": 20 },
+
+    { "title": "Tâches",              "x": 8,  "y": 2,  "w": 16, "h": 50 },
+
+    { "title": "Ce jour là",          "x": 0,  "y": 52, "w": 12, "h": 5 },
+    { "title": "Réalisé aujourd’hui", "x": 12, "y": 52, "w": 12, "h": 5 }
+  ],
+    "layout_today": [
+    { "title": "Aujourd'hui",         "x": 0,  "y": 0,  "w": 12,  "h": 2 },
+    { "title": "Date",                "x": 12,  "y": 0,  "w": 12, "h": 2 },
+
+    { "title": "Planning",            "x": 0,  "y": 2,  "w": 8, "h": 30 },
+    { "title": "Rendez-vous semaine", "x": 0,  "y": 32, "w": 8, "h": 20 },
+
+    { "title": "Tâches",              "x": 8,  "y": 2,  "w": 16, "h": 50 },
+
+    { "title": "Ce jour-là",          "x": 0,  "y": 52, "w": 12, "h": 5 },
+    { "title": "Réalisé aujourdhui", "x": 12, "y": 52, "w": 12, "h": 5 }
+  ],
+    "layout_week": [
+    { "title": "Objectifs",         "x": 0,  "y": 0, "w": 16, "h": 4 },
+    { "title": "Cette semaine",     "x": 16,  "y": 0,  "w": 8, "h": 4 },
+
+    { "title": "En retard",            "x": 0,  "y": 4,  "w": 6, "h": 16 },
+
+    { "title": "Lundi", "x": 6,  "y": 4, "w": 6, "h": 8 },
+    { "title": "Mardi", "x": 12,  "y": 4,  "w": 6, "h": 8 },
+    { "title": "Mercredi", "x": 18,  "y": 4,  "w": 6, "h": 8 },
+    { "title": "Jeudi", "x": 6,  "y": 12,  "w": 6, "h": 8 },
+    { "title": "Vendredi", "x": 12,  "y": 12,  "w": 6, "h": 8 },
+    { "title": "Samedi", "x": 18,  "y": 12,  "w": 3, "h": 4 },
+    { "title": "Dimanche", "x": 18,  "y": 16,  "w": 3, "h": 4 },
+
+    { "title": "Highlights de la semaine", "x": 0,  "y": 20, "w": 16, "h": 4 },
+    { "title": "Réalisé cette semaine", "x": 16, "y": 20, "w": 8, "h": 4 }
+  ]
+}
