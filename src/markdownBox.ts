@@ -36,7 +36,7 @@ export class MarkdownBox {
     this.boxEl.style.maxHeight = "100%";
     this.boxEl.style.boxSizing = "border-box";
     this.boxEl.style.padding = "0.25rem";
-    this.boxEl.style.border = "solid";
+    // this.boxEl.style.border = "solid";
 
     // Éléments de prévisualisation
     this.previewEl = this.boxEl.createDiv("preview");
