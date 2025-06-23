@@ -1,6 +1,6 @@
 {
 	"name": "agile-board",
-	"version": "0.1.0",
+	"version": "0.3.0",
 	"description": "Create a board",
 	"type": "module",
 	"main": "main.js",
@@ -21,8 +21,6 @@
 		"obsidian": "latest",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4"
-<<<<<<< HEAD
-=======
 	},
 	"dependencies": {
 		"@codemirror/basic-setup": "^0.20.0",
@@ -30,6 +28,5 @@
 		"@codemirror/state": "^6.5.2",
 		"@codemirror/view": "^6.37.2",
 		"ts-debounce": "^4.0.0"
->>>>>>> feature/layout-base
 	}
 }
