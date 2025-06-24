@@ -2,7 +2,7 @@
 import { TFile, Plugin, Notice, MarkdownView } from "obsidian";
 import { LayoutService } from "./layoutService";
 import { LayoutRenderer } from "./layoutRenderer";
-import { LayoutBlock } from "./types";
+// import { LayoutBlock } from "./types";
 import { parseHeadingsInFile } from "./sectionParser";
 
 export class ModelDetector {

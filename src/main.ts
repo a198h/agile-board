@@ -1,5 +1,5 @@
 //src/main.ts
-import { Plugin, Notice } from "obsidian";
+import { Plugin } from "obsidian";
 import { LayoutService } from "./layoutService";
 import { ModelDetector } from "./modelDetector";
 
