@@ -42,6 +42,10 @@ export class MarkdownBox {
     this.previewEl = this.boxEl.createDiv("preview");
     this.previewEl.style.flex = "1";
     this.previewEl.style.overflow = "auto"; // permet le scroll interne si besoin
+    this.previewEl.style.position = "relative";
+    
+    // Bouton d'édition
+    this.createEditButton();
 
     // Zone d'édition
     this.editorEl = this.boxEl.createEl("textarea", { cls: "editor" });
@@ -55,16 +59,29 @@ export class MarkdownBox {
 
     this.renderPreview();
 
-    // Clic sur le rendu → édition
-    this.previewEl.addEventListener("click", () => this.openEditor());
+    // Clic sélectif sur le rendu → édition (évite les éléments interactifs)
+    this.previewEl.addEventListener("click", (event) => {
+      const target = event.target as HTMLElement;
+      
+      // Ne pas intercepter les clics sur les éléments interactifs
+      if (this.isInteractiveElement(target)) {
+        return;
+      }
+      
+      // Vérifier si on clique sur l'icône d'édition
+      if (target.classList.contains('edit-button') || target.closest('.edit-button')) {
+        event.stopPropagation();
+        this.openEditor();
+        return;
+      }
+      
+      // Pour les autres clics, ne pas ouvrir l'éditeur automatiquement
+      // L'utilisateur doit cliquer sur l'icône d'édition
+    });
 
     // Changement → maj rendu + notify
     this.editorEl.addEventListener("blur", async () => {
-      this.content = this.editorEl.value;
-      this.editorEl.style.display = "none";
-      this.previewEl.style.display = "block";
-      await this.renderPreview();
-      this.onChange(this.content);
+      await this.closeEditor();
     });
 
     // Preview en live pendant la frappe
@@ -72,8 +89,122 @@ export class MarkdownBox {
       this.content = this.editorEl.value;
       this.renderPreview();
     });
+    
+    // Gestion des touches pour améliorer l'expérience
+    this.editorEl.addEventListener("keydown", (event) => {
+      // Échapper pour annuler l'édition
+      if (event.key === "Escape") {
+        this.editorEl.value = this.content; // Restore original content
+        this.closeEditor();
+        return;
+      }
+      
+      // Ctrl+Enter pour valider
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+        this.closeEditor();
+        return;
+      }
+      
+      // Auto-indentation pour les listes
+      if (event.key === "Enter") {
+        const textarea = this.editorEl;
+        const cursorPos = textarea.selectionStart;
+        const textBeforeCursor = textarea.value.substring(0, cursorPos);
+        const currentLine = textBeforeCursor.split('\n').pop() || '';
+        
+        // Détection des listes
+        const listMatch = currentLine.match(/^(\s*[-*+])\s/);
+        if (listMatch) {
+          event.preventDefault();
+          const listPrefix = listMatch[1];
+          const newText = textarea.value.substring(0, cursorPos) + 
+                         '\n' + listPrefix + ' ' + 
+                         textarea.value.substring(cursorPos);
+          textarea.value = newText;
+          textarea.setSelectionRange(cursorPos + listPrefix.length + 2, cursorPos + listPrefix.length + 2);
+          
+          // Trigger input event to update preview
+          this.content = textarea.value;
+          this.renderPreview();
+        }
+      }
+    });
 
 
+  }
+
+  private isInteractiveElement(element: HTMLElement): boolean {
+    // Vérifier si l'élément ou ses parents sont interactifs
+    let current = element;
+    while (current && current !== this.previewEl) {
+      const tag = current.tagName.toLowerCase();
+      
+      // Éléments interactifs standard
+      if (['a', 'button', 'input', 'textarea', 'select', 'img'].includes(tag)) {
+        return true;
+      }
+      
+      // Éléments avec des classes spéciales d'Obsidian
+      if (current.classList.contains('internal-link') || 
+          current.classList.contains('external-link') ||
+          current.classList.contains('image-embed') ||
+          current.classList.contains('file-embed') ||
+          current.classList.contains('tag') ||
+          current.classList.contains('cm-link') ||
+          current.classList.contains('dataview')) {
+        return true;
+      }
+      
+      // Éléments avec attributs interactifs
+      if (current.hasAttribute('href') || 
+          current.hasAttribute('src') ||
+          current.hasAttribute('data-href') ||
+          current.hasAttribute('data-path')) {
+        return true;
+      }
+      
+      current = current.parentElement!;
+    }
+    
+    return false;
+  }
+
+  private createEditButton() {
+    const editBtn = document.createElement("button");
+    editBtn.className = "edit-button";
+    editBtn.innerHTML = "✏️";
+    editBtn.title = "Modifier ce cadre";
+    editBtn.style.cssText = `
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: var(--background-primary);
+      border: 1px solid var(--background-modifier-border);
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-size: 12px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 10;
+    `;
+    
+    // Afficher le bouton au survol du cadre
+    this.previewEl.addEventListener("mouseenter", () => {
+      editBtn.style.opacity = "1";
+    });
+    
+    this.previewEl.addEventListener("mouseleave", () => {
+      editBtn.style.opacity = "0";
+    });
+    
+    // Clic sur le bouton d'édition
+    editBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      this.openEditor();
+    });
+    
+    this.previewEl.appendChild(editBtn);
   }
 
   async renderPreview() {
@@ -87,7 +218,7 @@ export class MarkdownBox {
 
     if (!this.content.trim()) {
       const placeholder = document.createElement("div");
-      placeholder.innerText = "Cliquez pour éditer…";
+      placeholder.innerText = "Cliquez sur ✏️ pour éditer…";
       // Styles en dur pour occuper tout l'espace et centrer le texte
       placeholder.style.position = "absolute";
       placeholder.style.top = "0";
@@ -100,10 +231,9 @@ export class MarkdownBox {
       placeholder.style.alignItems = "center";
       placeholder.style.justifyContent = "center";
       placeholder.style.opacity = "0.5";
-      placeholder.style.cursor = "pointer";
+      placeholder.style.cursor = "default";
       placeholder.style.userSelect = "none";
       placeholder.style.fontStyle = "italic";
-      placeholder.addEventListener("click", () => this.openEditor());
       this.previewEl.appendChild(placeholder);
     } else {
       // Nettoie le style si contenu non vide
@@ -113,9 +243,12 @@ export class MarkdownBox {
         this.content,
         this.previewEl,
         this.app.workspace.getActiveFile()?.path ?? "",
-        null
+        this.app.workspace.getActiveFile() as any
       );
     }
+    
+    // Recréer le bouton d'édition après chaque rendu
+    this.createEditButton();
   }
 
   openEditor() {
@@ -123,5 +256,16 @@ export class MarkdownBox {
     this.previewEl.style.display = "none";
     this.editorEl.style.display = "block";
     this.editorEl.focus();
+    
+    // Placer le curseur à la fin du texte
+    this.editorEl.setSelectionRange(this.content.length, this.content.length);
+  }
+  
+  private async closeEditor() {
+    this.content = this.editorEl.value;
+    this.editorEl.style.display = "none";
+    this.previewEl.style.display = "block";
+    await this.renderPreview();
+    this.onChange(this.content);
   }
 }
