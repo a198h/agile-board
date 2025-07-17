@@ -6,17 +6,32 @@
 ***
 # Agile Board
 
-**Agile Board** est un plugin pour [Obsidian](https://obsidian.md) qui permet d'organiser visuellement le contenu d'une note selon une mise en page sous forme de cadres. Chaque cadre devient une section éditable en mode Aperçu (Live Preview), parfaitement synchronisée avec le Markdown sous-jacent (mode Source).
+**Agile Board** est un plugin pour [Obsidian](https://obsidian.md) qui permet d'organiser visuellement le contenu d'une note selon une mise en page sous forme de cadres. Le plugin offre deux modes d'affichage : un **mode Board** avec grille de cadres éditables, et le **mode Normal** pour l'édition markdown classique.
 
 ***
 
 ## 🎯 À quoi ça sert ?
 
-Agile Board transforme une note Obsidian en un tableau de bord visuel. Il est alors possible d'ajouter du contenu dans chaque cadre.
-Pour le moment, il est possible d'ajouter :
-- des notes en markdown
-- des requêtes Dataview, Tasks, etc.
-(mais les liens vers d'autres notes ou images ne fonctionnent pas encore)
+Agile Board transforme une note Obsidian en un tableau de bord visuel organisé en cadres. Chaque cadre représente une section de votre note (titre de niveau 1) et peut contenir :
+
+- **Texte markdown** : headers, listes, formatage, etc.
+- **Liens internes** : vers d'autres notes de votre coffre
+- **Images** : affichage et interaction normaux
+- **Requêtes avancées** : Dataview, Tasks, etc.
+- **Tous les éléments Obsidian** : Le rendu est identique au Live Preview standard
+
+## 🔄 Deux modes d'affichage
+
+### Mode Board (Grille)
+- **Affichage** : Grille de cadres selon votre layout personnalisé
+- **Édition** : Cliquez sur un cadre pour l'éditer avec fonctionnalités Live Preview
+- **Fonctionnalités** : Continuation automatique des listes, indentation, etc.
+- **Basculement** : Cliquez sur l'icône 📄 "Mode Normal" dans la toolbar
+
+### Mode Normal (Markdown)
+- **Affichage** : Note markdown classique d'Obsidian
+- **Édition** : Live Preview et Source normaux
+- **Basculement** : Cliquez sur l'icône 🏢 "Mode Board" dans la toolbar (visible si layout configuré)
 
 ***
 
@@ -34,16 +49,89 @@ Pour le moment, il est possible d'ajouter :
 
 ## 📝 Utilisation
 
-1. Créez une note et ajoutez cette propriété en haut du fichier :
+### Configuration d'une note
+
+1. **Créez une note** et ajoutez cette propriété en haut du fichier :
 
    ```yaml
    ---
    agile-board: layout_eisenhower
    ---
    ```
-2. Passez en mode `Aperçu en direct` : le plugin vous propose de créer la structure de la note (les titres de niveau 1)
 
-3. Vous pouvez maintenant ajouter du contenu dans chaque cadre ou le modifier en mode Source.
+2. **Sauvegardez** la note - l'icône 🏢 "Mode Board" apparaît dans la toolbar
+
+3. **Cliquez sur "Mode Board"** pour basculer en mode grille
+
+### Première utilisation
+
+- Si des sections sont manquantes, le plugin vous propose de les créer automatiquement
+- Cliquez sur "➕ Créer les sections manquantes" pour générer la structure
+
+### Édition des cadres
+
+- **En mode Board** : Cliquez sur un cadre pour l'éditer
+- **Fonctionnalités d'édition** :
+  - Tapez `-` puis Entrée pour créer une liste
+  - Tapez `#` puis Entrée pour créer un header
+  - Tab/Shift+Tab pour indenter/désindenter
+  - Escape pour sortir du mode édition
+- **Synchronisation automatique** : Les modifications sont sauvées instantanément
+
+### Basculement entre modes
+
+- **Vers mode Board** : Cliquez sur 🏢 "Mode Board" (visible si layout configuré)
+- **Vers mode Normal** : Cliquez sur 📄 "Mode Normal" (visible en mode Board)
+- **Persistance** : Les boutons restent visibles même si vous changez d'onglet
+
+## 🎨 Layouts disponibles
+
+Le plugin inclut plusieurs layouts prédéfinis :
+
+- **`layout_eisenhower`** : Matrice d'Eisenhower (4 quadrants)
+- **`layout_kanban`** : Tableau Kanban (3 colonnes)
+- **`layout_dashboard`** : Tableau de bord général
+- **Layouts personnalisés** : Modifiez le fichier `layout.json` pour créer vos propres grilles
+
+## 🔧 Configuration avancée
+
+### Création de layouts personnalisés
+
+Éditez le fichier `layout.json` dans le dossier du plugin :
+
+```json
+{
+  "mon_layout": [
+    {
+      "title": "Titre du cadre",
+      "x": 0,     // Position colonne (0-23)
+      "y": 0,     // Position ligne (0-99)
+      "w": 12,    // Largeur en colonnes
+      "h": 12     // Hauteur en lignes
+    }
+  ]
+}
+```
+
+### Grille système
+
+- **24 colonnes** × **100 lignes** maximum
+- **Validation automatique** : Détection des collisions entre cadres
+- **Redimensionnement** : Ajustez `w` (largeur) et `h` (hauteur)
+
+## 🚀 Fonctionnalités avancées
+
+### Synchronisation bidirectionnelle
+
+- **Mode Board → Markdown** : Modifications instantanées dans le fichier source
+- **Mode Normal → Board** : Changements visibles immédiatement dans les cadres
+- **Cohérence garantie** : Un seul fichier source, deux modes d'affichage
+
+### Gestion des sections
+
+- **Détection automatique** : Le plugin identifie les titres de niveau 1 existants
+- **Création assistée** : Génération automatique des sections manquantes
+- **Préservation du frontmatter** : Les métadonnées sont conservées
 
 ***
 
