@@ -1,7 +1,7 @@
 //src/main.ts
 import { Plugin } from "obsidian";
 import { LayoutService } from "./layoutService";
-import { ModelDetector } from "./modelDetector";
+// import { ModelDetector } from "./modelDetector";
 import { AgileBoardView, AGILE_BOARD_VIEW_TYPE } from "./agileBoardView";
 import { ViewSwitcher } from "./viewSwitcher";
 import { FileSynchronizer } from "./fileSynchronizer";
@@ -10,7 +10,7 @@ import { FileSynchronizer } from "./fileSynchronizer";
 export default class AgileBoardPlugin extends Plugin {
   public layoutService: LayoutService;
   public fileSynchronizer: FileSynchronizer;
-  private modelDetector: ModelDetector;
+  // private modelDetector: ModelDetector;
   private viewSwitcher: ViewSwitcher;
 
   async onload() {
@@ -31,16 +31,17 @@ export default class AgileBoardPlugin extends Plugin {
     this.fileSynchronizer = new FileSynchronizer(this);
     this.fileSynchronizer.start();
 
-    // Garder l'ancien système pour la compatibilité (sera supprimé plus tard)
-    this.modelDetector = new ModelDetector(this, this.layoutService);
-    this.modelDetector.onLoad();
+    // Ancien système désactivé - maintenant on utilise uniquement le nouveau mode Board
+    // this.modelDetector = new ModelDetector(this, this.layoutService);
+    // this.modelDetector.onLoad();
 
     console.log("✅ Agile Board chargé avec mode Board");
   }
 
   onunload() {
-    this.modelDetector.onUnload();
+    // this.modelDetector.onUnload();
     this.fileSynchronizer.stop();
+    this.viewSwitcher.stop();
   }
 }
 

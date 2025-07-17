@@ -42,10 +42,6 @@ export class MarkdownBox {
     this.previewEl = this.boxEl.createDiv("preview");
     this.previewEl.style.flex = "1";
     this.previewEl.style.overflow = "auto"; // permet le scroll interne si besoin
-    this.previewEl.style.position = "relative";
-    
-    // Bouton d'édition
-    this.createEditButton();
 
     // Zone d'édition
     this.editorEl = this.boxEl.createEl("textarea", { cls: "editor" });
@@ -59,25 +55,7 @@ export class MarkdownBox {
 
     this.renderPreview();
 
-    // Clic sélectif sur le rendu → édition (évite les éléments interactifs)
-    this.previewEl.addEventListener("click", (event) => {
-      const target = event.target as HTMLElement;
-      
-      // Ne pas intercepter les clics sur les éléments interactifs
-      if (this.isInteractiveElement(target)) {
-        return;
-      }
-      
-      // Vérifier si on clique sur l'icône d'édition
-      if (target.classList.contains('edit-button') || target.closest('.edit-button')) {
-        event.stopPropagation();
-        this.openEditor();
-        return;
-      }
-      
-      // Pour les autres clics, ne pas ouvrir l'éditeur automatiquement
-      // L'utilisateur doit cliquer sur l'icône d'édition
-    });
+    // Pas d'événement de clic - l'édition se fait directement dans le contenu rendu
 
     // Changement → maj rendu + notify
     this.editorEl.addEventListener("blur", async () => {
@@ -169,43 +147,6 @@ export class MarkdownBox {
     return false;
   }
 
-  private createEditButton() {
-    const editBtn = document.createElement("button");
-    editBtn.className = "edit-button";
-    editBtn.innerHTML = "✏️";
-    editBtn.title = "Modifier ce cadre";
-    editBtn.style.cssText = `
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: var(--background-primary);
-      border: 1px solid var(--background-modifier-border);
-      border-radius: 3px;
-      padding: 2px 6px;
-      font-size: 12px;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.2s;
-      z-index: 10;
-    `;
-    
-    // Afficher le bouton au survol du cadre
-    this.previewEl.addEventListener("mouseenter", () => {
-      editBtn.style.opacity = "1";
-    });
-    
-    this.previewEl.addEventListener("mouseleave", () => {
-      editBtn.style.opacity = "0";
-    });
-    
-    // Clic sur le bouton d'édition
-    editBtn.addEventListener("click", (event) => {
-      event.stopPropagation();
-      this.openEditor();
-    });
-    
-    this.previewEl.appendChild(editBtn);
-  }
 
   async renderPreview() {
     this.previewEl.empty();
@@ -218,7 +159,7 @@ export class MarkdownBox {
 
     if (!this.content.trim()) {
       const placeholder = document.createElement("div");
-      placeholder.innerText = "Cliquez sur ✏️ pour éditer…";
+      placeholder.innerText = "Cliquez pour commencer à écrire…";
       // Styles en dur pour occuper tout l'espace et centrer le texte
       placeholder.style.position = "absolute";
       placeholder.style.top = "0";
@@ -231,7 +172,7 @@ export class MarkdownBox {
       placeholder.style.alignItems = "center";
       placeholder.style.justifyContent = "center";
       placeholder.style.opacity = "0.5";
-      placeholder.style.cursor = "default";
+      placeholder.style.cursor = "text";
       placeholder.style.userSelect = "none";
       placeholder.style.fontStyle = "italic";
       this.previewEl.appendChild(placeholder);
@@ -246,9 +187,6 @@ export class MarkdownBox {
         this.app.workspace.getActiveFile() as any
       );
     }
-    
-    // Recréer le bouton d'édition après chaque rendu
-    this.createEditButton();
   }
 
   openEditor() {

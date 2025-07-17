@@ -1,5 +1,5 @@
 // src/markdownSubView.ts
-import { App, TFile, Component, MarkdownRenderer } from "obsidian";
+import { App, TFile, Component, MarkdownRenderer, Editor, MarkdownView } from "obsidian";
 import { SectionInfo } from "./sectionParser";
 import { debounce } from "ts-debounce";
 
@@ -8,6 +8,10 @@ export class MarkdownSubView {
   private isRendering = false;
   private debouncedOnChange: (content: string) => void;
   private component: Component;
+  private markdownContent: string;
+  private isEditing = false;
+  private textArea: HTMLTextAreaElement | null = null;
+  private previewEl: HTMLElement | null = null;
 
   constructor(
     private app: App,
@@ -18,6 +22,7 @@ export class MarkdownSubView {
   ) {
     this.contentEl = container;
     this.component = new Component();
+    this.markdownContent = this.section.lines.join('\n');
     
     // Débouncer les changements pour éviter les sauvegardes trop fréquentes
     this.debouncedOnChange = debounce(this.onChange, 300);
@@ -33,31 +38,94 @@ export class MarkdownSubView {
     try {
       // Vider le contenu
       this.contentEl.empty();
-
-      // Obtenir le contenu de la section
-      const content = this.section.lines.join('\n');
-
-      if (!content.trim()) {
-        this.renderEmptyState();
+      
+      // Créer les deux modes : preview et édition
+      this.createPreviewMode();
+      this.createEditMode();
+      
+      // Afficher le mode approprié
+      if (this.isEditing) {
+        this.showEditMode();
       } else {
-        // Utiliser MarkdownRenderer pour un rendu natif
-        await MarkdownRenderer.renderMarkdown(
-          content,
-          this.contentEl,
-          this.file.path,
-          this.component
-        );
+        this.showPreviewMode();
       }
-
-      // Rendre le contenu éditable
-      this.makeEditable();
+      
     } finally {
       this.isRendering = false;
     }
   }
+  
+  private createPreviewMode(): void {
+    this.previewEl = this.contentEl.createDiv('markdown-preview');
+    this.previewEl.style.cssText = `
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      cursor: text;
+    `;
+    
+    this.renderPreview();
+  }
+  
+  private createEditMode(): void {
+    this.textArea = this.contentEl.createEl('textarea');
+    this.textArea.style.cssText = `
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: var(--font-text);
+      font-size: var(--font-size-normal);
+      background: transparent;
+      color: var(--text-normal);
+      padding: 0;
+      margin: 0;
+      display: none;
+      line-height: 1.6;
+    `;
+    
+    this.textArea.value = this.markdownContent;
+    
+    // Ajouter les raccourcis clavier pour simuler le live-preview
+    this.addLivePreviewKeyboardShortcuts();
+  }
+  
+  private async renderPreview(): Promise<void> {
+    if (!this.previewEl) return;
+    
+    this.previewEl.empty();
+    
+    if (!this.markdownContent.trim()) {
+      this.renderEmptyState();
+    } else {
+      // Utiliser MarkdownRenderer pour un rendu natif
+      await MarkdownRenderer.renderMarkdown(
+        this.markdownContent,
+        this.previewEl,
+        this.file.path,
+        this.component
+      );
+    }
+  }
+  
+  private showPreviewMode(): void {
+    if (this.previewEl) this.previewEl.style.display = 'block';
+    if (this.textArea) this.textArea.style.display = 'none';
+  }
+  
+  private showEditMode(): void {
+    if (this.previewEl) this.previewEl.style.display = 'none';
+    if (this.textArea) {
+      this.textArea.style.display = 'block';
+      this.textArea.focus();
+    }
+  }
 
   private renderEmptyState(): void {
-    const placeholder = this.contentEl.createDiv("empty-frame");
+    if (!this.previewEl) return;
+    
+    const placeholder = this.previewEl.createDiv("empty-frame");
     placeholder.style.cssText = `
       display: flex;
       align-items: center;
@@ -71,188 +139,278 @@ export class MarkdownSubView {
     placeholder.textContent = "Cliquez pour commencer à écrire...";
   }
 
-  private makeEditable(): void {
-    // Rendre le contenu éditable
-    this.contentEl.contentEditable = "true";
-    this.contentEl.style.outline = "none";
-    this.contentEl.style.cursor = "text";
-
-    // Gérer les liens pour qu'ils restent cliquables
-    this.handleLinksAndInteractiveElements();
-  }
-
-  private handleLinksAndInteractiveElements(): void {
-    // Gérer les liens internes
-    const internalLinks = this.contentEl.querySelectorAll('a.internal-link');
-    internalLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const href = link.getAttribute('data-href');
-        if (href) {
-          this.app.workspace.openLinkText(href, this.file.path);
-        }
-      });
-    });
-
-    // Gérer les liens externes
-    const externalLinks = this.contentEl.querySelectorAll('a:not(.internal-link)');
-    externalLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        // Laisser le comportement par défaut pour les liens externes
-      });
-    });
-
-    // Gérer les images
-    const images = this.contentEl.querySelectorAll('img');
-    images.forEach(img => {
-      img.style.pointerEvents = 'auto';
-      img.addEventListener('click', (e) => {
-        e.stopPropagation();
-        // Optionnel : ouvrir l'image dans un modal
-      });
-    });
-  }
 
   private setupEventListeners(): void {
-    // Écouter les changements de contenu
-    this.contentEl.addEventListener('input', this.onContentChange.bind(this));
-    this.contentEl.addEventListener('paste', this.onPaste.bind(this));
-    this.contentEl.addEventListener('keydown', this.onKeyDown.bind(this));
-
-    // Écouter les changements de focus
-    this.contentEl.addEventListener('focus', this.onFocus.bind(this));
-    this.contentEl.addEventListener('blur', this.onBlur.bind(this));
-  }
-
-  private onContentChange(): void {
-    const content = this.extractMarkdownFromHTML();
-    this.debouncedOnChange(content);
-  }
-
-  private onPaste(event: ClipboardEvent): void {
-    event.preventDefault();
-    
-    // Obtenir le texte brut du presse-papiers
-    const text = event.clipboardData?.getData('text/plain') || '';
-    
-    // Insérer le texte à la position du curseur
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-      range.insertNode(document.createTextNode(text));
-      
-      // Placer le curseur après le texte inséré
-      range.setStartAfter(range.endContainer);
-      range.setEndAfter(range.endContainer);
-      selection.removeAllRanges();
-      selection.addRange(range);
+    // Écouter les clics sur le preview pour passer en mode édition
+    if (this.previewEl) {
+      this.previewEl.addEventListener('click', (e) => {
+        // Ne pas intercepter les clics sur les liens et éléments interactifs
+        if (this.isInteractiveElement(e.target as HTMLElement)) {
+          return;
+        }
+        this.enterEditMode();
+      });
     }
-
-    // Notifier le changement
-    this.onContentChange();
-  }
-
-  private onKeyDown(event: KeyboardEvent): void {
-    // Gérer les raccourcis clavier spéciaux
-    if (event.key === 'Enter') {
-      this.handleEnterKey(event);
-    } else if (event.key === 'Tab') {
-      this.handleTabKey(event);
+    
+    // Écouter les changements dans le textarea
+    if (this.textArea) {
+      this.textArea.addEventListener('input', this.onTextAreaInput.bind(this));
+      this.textArea.addEventListener('blur', this.onTextAreaBlur.bind(this));
+      this.textArea.addEventListener('keydown', this.onTextAreaKeyDown.bind(this));
     }
   }
 
+  private enterEditMode(): void {
+    this.isEditing = true;
+    this.textArea!.value = this.markdownContent;
+    this.showEditMode();
+  }
+  
+  private async exitEditMode(): Promise<void> {
+    this.isEditing = false;
+    await this.renderPreview();
+    this.showPreviewMode();
+  }
+  
+  private onTextAreaInput(): void {
+    if (!this.textArea) return;
+    
+    this.markdownContent = this.textArea.value;
+    this.debouncedOnChange(this.markdownContent);
+  }
+  
+  private async onTextAreaBlur(): Promise<void> {
+    await this.exitEditMode();
+  }
+  
+  private async onTextAreaKeyDown(event: KeyboardEvent): Promise<void> {
+    if (event.key === 'Escape') {
+      await this.exitEditMode();
+      return;
+    }
+    
+    // Laisser la méthode addLivePreviewKeyboardShortcuts gérer les autres touches
+  }
+  
+  private addLivePreviewKeyboardShortcuts(): void {
+    if (!this.textArea) return;
+    
+    this.textArea.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        this.handleEnterKey(event);
+      } else if (event.key === 'Tab') {
+        this.handleTabKey(event);
+      } else if (event.key === 'Backspace') {
+        this.handleBackspaceKey(event);
+      }
+    });
+  }
+  
   private handleEnterKey(event: KeyboardEvent): void {
-    // Gérer la création automatique de listes
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
-
-    const range = selection.getRangeAt(0);
-    const currentNode = range.startContainer;
+    const textarea = this.textArea!;
+    const cursorPos = textarea.selectionStart;
+    const textBeforeCursor = textarea.value.substring(0, cursorPos);
+    const currentLine = textBeforeCursor.split('\n').pop() || '';
     
-    // Trouver le paragraphe ou l'élément de liste parent
-    let listItem = currentNode.parentElement;
-    while (listItem && !['LI', 'P', 'DIV'].includes(listItem.tagName)) {
-      listItem = listItem.parentElement;
-    }
-
-    if (listItem && listItem.tagName === 'LI') {
+    // Détecter les listes
+    const listMatch = currentLine.match(/^(\s*)([-*+])\s+(.*)$/);
+    if (listMatch) {
+      const [, indent, bullet, content] = listMatch;
+      
+      // Si la ligne est vide (juste le bullet), on sort de la liste
+      if (!content.trim()) {
+        event.preventDefault();
+        const lineStart = textBeforeCursor.lastIndexOf('\n') + 1;
+        const newText = textarea.value.substring(0, lineStart) + 
+                       '\n' + 
+                       textarea.value.substring(cursorPos);
+        textarea.value = newText;
+        textarea.setSelectionRange(lineStart + 1, lineStart + 1);
+        return;
+      }
+      
+      // Créer une nouvelle ligne de liste
       event.preventDefault();
-      this.createNewListItem(listItem);
+      const newListItem = '\n' + indent + bullet + ' ';
+      const newText = textarea.value.substring(0, cursorPos) + 
+                     newListItem + 
+                     textarea.value.substring(cursorPos);
+      textarea.value = newText;
+      textarea.setSelectionRange(cursorPos + newListItem.length, cursorPos + newListItem.length);
+      
+      // Notifier le changement
+      this.onTextAreaInput();
+      return;
+    }
+    
+    // Détecter les listes numérotées
+    const numberedListMatch = currentLine.match(/^(\s*)(\d+)\.\s+(.*)$/);
+    if (numberedListMatch) {
+      const [, indent, num, content] = numberedListMatch;
+      
+      if (!content.trim()) {
+        event.preventDefault();
+        const lineStart = textBeforeCursor.lastIndexOf('\n') + 1;
+        const newText = textarea.value.substring(0, lineStart) + 
+                       '\n' + 
+                       textarea.value.substring(cursorPos);
+        textarea.value = newText;
+        textarea.setSelectionRange(lineStart + 1, lineStart + 1);
+        return;
+      }
+      
+      event.preventDefault();
+      const nextNum = parseInt(num) + 1;
+      const newListItem = '\n' + indent + nextNum + '. ';
+      const newText = textarea.value.substring(0, cursorPos) + 
+                     newListItem + 
+                     textarea.value.substring(cursorPos);
+      textarea.value = newText;
+      textarea.setSelectionRange(cursorPos + newListItem.length, cursorPos + newListItem.length);
+      
+      this.onTextAreaInput();
+      return;
+    }
+    
+    // Détecter les blocs de citation
+    const blockquoteMatch = currentLine.match(/^(\s*)(>)\s+(.*)$/);
+    if (blockquoteMatch) {
+      const [, indent, quote, content] = blockquoteMatch;
+      
+      if (!content.trim()) {
+        event.preventDefault();
+        const lineStart = textBeforeCursor.lastIndexOf('\n') + 1;
+        const newText = textarea.value.substring(0, lineStart) + 
+                       '\n' + 
+                       textarea.value.substring(cursorPos);
+        textarea.value = newText;
+        textarea.setSelectionRange(lineStart + 1, lineStart + 1);
+        return;
+      }
+      
+      event.preventDefault();
+      const newQuoteLine = '\n' + indent + '> ';
+      const newText = textarea.value.substring(0, cursorPos) + 
+                     newQuoteLine + 
+                     textarea.value.substring(cursorPos);
+      textarea.value = newText;
+      textarea.setSelectionRange(cursorPos + newQuoteLine.length, cursorPos + newQuoteLine.length);
+      
+      this.onTextAreaInput();
+      return;
     }
   }
-
-  private createNewListItem(currentItem: HTMLElement): void {
-    const newItem = document.createElement('li');
-    newItem.textContent = '';
-    
-    // Insérer après l'élément actuel
-    if (currentItem.nextSibling) {
-      currentItem.parentNode?.insertBefore(newItem, currentItem.nextSibling);
-    } else {
-      currentItem.parentNode?.appendChild(newItem);
-    }
-
-    // Placer le curseur dans le nouvel élément
-    const range = document.createRange();
-    range.selectNodeContents(newItem);
-    range.collapse(true);
-    
-    const selection = window.getSelection();
-    selection?.removeAllRanges();
-    selection?.addRange(range);
-  }
-
+  
   private handleTabKey(event: KeyboardEvent): void {
-    event.preventDefault();
+    const textarea = this.textArea!;
+    const cursorPos = textarea.selectionStart;
+    const textBeforeCursor = textarea.value.substring(0, cursorPos);
+    const currentLine = textBeforeCursor.split('\n').pop() || '';
     
-    // Insérer une tabulation ou des espaces
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      const tabText = event.shiftKey ? '' : '\t'; // Simplification
-      range.insertNode(document.createTextNode(tabText));
-      range.collapse(false);
+    // Indenter les listes
+    const listMatch = currentLine.match(/^(\s*)([-*+])\s/);
+    if (listMatch) {
+      event.preventDefault();
+      const lineStart = textBeforeCursor.lastIndexOf('\n') + 1;
+      const indent = event.shiftKey ? '  ' : '\t';
+      const newText = textarea.value.substring(0, lineStart) + 
+                     (event.shiftKey ? 
+                      currentLine.replace(/^(\s*)/, (match) => match.length >= 2 ? match.slice(2) : '') :
+                      indent + currentLine) + 
+                     textarea.value.substring(cursorPos);
+      textarea.value = newText;
+      const newCursorPos = cursorPos + (event.shiftKey ? -Math.min(2, listMatch[1].length) : indent.length);
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+      
+      this.onTextAreaInput();
+      return;
+    }
+    
+    // Tab normal
+    event.preventDefault();
+    const tabText = '\t';
+    const newText = textarea.value.substring(0, cursorPos) + 
+                   tabText + 
+                   textarea.value.substring(cursorPos);
+    textarea.value = newText;
+    textarea.setSelectionRange(cursorPos + tabText.length, cursorPos + tabText.length);
+    
+    this.onTextAreaInput();
+  }
+  
+  private handleBackspaceKey(event: KeyboardEvent): void {
+    const textarea = this.textArea!;
+    const cursorPos = textarea.selectionStart;
+    const textBeforeCursor = textarea.value.substring(0, cursorPos);
+    const currentLine = textBeforeCursor.split('\n').pop() || '';
+    
+    // Supprimer intelligemment les listes vides
+    if (currentLine.match(/^(\s*)([-*+])\s*$/)) {
+      event.preventDefault();
+      const lineStart = textBeforeCursor.lastIndexOf('\n') + 1;
+      const newText = textarea.value.substring(0, lineStart) + 
+                     textarea.value.substring(cursorPos);
+      textarea.value = newText;
+      textarea.setSelectionRange(lineStart, lineStart);
+      
+      this.onTextAreaInput();
+      return;
     }
   }
-
-  private onFocus(): void {
-    // Ajouter une classe pour le styling
-    this.contentEl.classList.add('agile-board-frame-focused');
+  
+  private isInteractiveElement(element: HTMLElement): boolean {
+    let current = element;
+    while (current && current !== this.previewEl) {
+      const tag = current.tagName.toLowerCase();
+      
+      // Éléments interactifs standard
+      if (['a', 'button', 'input', 'textarea', 'select', 'img'].includes(tag)) {
+        return true;
+      }
+      
+      // Éléments avec des classes spéciales d'Obsidian
+      if (current.classList.contains('internal-link') || 
+          current.classList.contains('external-link') ||
+          current.classList.contains('image-embed') ||
+          current.classList.contains('file-embed') ||
+          current.classList.contains('tag') ||
+          current.classList.contains('cm-link') ||
+          current.classList.contains('dataview')) {
+        return true;
+      }
+      
+      // Éléments avec attributs interactifs
+      if (current.hasAttribute('href') || 
+          current.hasAttribute('src') ||
+          current.hasAttribute('data-href') ||
+          current.hasAttribute('data-path')) {
+        return true;
+      }
+      
+      current = current.parentElement!;
+    }
+    
+    return false;
   }
 
-  private onBlur(): void {
-    // Enlever la classe de focus
-    this.contentEl.classList.remove('agile-board-frame-focused');
-  }
-
-  private extractMarkdownFromHTML(): string {
-    // Fonction simple pour extraire le markdown du HTML
-    // Dans une implémentation complète, on pourrait utiliser une bibliothèque
-    // comme turndown pour une conversion plus robuste
-    
-    let content = this.contentEl.innerText || '';
-    
-    // Nettoyer le contenu
-    content = content.replace(/\n\s*\n\s*\n/g, '\n\n'); // Réduire les lignes vides multiples
-    content = content.trim();
-    
-    return content;
-  }
 
   // Méthode pour mettre à jour le contenu depuis l'extérieur
   async updateContent(newSection: SectionInfo): Promise<void> {
     this.section = newSection;
-    await this.render();
+    this.markdownContent = newSection.lines.join('\n');
+    
+    // Mettre à jour la textarea si elle existe
+    if (this.textArea) {
+      this.textArea.value = this.markdownContent;
+    }
+    
+    // Re-rendre le preview
+    await this.renderPreview();
   }
 
   // Méthode pour nettoyer les event listeners
   destroy(): void {
     this.component.unload();
-    this.contentEl.removeEventListener('input', this.onContentChange);
-    this.contentEl.removeEventListener('paste', this.onPaste);
-    this.contentEl.removeEventListener('keydown', this.onKeyDown);
-    this.contentEl.removeEventListener('focus', this.onFocus);
-    this.contentEl.removeEventListener('blur', this.onBlur);
+    // Les event listeners seront automatiquement nettoyés quand les éléments sont supprimés
   }
 }
