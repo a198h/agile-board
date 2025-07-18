@@ -2,13 +2,13 @@
 import { FileView, TFile, WorkspaceLeaf } from "obsidian";
 import { LayoutBlock } from "./types";
 import { SectionInfo, parseHeadingsInFile } from "./sectionParser";
-import { LivePreviewFrame } from "./livePreviewFrame";
+import { SimpleMarkdownFrame } from "./simpleMarkdownFrame";
 import AgileBoardPlugin from "./main";
 
 export const AGILE_BOARD_VIEW_TYPE = "agile-board-view";
 
 export class AgileBoardView extends FileView {
-  private frames: Map<string, LivePreviewFrame> = new Map();
+  private frames: Map<string, SimpleMarkdownFrame> = new Map();
   private layoutBlocks: LayoutBlock[] = [];
   private gridContainer: HTMLElement | null = null;
 
@@ -147,8 +147,8 @@ export class AgileBoardView extends FileView {
         padding: 0.5rem;
       `;
 
-      // Créer la vue live preview
-      const livePreviewFrame = new LivePreviewFrame(
+      // Créer la vue markdown simple
+      const simpleMarkdownFrame = new SimpleMarkdownFrame(
         this.app,
         contentEl,
         this.file!,
@@ -156,7 +156,7 @@ export class AgileBoardView extends FileView {
         (newContent) => this.onFrameContentChanged(block.title, newContent)
       );
 
-      this.frames.set(block.title, livePreviewFrame);
+      this.frames.set(block.title, simpleMarkdownFrame);
     }
   }
 

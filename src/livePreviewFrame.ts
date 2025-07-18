@@ -77,13 +77,13 @@ export class LivePreviewFrame {
       overflow: hidden;
     `;
 
-    // Configuration CodeMirror 6 avec support Obsidian
+    // Configuration CodeMirror 6 avec décorateurs conditionnels
     const extensions = [
       // Support markdown
       markdown(),
       
-      // Décorateur pour les liens et images Obsidian
-      obsidianLinkDecorator(this.app, this.file.path),
+      // Décorateurs Obsidian (conditionnels)
+      obsidianLinkDecorator(this.app, this.file.path, () => !this.isEditing),
       
       // Wrap des lignes longues
       EditorView.lineWrapping,
@@ -157,11 +157,14 @@ export class LivePreviewFrame {
           borderColor: 'var(--text-accent)',
         },
         
-        // Styles pour les éléments Obsidian
+        // Styles pour les éléments Obsidian (approche native)
         '.cm-hmd-internal-link': {
           color: 'var(--link-color)',
-          textDecoration: 'none',
+          textDecoration: 'underline',
           cursor: 'pointer',
+          fontWeight: '500',
+          padding: '0 1px',
+          borderRadius: '2px',
         },
         
         '.cm-hmd-internal-link:hover': {
@@ -171,21 +174,21 @@ export class LivePreviewFrame {
         '.cm-formatting-link': {
           color: 'var(--text-muted)',
           fontSize: '0.9em',
-          opacity: '0.7',
+          opacity: '0.5',
         },
         
         '.cm-image-embed': {
-          display: 'block',
-          margin: '0.5rem 0',
-          textAlign: 'center',
-        },
-        
-        '.cm-image-placeholder': {
-          color: 'var(--text-error)',
           backgroundColor: 'var(--background-secondary)',
+          color: 'var(--text-accent)',
+          cursor: 'pointer',
           padding: '2px 4px',
           borderRadius: '3px',
           fontFamily: 'var(--font-monospace)',
+          fontSize: '0.9em',
+        },
+        
+        '.cm-image-embed:hover': {
+          backgroundColor: 'var(--background-modifier-hover)',
         }
       }),
       
@@ -329,12 +332,15 @@ export class LivePreviewFrame {
         return true;
       }
       
-      // Classes spéciales d'Obsidian
+      // Classes spéciales d'Obsidian ET nos widgets
       if (current.classList.contains('internal-link') || 
           current.classList.contains('external-link') ||
           current.classList.contains('image-embed') ||
           current.classList.contains('file-embed') ||
-          current.classList.contains('tag')) {
+          current.classList.contains('tag') ||
+          current.classList.contains('cm-hmd-internal-link') ||
+          current.classList.contains('cm-image-embed') ||
+          current.classList.contains('cm-formatting-link')) {
         return true;
       }
       
@@ -359,6 +365,10 @@ export class LivePreviewFrame {
           insert: this.markdownContent
         }
       });
+      
+      // Forcer la mise à jour des décorateurs (désactivés)
+      this.editorView.dispatch({ effects: [] });
+      
       this.editorView.focus();
     }
   }
@@ -368,16 +378,22 @@ export class LivePreviewFrame {
     
     console.log('🔄 Sortie du mode édition');
     this.isEditing = false;
-    this.editorContainer.style.display = 'none';
-    this.previewContainer.style.display = 'block';
     
     // Récupérer le contenu de l'éditeur
     if (this.editorView) {
       this.markdownContent = this.editorView.state.doc.toString();
     }
     
+    // Forcer la mise à jour des décorateurs
+    if (this.editorView) {
+      this.editorView.dispatch({ effects: [] });
+    }
+    
     // Re-rendre le preview
     await this.renderMarkdown();
+    
+    this.editorContainer.style.display = 'none';
+    this.previewContainer.style.display = 'block';
   }
 
   private onEditorChange(update: ViewUpdate): void {
