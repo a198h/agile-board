@@ -3,6 +3,7 @@ import { App, TFile, Component, MarkdownRenderer } from "obsidian";
 import { EditorState } from "@codemirror/state";
 import { EditorView, ViewUpdate } from "@codemirror/view";
 import { markdown } from "@codemirror/lang-markdown";
+import { obsidianLinkDecorator } from "./obsidianLinkDecorator";
 import { SectionInfo } from "./sectionParser";
 import { debounce } from "ts-debounce";
 
@@ -76,10 +77,13 @@ export class LivePreviewFrame {
       overflow: hidden;
     `;
 
-    // Configuration ultra-minimaliste de CodeMirror 6
+    // Configuration CodeMirror 6 avec support Obsidian
     const extensions = [
-      // Juste le support markdown
+      // Support markdown
       markdown(),
+      
+      // Décorateur pour les liens et images Obsidian
+      obsidianLinkDecorator(this.app, this.file.path),
       
       // Wrap des lignes longues
       EditorView.lineWrapping,
@@ -151,6 +155,37 @@ export class LivePreviewFrame {
         // Curseur
         '.cm-cursor': {
           borderColor: 'var(--text-accent)',
+        },
+        
+        // Styles pour les éléments Obsidian
+        '.cm-hmd-internal-link': {
+          color: 'var(--link-color)',
+          textDecoration: 'none',
+          cursor: 'pointer',
+        },
+        
+        '.cm-hmd-internal-link:hover': {
+          backgroundColor: 'var(--link-hover-color)',
+        },
+        
+        '.cm-formatting-link': {
+          color: 'var(--text-muted)',
+          fontSize: '0.9em',
+          opacity: '0.7',
+        },
+        
+        '.cm-image-embed': {
+          display: 'block',
+          margin: '0.5rem 0',
+          textAlign: 'center',
+        },
+        
+        '.cm-image-placeholder': {
+          color: 'var(--text-error)',
+          backgroundColor: 'var(--background-secondary)',
+          padding: '2px 4px',
+          borderRadius: '3px',
+          fontFamily: 'var(--font-monospace)',
         }
       }),
       
