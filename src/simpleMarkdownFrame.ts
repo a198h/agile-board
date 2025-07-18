@@ -122,14 +122,14 @@ export class SimpleMarkdownFrame {
     html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
     html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
     
-    // Traiter les liens internes [[text]]
-    html = html.replace(/\[\[([^\]]+)\]\]/g, (match, linkText) => {
-      return `<a href="#" class="internal-link" data-href="${linkText}">${linkText}</a>`;
-    });
-    
-    // Traiter les images ![[text]]
+    // IMPORTANT: Traiter les images AVANT les liens (pour éviter les conflits)
     html = html.replace(/!\[\[([^\]]+)\]\]/g, (match, imageName) => {
       return `<img src="#" class="image-embed" data-src="${imageName}" alt="${imageName}" style="max-width: 100%; height: auto;">`;
+    });
+    
+    // Traiter les liens internes [[text]] (après les images)
+    html = html.replace(/\[\[([^\]]+)\]\]/g, (match, linkText) => {
+      return `<a href="#" class="internal-link" data-href="${linkText}">${linkText}</a>`;
     });
     
     // Traiter les listes
