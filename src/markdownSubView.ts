@@ -106,7 +106,175 @@ export class MarkdownSubView {
         this.file.path,
         this.component
       );
+      
+      // Post-traitement pour les éléments spécifiques d'Obsidian
+      this.processObsidianElements();
     }
+  }
+  
+  private processObsidianElements(): void {
+    if (!this.previewEl) return;
+    
+    // Traiter les images internes ![[image.jpg]]
+    this.processInternalImages();
+    
+    // Traiter les liens internes [[note]]
+    this.processInternalLinks();
+  }
+  
+  private processInternalImages(): void {
+    if (!this.previewEl) return;
+    
+    // Chercher les textes qui correspondent au pattern ![[image.jpg]]
+    const walker = document.createTreeWalker(
+      this.previewEl,
+      NodeFilter.SHOW_TEXT
+    );
+    
+    const textNodes: Text[] = [];
+    let node;
+    while (node = walker.nextNode()) {
+      if (node.textContent?.includes('![[')) {
+        textNodes.push(node as Text);
+      }
+    }
+    
+    textNodes.forEach(textNode => {
+      const content = textNode.textContent || '';
+      const imageRegex = /!\[\[([^\]]+)\]\]/g;
+      let match;
+      let lastIndex = 0;
+      const fragment = document.createDocumentFragment();
+      
+      while ((match = imageRegex.exec(content)) !== null) {
+        // Ajouter le texte avant l'image
+        if (match.index > lastIndex) {
+          fragment.appendChild(document.createTextNode(content.slice(lastIndex, match.index)));
+        }
+        
+        // Créer l'élément image
+        const imageName = match[1];
+        const imageEl = this.createImageElement(imageName);
+        fragment.appendChild(imageEl);
+        
+        lastIndex = imageRegex.lastIndex;
+      }
+      
+      // Ajouter le texte restant
+      if (lastIndex < content.length) {
+        fragment.appendChild(document.createTextNode(content.slice(lastIndex)));
+      }
+      
+      // Remplacer le nœud texte par le fragment
+      if (fragment.childNodes.length > 0) {
+        textNode.parentNode?.replaceChild(fragment, textNode);
+      }
+    });
+  }
+  
+  private createImageElement(imageName: string): HTMLElement {
+    const container = document.createElement('span');
+    container.className = 'image-embed';
+    
+    // Résoudre le chemin de l'image
+    const imageFile = this.app.metadataCache.getFirstLinkpathDest(imageName, this.file.path);
+    
+    if (imageFile) {
+      const img = document.createElement('img');
+      img.src = this.app.vault.getResourcePath(imageFile);
+      img.alt = imageName;
+      img.style.maxWidth = '100%';
+      img.style.height = 'auto';
+      
+      // Ajouter un clic pour ouvrir l'image
+      img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.app.workspace.openLinkText(imageName, this.file.path);
+      });
+      
+      container.appendChild(img);
+    } else {
+      // Image non trouvée
+      const placeholder = document.createElement('span');
+      placeholder.className = 'image-embed-placeholder';
+      placeholder.textContent = `![[${imageName}]]`;
+      placeholder.style.cssText = `
+        color: var(--text-error);
+        background: var(--background-secondary);
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-family: var(--font-monospace);
+      `;
+      container.appendChild(placeholder);
+    }
+    
+    return container;
+  }
+  
+  private processInternalLinks(): void {
+    if (!this.previewEl) return;
+    
+    // Chercher les textes qui correspondent au pattern [[note]]
+    const walker = document.createTreeWalker(
+      this.previewEl,
+      NodeFilter.SHOW_TEXT
+    );
+    
+    const textNodes: Text[] = [];
+    let node;
+    while (node = walker.nextNode()) {
+      if (node.textContent?.includes('[[') && !node.textContent?.includes('![[')) {
+        textNodes.push(node as Text);
+      }
+    }
+    
+    textNodes.forEach(textNode => {
+      const content = textNode.textContent || '';
+      const linkRegex = /\[\[([^\]]+)\]\]/g;
+      let match;
+      let lastIndex = 0;
+      const fragment = document.createDocumentFragment();
+      
+      while ((match = linkRegex.exec(content)) !== null) {
+        // Ajouter le texte avant le lien
+        if (match.index > lastIndex) {
+          fragment.appendChild(document.createTextNode(content.slice(lastIndex, match.index)));
+        }
+        
+        // Créer l'élément lien
+        const linkText = match[1];
+        const linkEl = this.createLinkElement(linkText);
+        fragment.appendChild(linkEl);
+        
+        lastIndex = linkRegex.lastIndex;
+      }
+      
+      // Ajouter le texte restant
+      if (lastIndex < content.length) {
+        fragment.appendChild(document.createTextNode(content.slice(lastIndex)));
+      }
+      
+      // Remplacer le nœud texte par le fragment
+      if (fragment.childNodes.length > 0) {
+        textNode.parentNode?.replaceChild(fragment, textNode);
+      }
+    });
+  }
+  
+  private createLinkElement(linkText: string): HTMLElement {
+    const link = document.createElement('a');
+    link.className = 'internal-link';
+    link.textContent = linkText;
+    link.href = '#';
+    
+    // Gérer le clic sur le lien
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.app.workspace.openLinkText(linkText, this.file.path);
+    });
+    
+    return link;
   }
   
   private showPreviewMode(): void {
@@ -372,6 +540,7 @@ export class MarkdownSubView {
       if (current.classList.contains('internal-link') || 
           current.classList.contains('external-link') ||
           current.classList.contains('image-embed') ||
+          current.classList.contains('image-embed-placeholder') ||
           current.classList.contains('file-embed') ||
           current.classList.contains('tag') ||
           current.classList.contains('cm-link') ||

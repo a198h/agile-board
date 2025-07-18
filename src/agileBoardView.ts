@@ -2,13 +2,13 @@
 import { FileView, TFile, WorkspaceLeaf } from "obsidian";
 import { LayoutBlock } from "./types";
 import { SectionInfo, parseHeadingsInFile } from "./sectionParser";
-import { MarkdownSubView } from "./markdownSubView";
+import { LivePreviewFrame } from "./livePreviewFrame";
 import AgileBoardPlugin from "./main";
 
 export const AGILE_BOARD_VIEW_TYPE = "agile-board-view";
 
 export class AgileBoardView extends FileView {
-  private frames: Map<string, MarkdownSubView> = new Map();
+  private frames: Map<string, LivePreviewFrame> = new Map();
   private layoutBlocks: LayoutBlock[] = [];
   private gridContainer: HTMLElement | null = null;
 
@@ -36,13 +36,13 @@ export class AgileBoardView extends FileView {
   }
 
   async onUnloadFile(file: TFile): Promise<void> {
-    this.cleanup();
+    await this.cleanup();
   }
 
   private async renderBoardLayout(): Promise<void> {
     if (!this.file) return;
 
-    this.cleanup();
+    await this.cleanup();
 
     // Vérifier si le fichier a un layout agile-board
     const cache = this.app.metadataCache.getFileCache(this.file);
@@ -72,9 +72,10 @@ export class AgileBoardView extends FileView {
     await this.createFrames(sections);
   }
 
-  private cleanup(): void {
+  private async cleanup(): Promise<void> {
     // Nettoyer les frames existantes
-    this.frames.forEach(frame => frame.destroy());
+    const destroyPromises = Array.from(this.frames.values()).map(frame => frame.destroy());
+    await Promise.all(destroyPromises);
     this.frames.clear();
 
     // Nettoyer le container
@@ -146,8 +147,8 @@ export class AgileBoardView extends FileView {
         padding: 0.5rem;
       `;
 
-      // Créer le sous-éditeur
-      const subView = new MarkdownSubView(
+      // Créer la vue live preview
+      const livePreviewFrame = new LivePreviewFrame(
         this.app,
         contentEl,
         this.file!,
@@ -155,7 +156,7 @@ export class AgileBoardView extends FileView {
         (newContent) => this.onFrameContentChanged(block.title, newContent)
       );
 
-      this.frames.set(block.title, subView);
+      this.frames.set(block.title, livePreviewFrame);
     }
   }
 
