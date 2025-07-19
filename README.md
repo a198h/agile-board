@@ -10,173 +10,81 @@
 
 ***
 
-## 🎯 À quoi ça sert ?
+## 🎯 Fonctionnalités
 
-Agile Board transforme une note Obsidian en un tableau de bord visuel organisé en cadres. Chaque cadre représente une section de votre note (titre de niveau 1) et peut contenir :
+Transforme vos notes en tableaux de bord visuels avec des cadres éditables. Chaque cadre représente une section (titre de niveau 1) avec support complet de :
 
-- **Texte markdown** : headers, listes, formatage, etc.
-- **Liens internes** : vers d'autres notes de votre coffre (cliquables)
-- **Images** : affichage `![[image.jpg]]` avec clic pour ouvrir
-- **Embeds de fichiers** : aperçu `![[fichier]]` avec clic pour ouvrir
-- **Cases à cocher interactives** : `- [ ]` et `- [x]` fonctionnelles
-- **Requêtes avancées** : Dataview, Tasks, etc.
-- **Tous les éléments Obsidian** : Le rendu est identique au Live Preview standard
+- **Markdown riche** : `![[images]]`, `[[liens]]`, `- [ ] tâches`, formatage
+- **Édition intelligente** : listes auto-continuées, cases à cocher cliquables
+- **Plugins compatibles** : Dataview, Tasks, etc.
+- **Live Preview natif** : rendu identique à Obsidian standard
 
 ## 🔄 Deux modes d'affichage
 
-### Mode Board (Grille)
-- **Affichage** : Grille de cadres selon votre layout personnalisé
-- **Édition** : Cliquez sur un cadre pour l'éditer avec fonctionnalités Live Preview
-- **Fonctionnalités avancées** : 
-  - Continuation automatique des listes avec Entrée
-  - Sortie de liste avec double Entrée
-  - Cases à cocher interactives
-  - Liens et images cliquables
-  - Support complet Dataview/Tasks
-- **Basculement** : Cliquez sur l'icône 📄 "Mode Normal" dans la toolbar
+**🏢 Mode Board** : Grille de cadres éditables avec fonctionnalités Live Preview  
+**📄 Mode Normal** : Édition markdown classique d'Obsidian
 
-### Mode Normal (Markdown)
-- **Affichage** : Note markdown classique d'Obsidian
-- **Édition** : Live Preview et Source normaux
-- **Basculement** : Cliquez sur l'icône 🏢 "Mode Board" dans la toolbar (visible si layout configuré)
+Basculez entre les modes via les icônes dans la toolbar.
 
 ***
 
-## 🚀 Installation manuelle
+## 🚀 Installation
 
-1. Dézippez le fichier `Agile-Board-vxx.xx.xx.zip`
-
-2. Copier le dossier `agile-board` dans le dossier .obsidian/plungins/ de votre coffre 
-
-3. Redémarrez Obsidian
-
-3. Dans `Paramètres → Plugins communautaires` de Obsidian, sélectionnez `Agile Board` et cliquez sur "Activer"
+1. Dézippez `Agile-Board-vxx.xx.xx.zip`
+2. Copiez le dossier `agile-board` dans `.obsidian/plugins/`
+3. Redémarrez Obsidian et activez le plugin
 
 ***
 
 ## 📝 Utilisation
 
-### Configuration d'une note
+### Configuration
+Ajoutez cette propriété en haut de votre note :
 
-1. **Créez une note** et ajoutez cette propriété en haut du fichier :
+```yaml
+---
+agile-board: layout_eisenhower
+---
+```
 
-   ```yaml
-   ---
-   agile-board: layout_eisenhower
-   ---
-   ```
+L'icône 🏢 apparaît dans la toolbar. Cliquez pour basculer en mode Board.
 
-2. **Sauvegardez** la note - l'icône 🏢 "Mode Board" apparaît dans la toolbar
+### Édition
+- **Clic sur un cadre** → mode édition avec Live Preview
+- **Listes intelligentes** : Entrée crée un nouvel item, double Entrée sort de la liste
+- **Cases à cocher** : Clic pour cocher/décocher, sync automatique
+- **Contenu riche** : `![[images]]`, `[[liens]]`, Dataview, Tasks
 
-3. **Cliquez sur "Mode Board"** pour basculer en mode grille
+## 🔧 Configuration
 
-### Première utilisation
+**Layout inclus** : `layout_eisenhower` (matrice 4 quadrants)
 
-- Si des sections sont manquantes, le plugin vous propose de les créer automatiquement
-- Cliquez sur "➕ Créer les sections manquantes" pour générer la structure
-
-### Édition des cadres
-
-- **En mode Board** : Cliquez sur un cadre pour l'éditer
-- **Fonctionnalités d'édition** :
-  - **Listes intelligentes** :
-    - Tapez `-` puis Entrée pour créer une liste
-    - Entrée sur un item → crée automatiquement le suivant
-    - Entrée sur un item vide → sort de la liste
-    - Support des listes numérotées (auto-incrémentation)
-  - **Cases à cocher** :
-    - Tapez `- [ ]` pour créer une tâche
-    - Clic sur la case pour cocher/décocher
-    - Synchronisation automatique avec le markdown
-  - **Contenu riche** :
-    - Images `![[image.jpg]]` affichées et cliquables
-    - Embeds `![[fichier]]` avec aperçu et clic
-    - Liens `[[note]]` cliquables
-  - **Navigation** :
-    - Tab/Shift+Tab pour indenter/désindenter
-    - Escape pour sortir du mode édition
-- **Synchronisation automatique** : Les modifications sont sauvées instantanément
-
-### Basculement entre modes
-
-- **Vers mode Board** : Cliquez sur 🏢 "Mode Board" (visible si layout configuré)
-- **Vers mode Normal** : Cliquez sur 📄 "Mode Normal" (visible en mode Board)
-- **Persistance** : Les boutons restent visibles même si vous changez d'onglet
-
-## 🎨 Layouts disponibles
-
-Le plugin inclut plusieurs layouts prédéfinis :
-
-- **`layout_eisenhower`** : Matrice d'Eisenhower (4 quadrants)
-- **`layout_kanban`** : Tableau Kanban (3 colonnes)
-- **`layout_dashboard`** : Tableau de bord général
-- **Layouts personnalisés** : Modifiez le fichier `layout.json` pour créer vos propres grilles
-
-## 🔧 Configuration avancée
-
-### Création de layouts personnalisés
-
-Éditez le fichier `layout.json` dans le dossier du plugin :
+**Layouts personnalisés** : Éditez `layout.json` dans le dossier du plugin
 
 ```json
 {
   "mon_layout": [
     {
       "title": "Titre du cadre",
-      "x": 0,     // Position colonne (0-23)
-      "y": 0,     // Position ligne (0-99)
-      "w": 12,    // Largeur en colonnes
-      "h": 12     // Hauteur en lignes
+      "x": 0, "y": 0,     // Position (colonne, ligne)
+      "w": 12, "h": 12    // Taille (largeur, hauteur)
     }
   ]
 }
 ```
 
-### Grille système
+Grille 24×100, validation automatique des collisions.
 
-- **24 colonnes** × **100 lignes** maximum
-- **Validation automatique** : Détection des collisions entre cadres
-- **Redimensionnement** : Ajustez `w` (largeur) et `h` (hauteur)
+## ✨ Caractéristiques
 
-## 🚀 Fonctionnalités avancées
-
-### Synchronisation bidirectionnelle
-
-- **Mode Board → Markdown** : Modifications instantanées dans le fichier source
-- **Mode Normal → Board** : Changements visibles immédiatement dans les cadres
-- **Cohérence garantie** : Un seul fichier source, deux modes d'affichage
-
-### Édition riche Live Preview
-
-- **Images intégrées** : `![[image.jpg]]` affichées directement dans les cadres
-- **Embeds intelligents** : `![[fichier]]` avec aperçu du contenu et clic pour ouvrir
-- **Cases à cocher fonctionnelles** : Clic pour basculer l'état, sync avec markdown
-- **Listes auto-continuées** : Entrée crée automatiquement le prochain item
-- **Liens cliquables** : `[[note]]` ouvrent directement dans Obsidian
-
-### Gestion des sections
-
-- **Détection automatique** : Le plugin identifie les titres de niveau 1 existants
-- **Création assistée** : Génération automatique des sections manquantes
-- **Préservation du frontmatter** : Les métadonnées sont conservées
-
-### Compatibilité complète
-
-- **Dataview** : Requêtes et tableaux fonctionnent normalement
-- **Tasks** : Plugin Tasks complètement supporté
-- **Autres plugins** : Compatible avec l'écosystème Obsidian
+- **Synchronisation bidirectionnelle** : Un fichier, deux modes d'affichage
+- **Sections automatiques** : Création assistée des sections manquantes
+- **Compatibilité plugins** : Dataview, Tasks et Templater semblent fonctionner normalement (reportez les bugs!); autres plugins à vérifer.
 
 ***
 
-## Dossier exemple
+## 📂 Ressources
 
-Vous pouvez télécharger le dossier exemple `Exemple-Agile-Board.zip`
-
-
-## Contribuez !
-
-Vous pouvez reporter les problèmes ou les suggestions ici : https://github.com/a198h/agile-board/issues
-
-Un espace de discussion est disponible ici : https://github.com/a198h/agile-board/discussions/8
-
-Toutes les contributions sont les bienvenues !
+- **Dossier exemple** : `Exemple-Agile-Board.zip`
+- **Bugs/Issues** : https://github.com/a198h/agile-board/issues
+- **Discussions** : https://github.com/a198h/agile-board/discussions/8
