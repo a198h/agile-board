@@ -1,12 +1,8 @@
 // src/modelDetector.ts
-import { TFile, Plugin, Notice, MarkdownView } from "obsidian";
+import { TFile, Plugin, MarkdownView } from "obsidian";
 import { LayoutService } from "./layoutService";
-import { LayoutRenderer } from "./layoutRenderer";
-// import { LayoutBlock } from "./types";
-import { parseHeadingsInFile } from "./sectionParser";
 
 export class ModelDetector {
-  private layoutRenderer = new LayoutRenderer(this.plugin.app);
 
   constructor(
     private plugin: Plugin,
@@ -53,9 +49,11 @@ export class ModelDetector {
   };
 
   private async applyModelForFile(file: TFile) {
+    console.log(`🔍 ModelDetector: applyModelForFile appelé pour ${file.path}`);
+    
     // Ne traiter que les .md
     if (!file.path.endsWith(".md")) {
-      this.cleanupContainer();
+      console.log(`❌ ModelDetector: ${file.path} n'est pas un fichier .md`);
       return;
     }
 
@@ -63,48 +61,31 @@ export class ModelDetector {
     const cache = this.plugin.app.metadataCache.getFileCache(file);
     const modelName = cache?.frontmatter?.["agile-board"] as string | undefined;
 
-    // Récupération de la vue active
-    const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!view || view.file?.path !== file.path) {
-      this.cleanupContainer();
-      return;
+    // Si c'est une note Agile Board, basculer automatiquement vers le mode Board
+    if (modelName) {
+      console.log(`🔍 Note Agile Board détectée: ${file.path} avec modèle: ${modelName}`);
+      
+      const currentView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
+      console.log(`🔍 Vue markdown actuelle:`, currentView ? `${currentView.file?.path}` : 'aucune');
+      
+      if (currentView && currentView.file?.path === file.path) {
+        console.log(`🚀 Conditions remplies, basculement automatique vers mode Board`);
+        
+        // Utiliser le viewSwitcher du plugin pour basculer
+        const plugin = this.plugin as any;
+        if (plugin.viewSwitcher) {
+          console.log(`✅ ViewSwitcher disponible, basculement...`);
+          await plugin.viewSwitcher.switchToBoardView(file);
+        } else {
+          console.log(`❌ ViewSwitcher non disponible`);
+        }
+        return;
+      } else {
+        console.log(`❌ Conditions non remplies pour le basculement automatique`);
+      }
+    } else {
+      console.log(`ℹ️ Pas de modèle Agile Board pour ${file.path}`);
     }
-
-    // 🚦 Test immédiat du mode Live Preview vs Source
-    const state = (view as any).getState?.();
-    const isLivePreview = state?.mode === "source" && state?.source === false;
-    if (!isLivePreview) {
-      console.log("✋ Passage en mode Source détecté → suppression des cadres");
-      this.cleanupContainer();
-      return;
-    }
-
-    // Si pas de modèle déclaré
-    if (!modelName) {
-      this.cleanupContainer();
-      return;
-    }
-
-    // Récupération du modèle
-    const model = this.layoutService.getModel(modelName);
-    if (!model) {
-      new Notice(`❌ Modèle "${modelName}" introuvable`);
-      return;
-    }
-
-    // Parsing des sections existantes
-    const sections = await parseHeadingsInFile(this.plugin.app, file);
-    console.log("📑 Sections trouvées :", Object.keys(sections));
-
-    // Rendu du layout
-    this.layoutRenderer.renderLayout(model, view, sections);
-  }
-
-  private cleanupContainer() {
-    const view = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!view) return;
-    const old = view.contentEl.querySelector(".agile-board-container");
-    if (old) old.remove();
   }
 }
 

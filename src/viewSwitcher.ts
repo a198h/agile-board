@@ -65,6 +65,7 @@ export class ViewSwitcher {
       })
     );
 
+
     // Ajouter des événements pour maintenir le bouton même quand la vue perd le focus
     this.plugin.registerEvent(
       this.plugin.app.workspace.on("layout-change", () => {
@@ -283,4 +284,5 @@ export class ViewSwitcher {
       }
     });
   }
+
 }

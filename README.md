@@ -83,8 +83,7 @@ Grille 24×100, validation automatique des collisions.
 
 ***
 
-## 📂 Ressources
+## 📂 Votre contribution compte !
 
-- **Dossier exemple** : `Exemple-Agile-Board.zip`
 - **Bugs/Issues** : https://github.com/a198h/agile-board/issues
 - **Discussions** : https://github.com/a198h/agile-board/discussions/8

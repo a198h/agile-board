@@ -120,10 +120,6 @@ export class AgileBoardView extends FileView {
         grid-column: ${block.x + 1} / span ${block.w};
         grid-row: ${block.y + 1} / span ${block.h};
         min-height: 100px;
-        border: 1px solid var(--background-modifier-border);
-        background-color: var(--background-primary);
-        border-radius: 0.5rem;
-        overflow: hidden;
         display: flex;
         flex-direction: column;
       `;
@@ -131,10 +127,6 @@ export class AgileBoardView extends FileView {
       // Titre du cadre
       const titleEl = frameContainer.createDiv("frame-title");
       titleEl.style.cssText = `
-        padding: 0.5rem;
-        font-weight: bold;
-        border-bottom: 1px solid var(--background-modifier-border);
-        background-color: var(--background-secondary);
         flex-shrink: 0;
       `;
       titleEl.textContent = block.title;
