@@ -15,8 +15,10 @@
 Agile Board transforme une note Obsidian en un tableau de bord visuel organisé en cadres. Chaque cadre représente une section de votre note (titre de niveau 1) et peut contenir :
 
 - **Texte markdown** : headers, listes, formatage, etc.
-- **Liens internes** : vers d'autres notes de votre coffre
-- **Images** : affichage et interaction normaux
+- **Liens internes** : vers d'autres notes de votre coffre (cliquables)
+- **Images** : affichage `![[image.jpg]]` avec clic pour ouvrir
+- **Embeds de fichiers** : aperçu `![[fichier]]` avec clic pour ouvrir
+- **Cases à cocher interactives** : `- [ ]` et `- [x]` fonctionnelles
 - **Requêtes avancées** : Dataview, Tasks, etc.
 - **Tous les éléments Obsidian** : Le rendu est identique au Live Preview standard
 
@@ -25,7 +27,12 @@ Agile Board transforme une note Obsidian en un tableau de bord visuel organisé 
 ### Mode Board (Grille)
 - **Affichage** : Grille de cadres selon votre layout personnalisé
 - **Édition** : Cliquez sur un cadre pour l'éditer avec fonctionnalités Live Preview
-- **Fonctionnalités** : Continuation automatique des listes, indentation, etc.
+- **Fonctionnalités avancées** : 
+  - Continuation automatique des listes avec Entrée
+  - Sortie de liste avec double Entrée
+  - Cases à cocher interactives
+  - Liens et images cliquables
+  - Support complet Dataview/Tasks
 - **Basculement** : Cliquez sur l'icône 📄 "Mode Normal" dans la toolbar
 
 ### Mode Normal (Markdown)
@@ -72,10 +79,22 @@ Agile Board transforme une note Obsidian en un tableau de bord visuel organisé 
 
 - **En mode Board** : Cliquez sur un cadre pour l'éditer
 - **Fonctionnalités d'édition** :
-  - Tapez `-` puis Entrée pour créer une liste
-  - Tapez `#` puis Entrée pour créer un header
-  - Tab/Shift+Tab pour indenter/désindenter
-  - Escape pour sortir du mode édition
+  - **Listes intelligentes** :
+    - Tapez `-` puis Entrée pour créer une liste
+    - Entrée sur un item → crée automatiquement le suivant
+    - Entrée sur un item vide → sort de la liste
+    - Support des listes numérotées (auto-incrémentation)
+  - **Cases à cocher** :
+    - Tapez `- [ ]` pour créer une tâche
+    - Clic sur la case pour cocher/décocher
+    - Synchronisation automatique avec le markdown
+  - **Contenu riche** :
+    - Images `![[image.jpg]]` affichées et cliquables
+    - Embeds `![[fichier]]` avec aperçu et clic
+    - Liens `[[note]]` cliquables
+  - **Navigation** :
+    - Tab/Shift+Tab pour indenter/désindenter
+    - Escape pour sortir du mode édition
 - **Synchronisation automatique** : Les modifications sont sauvées instantanément
 
 ### Basculement entre modes
@@ -127,11 +146,25 @@ Le plugin inclut plusieurs layouts prédéfinis :
 - **Mode Normal → Board** : Changements visibles immédiatement dans les cadres
 - **Cohérence garantie** : Un seul fichier source, deux modes d'affichage
 
+### Édition riche Live Preview
+
+- **Images intégrées** : `![[image.jpg]]` affichées directement dans les cadres
+- **Embeds intelligents** : `![[fichier]]` avec aperçu du contenu et clic pour ouvrir
+- **Cases à cocher fonctionnelles** : Clic pour basculer l'état, sync avec markdown
+- **Listes auto-continuées** : Entrée crée automatiquement le prochain item
+- **Liens cliquables** : `[[note]]` ouvrent directement dans Obsidian
+
 ### Gestion des sections
 
 - **Détection automatique** : Le plugin identifie les titres de niveau 1 existants
 - **Création assistée** : Génération automatique des sections manquantes
 - **Préservation du frontmatter** : Les métadonnées sont conservées
+
+### Compatibilité complète
+
+- **Dataview** : Requêtes et tableaux fonctionnent normalement
+- **Tasks** : Plugin Tasks complètement supporté
+- **Autres plugins** : Compatible avec l'écosystème Obsidian
 
 ***
 
