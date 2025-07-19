@@ -6,47 +6,48 @@
   font-size: 1.1rem;
   padding: 0.5em 0.75em;
   margin-bottom: 0.5em;
-  font-weight: bold;
+  font-weight: 500;
   color: var(--text-normal);
   border-bottom: 1px solid var(--background-modifier-border);
-  border-radius: 16px 16px 0 0;
-  background: linear-gradient(135deg, var(--background-secondary) 0%, var(--background-primary) 100%);
+  border-radius: 6px 6px 0 0;
+  background: var(--background-secondary);
 }
 
 .agile-board-frame {
-  outline: 1px solid var(--interactive-accent);
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  padding: 1em;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  padding: 0;
   display: block;
-  overflow: visible;
+  overflow: hidden;
   min-height: 80px;
   box-sizing: border-box;
   background: var(--background-primary);
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease;
 }
 
 .agile-board-frame:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  outline-color: var(--interactive-accent-hover);
+  border-color: var(--interactive-accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
 /* === Styles pour le mode Board === */
 .frame-title {
   padding: 0.5em 0.75em;
-  font-weight: bold;
+  font-weight: 500;
   color: var(--text-normal);
   border-bottom: 1px solid var(--background-modifier-border);
-  border-radius: 16px 16px 0 0;
-  background: linear-gradient(135deg, var(--background-secondary) 0%, var(--background-primary) 100%);
+  border-radius: 6px 6px 0 0;
+  background: var(--background-secondary);
   font-size: 1.1rem;
 }
 
 .frame-content {
   flex: 1;
   overflow: auto;
-  padding: 0.5rem;
+  padding: 0.75rem;
+  background: var(--background-primary);
 }
 
 /* === Grille === */
