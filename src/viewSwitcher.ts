@@ -9,6 +9,14 @@ export class ViewSwitcher {
   
   constructor(private plugin: AgileBoardPlugin) {}
 
+  private markAsManualChange(file: TFile): void {
+    // Notifier le ModelDetector qu'un changement manuel a eu lieu
+    const plugin = this.plugin as any;
+    if (plugin.modelDetector) {
+      plugin.modelDetector.markUserManualChange(file.path);
+    }
+  }
+
   async switchToBoardView(file: TFile): Promise<void> {
     const leaf = this.plugin.app.workspace.activeLeaf;
     if (!leaf) return;
@@ -202,6 +210,7 @@ export class ViewSwitcher {
         "Mode Board",
         () => {
           if (markdownView.file) {
+            this.markAsManualChange(markdownView.file);
             this.switchToBoardView(markdownView.file);
           }
         }
@@ -249,6 +258,7 @@ export class ViewSwitcher {
         "Mode Normal",
         () => {
           if (boardView.file) {
+            this.markAsManualChange(boardView.file);
             this.switchToMarkdownView(boardView.file);
           }
         }
