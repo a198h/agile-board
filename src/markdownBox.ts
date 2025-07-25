@@ -6,6 +6,7 @@ export class MarkdownBox {
   previewEl: HTMLElement;
   editorEl: HTMLTextAreaElement;
   content = "";
+  private containerOriginalHeight: string;
 
   constructor(
     private app: App,
@@ -14,16 +15,18 @@ export class MarkdownBox {
     private onChange: (newContent: string) => void
   ) {
     this.content = initial;
+    
+    
+    // Mémoriser la hauteur originale du container
+    this.containerOriginalHeight = container.style.height || getComputedStyle(container).height;
 
-    // Contrôle la hauteur du cadre parent (agile-board-frame)
+    // ATTENTION : Ne pas modifier le display du container car cela interfère avec CSS Grid
+    // Le container garde son display original pour préserver les propriétés de grille
     if (container.classList.contains("agile-board-frame")) {
-      container.style.display = "flex";
-      container.style.flexDirection = "column";
-      container.style.height = "100%";
-      container.style.minHeight = "100px";
-      container.style.maxHeight = "100%";
+      // Seulement définir les propriétés qui ne cassent pas CSS Grid
       container.style.boxSizing = "border-box";
-      container.style.overflow = "hidden"; // ← important ici aussi
+      container.style.overflow = "hidden";
+      // Ne pas toucher à display, height, etc. - laisser CSS Grid gérer
     }
 
 
@@ -55,7 +58,13 @@ export class MarkdownBox {
 
     this.renderPreview();
 
-    // Pas d'événement de clic - l'édition se fait directement dans le contenu rendu
+    // Événement de clic pour ouvrir l'éditeur
+    this.previewEl.addEventListener("click", (event) => {
+      // Éviter l'édition si on clique sur un élément interactif
+      if (!this.isInteractiveElement(event.target as HTMLElement)) {
+        this.openEditor();
+      }
+    });
 
     // Changement → maj rendu + notify
     this.editorEl.addEventListener("blur", async () => {
@@ -180,7 +189,8 @@ export class MarkdownBox {
       // Nettoie le style si contenu non vide
       this.previewEl.style.position = "";
       this.previewEl.style.minHeight = "";
-      await MarkdownRenderer.renderMarkdown(
+      await MarkdownRenderer.render(
+        this.app,
         this.content,
         this.previewEl,
         this.app.workspace.getActiveFile()?.path ?? "",
@@ -193,6 +203,35 @@ export class MarkdownBox {
     this.editorEl.value = this.content;
     this.previewEl.style.display = "none";
     this.editorEl.style.display = "block";
+    
+    // S'assurer que le container conserve ses propriétés de grille ET sa hauteur
+    const container = this.boxEl.parentElement;
+    
+    if (container && container.classList.contains("agile-board-frame")) {
+      // Sauvegarder les propriétés CSS Grid existantes
+      const computedStyle = getComputedStyle(container);
+      const gridColumn = computedStyle.gridColumn;
+      const gridRow = computedStyle.gridRow;
+      const currentHeight = computedStyle.height;
+      
+      // Préserver la hauteur ET les propriétés de grille
+      container.style.height = currentHeight;
+      container.style.minHeight = currentHeight;
+      container.style.maxHeight = currentHeight;
+      
+      // IMPORTANT : Préserver les propriétés de grille qui pourraient être écrasées
+      if (gridColumn && gridColumn !== 'auto') {
+        container.style.gridColumn = gridColumn;
+      }
+      if (gridRow && gridRow !== 'auto') {
+        container.style.gridRow = gridRow;
+      }
+    }
+    
+    // S'assurer que l'éditeur occupe tout l'espace disponible
+    this.editorEl.style.height = "100%";
+    this.editorEl.style.minHeight = "calc(100% - 1rem)";
+    
     this.editorEl.focus();
     
     // Placer le curseur à la fin du texte
@@ -203,6 +242,17 @@ export class MarkdownBox {
     this.content = this.editorEl.value;
     this.editorEl.style.display = "none";
     this.previewEl.style.display = "block";
+    
+    // Rétablir le comportement flexible du container
+    const container = this.boxEl.parentElement;
+    if (container && container.classList.contains("agile-board-frame")) {
+      // Retirer les contraintes de hauteur fixe pour permettre au contenu de s'adapter
+      container.style.minHeight = "100px"; // Hauteur minimum raisonnable
+      container.style.maxHeight = "100%";   // Reprendre la hauteur de la grille
+      // Garder la hauteur actuelle comme base
+      // container.style.height reste inchangé pour conserver la taille
+    }
+    
     await this.renderPreview();
     this.onChange(this.content);
   }

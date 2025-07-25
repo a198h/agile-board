@@ -1,6 +1,6 @@
 // src/agileBoardView.ts
 import { FileView, TFile, WorkspaceLeaf } from "obsidian";
-import { LayoutBlock } from "./types";
+import { LayoutBlock, LayoutModel } from "./types";
 import { SectionInfo, parseHeadingsInFile } from "./sectionParser";
 import { SimpleMarkdownFrame } from "./simpleMarkdownFrame";
 import AgileBoardPlugin from "./main";
@@ -9,7 +9,7 @@ export const AGILE_BOARD_VIEW_TYPE = "agile-board-view";
 
 export class AgileBoardView extends FileView {
   private frames: Map<string, SimpleMarkdownFrame> = new Map();
-  private layoutBlocks: LayoutBlock[] = [];
+  private layoutBlocks: LayoutModel = [];
   private gridContainer: HTMLElement | null = null;
 
   constructor(
@@ -60,7 +60,7 @@ export class AgileBoardView extends FileView {
       return;
     }
 
-    this.layoutBlocks = model;
+    this.layoutBlocks = [...model];
 
     // Parser les sections du fichier
     const sections = await parseHeadingsInFile(this.app, this.file);
@@ -74,8 +74,7 @@ export class AgileBoardView extends FileView {
 
   private async cleanup(): Promise<void> {
     // Nettoyer les frames existantes
-    const destroyPromises = Array.from(this.frames.values()).map(frame => frame.destroy());
-    await Promise.all(destroyPromises);
+    Array.from(this.frames.values()).forEach(frame => frame.unload());
     this.frames.clear();
 
     // Nettoyer le container
@@ -141,8 +140,8 @@ export class AgileBoardView extends FileView {
 
       // Créer la vue markdown simple
       const simpleMarkdownFrame = new SimpleMarkdownFrame(
-        this.app,
         contentEl,
+        this.app,
         this.file!,
         section,
         (newContent) => this.onFrameContentChanged(block.title, newContent)

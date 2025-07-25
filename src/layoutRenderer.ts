@@ -1,55 +1,54 @@
 // src/layoutRenderer.ts
 import { App, MarkdownView, TFile } from "obsidian";
-import { LayoutBlock } from "./types";
-import { SectionInfo, parseHeadingsInFile } from "./sectionParser";
+import { 
+  LayoutModel, 
+  SectionRegistry, 
+  LayoutRenderer as ILayoutRenderer,
+  PLUGIN_CONSTANTS 
+} from "./types";
+import { parseHeadingsInFile } from "./sectionParser";
 import { MarkdownBox } from "./markdownBox";
 
-export class LayoutRenderer {
-  constructor(private app: App) {}
+/**
+ * Service de rendu des layouts en mode Live Preview.
+ * Gère l'affichage en grille et la création des composants d'édition.
+ */
+export class LayoutRenderer implements ILayoutRenderer {
+  constructor(private readonly app: App) {}
 
-  async renderLayout(
-    blocks: LayoutBlock[],
+  /**
+   * Rend un layout en mode Live Preview avec les sections correspondantes.
+   * @param blocks Modèle de layout à rendre
+   * @param view Vue Markdown active
+   * @param sections Registry des sections extraites du fichier
+   */
+  public async renderLayout(
+    blocks: LayoutModel,
     view: MarkdownView,
-    sections: Record<string, SectionInfo>
-  ) {
-    // Si view.file est null, on ne fait rien
-    if (!view.file) return;
-
-    // 📋 Récupère l'état courant de la vue
-    const state = (view as any).getState();
-    console.log("🔍 getState() →", state);
-    
-    // ✅ Live Preview = mode "source" + source:false
-    const isLivePreview = state.mode === "source" && state.source === false;
-    if (!isLivePreview) {
+    sections: SectionRegistry
+  ): Promise<void> {
+    if (!view.file) {
       return;
     }
 
-
-    // Repérage des titres manquants
-    const missingTitles = blocks
-      .map(b => b.title)
-      .filter(title => !(title in sections));
-
-    // Création ou réinitialisation du wrapper
-    let container = view.contentEl.querySelector(
-      ".agile-board-container"
-    ) as HTMLElement | null;
-    if (!container) {
-      container = document.createElement("div");
-      container.className = "agile-board-container";
-      view.contentEl.prepend(container);
-    } else {
-      container.innerHTML = "";
+    // Vérifier si nous sommes en mode Live Preview
+    if (!this.isLivePreviewMode(view)) {
+      return;
     }
 
-    // Si titres manquants, on affiche l'erreur + bouton
+    // Identifier les sections manquantes
+    const missingTitles = this.findMissingSections(blocks, sections);
+
+    // Créer ou réinitialiser le container principal
+    const container = this.getOrCreateContainer(view);
+
+    // Si des sections sont manquantes, afficher l'interface d'erreur
     if (missingTitles.length > 0) {
       this.renderErrorOverlay(view, container, blocks, missingTitles);
       return;
     }
 
-    // Sinon, on construit la grille
+    // Sinon, construire la grille
     const grid = document.createElement("div");
     grid.className = "agile-board-grid";
     grid.style.cssText = `
@@ -107,12 +106,68 @@ export class LayoutRenderer {
     container.appendChild(grid);
   }
 
+  /**
+   * Vérifie si nous sommes en mode Live Preview.
+   * @param view Vue Markdown à vérifier
+   * @returns true si en mode Live Preview
+   */
+  private isLivePreviewMode(view: MarkdownView): boolean {
+    const state = view.getState();
+    return state.mode === "source" && state.source === false;
+  }
+
+  /**
+   * Identifie les sections manquantes par rapport au modèle.
+   * @param blocks Modèle de layout
+   * @param sections Registry des sections disponibles
+   * @returns Liste des titres manquants
+   */
+  private findMissingSections(
+    blocks: LayoutModel,
+    sections: SectionRegistry
+  ): string[] {
+    return blocks
+      .map(block => block.title)
+      .filter(title => !sections[title]);
+  }
+
+  /**
+   * Crée ou récupère le container principal pour le rendu.
+   * @param view Vue Markdown active
+   * @returns Container HTML principal
+   */
+  private getOrCreateContainer(view: MarkdownView): HTMLElement {
+    const existingContainer = view.containerEl.querySelector(
+      `.${PLUGIN_CONSTANTS.CSS_CLASSES.CONTAINER}`
+    );
+
+    if (existingContainer) {
+      existingContainer.empty();
+      return existingContainer as HTMLElement;
+    }
+
+    const container = view.containerEl.createDiv(
+      PLUGIN_CONSTANTS.CSS_CLASSES.CONTAINER
+    );
+    container.style.cssText = `
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      overflow: auto;
+    `;
+
+    return container;
+  }
+
+  /**
+   * Affiche l'interface d'erreur quand des sections sont manquantes.
+   */
   private renderErrorOverlay(
     view: MarkdownView,
     container: HTMLElement,
-    blocks: LayoutBlock[],
+    blocks: LayoutModel,
     missingTitles: string[]
-  ) {
+  ): void {
     // Zone d'erreur
     const overlay = document.createElement("div");
     overlay.className = "agile-board-error";
@@ -162,9 +217,14 @@ export class LayoutRenderer {
     container.appendChild(overlay);
   }
 
+  /**
+   * Réinitialise le fichier avec les sections du modèle.
+   * @param file Fichier à modifier
+   * @param blocks Modèle de layout
+   */
   private async resetAndInsertSections(
     file: TFile,
-    blocks: LayoutBlock[]
+    blocks: LayoutModel
   ): Promise<void> {
     const raw = await this.app.vault.read(file);
     const lines = raw.split("\n");
@@ -186,27 +246,4 @@ export class LayoutRenderer {
 
     await this.app.vault.modify(file, final.trimStart());
   }
-}
-
-function renderFrame(markdown: string): string {
-  // Sépare le Markdown en lignes
-  const lines = markdown.split('\n');
-  let output: string[] = [];
-  for (let i = 0; i < lines.length; i++) {
-    output.push(lines[i]);
-    // Si c'est un titre de cadre
-    if (lines[i].match(/^# .+/)) {
-      // Si la ligne suivante n'existe pas ou est un autre titre
-      if (!lines[i + 1] || lines[i + 1].match(/^# /)) {
-        // Ajoute un placeholder invisible
-        output.push('<span style="display:none" data-placeholder="true"></span>');
-      }
-    }
-  }
-  return output.join('\n');
-}
-
-function cleanPlaceholders(markdown: string): string {
-  // Supprime tous les placeholders invisibles
-  return markdown.replace(/<span style="display:none" data-placeholder="true"><\/span>\n?/g, '');
 }
