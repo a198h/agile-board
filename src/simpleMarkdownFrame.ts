@@ -92,10 +92,18 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
             this.file.path,
             this.component
           );
+          
+          // Configurer manuellement les liens après le rendu d'Obsidian
+          this.setupInternalLinks();
+          // Configurer la sauvegarde des checkboxes
+          this.setupCheckboxHandlers();
+          
         } catch (error) {
           console.warn('MarkdownRenderer failed, falling back to simple HTML:', error);
           // Fallback vers rendu simple
           this.containerEl.innerHTML = this.parseMarkdownToHTML(this.markdownContent);
+          this.setupInternalLinks();
+          this.setupCheckboxHandlers();
         }
       }
       
@@ -103,10 +111,31 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
       this.containerEl.addEventListener('click', (e) => {
         // Éviter de déclencher sur les éléments interactifs
         const target = e.target as HTMLElement;
-        if (target.tagName === 'A' || target.tagName === 'BUTTON' || 
-            target.closest('a') || target.closest('button') ||
+        
+        // Vérifier tous les types de liens et éléments interactifs d'Obsidian
+        if (target.tagName === 'A' || 
+            target.tagName === 'BUTTON' || 
+            target.tagName === 'INPUT' ||  // Inclure tous les inputs (checkboxes, etc.)
+            target.closest('a') || 
+            target.closest('button') ||
+            target.closest('input') ||
             target.classList.contains('dataview') ||
-            target.closest('.dataview')) {
+            target.closest('.dataview') ||
+            target.classList.contains('internal-link') ||
+            target.classList.contains('external-link') ||
+            target.classList.contains('tag') ||
+            target.classList.contains('cm-link') ||
+            target.classList.contains('file-embed') ||
+            target.classList.contains('image-embed') ||
+            target.classList.contains('task-list-item') ||
+            target.classList.contains('task-list-item-checkbox') ||
+            target.closest('.internal-link') ||
+            target.closest('.external-link') ||
+            target.closest('.tag') ||
+            target.closest('.file-embed') ||
+            target.closest('.image-embed') ||
+            target.closest('.task-list-item') ||
+            target.closest('.task-list-item-checkbox')) {
           return; // Laisser les éléments interactifs fonctionner
         }
         
@@ -367,6 +396,109 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
     console.log(`Restored ${allFrames.length} frames to CSS Grid`);
   }
 
+
+  /**
+   * Configure les liens internes pour qu'ils fonctionnent correctement.
+   */
+  private setupInternalLinks(): void {
+    if (!this.containerEl) return;
+    
+    // Trouver tous les liens internes dans le contenu rendu
+    const internalLinks = this.containerEl.querySelectorAll('a[data-href], a.internal-link, a[href^="#"]');
+    
+    internalLinks.forEach(link => {
+      const linkElement = link as HTMLAnchorElement;
+      
+      // Éviter de dupliquer les gestionnaires
+      if (linkElement.dataset.agileLinkSetup === 'true') {
+        return;
+      }
+      
+      linkElement.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Récupérer le lien depuis différents attributs possibles
+        const href = linkElement.getAttribute('data-href') || 
+                    linkElement.getAttribute('href') || 
+                    linkElement.textContent;
+        
+        if (href && href !== '#') {
+          console.log('Opening internal link:', href);
+          // Utiliser l'API d'Obsidian pour ouvrir le lien
+          this.app.workspace.openLinkText(href, this.file.path);
+        }
+      });
+      
+      // Marquer comme configuré
+      linkElement.dataset.agileLinkSetup = 'true';
+    });
+    
+    console.log(`Configured ${internalLinks.length} internal links`);
+  }
+
+  /**
+   * Configure la sauvegarde automatique des changements de checkbox.
+   */
+  private setupCheckboxHandlers(): void {
+    if (!this.containerEl) return;
+    
+    // Trouver toutes les checkboxes de tâches
+    const checkboxes = this.containerEl.querySelectorAll('input[type="checkbox"]');
+    
+    checkboxes.forEach(checkbox => {
+      const checkboxElement = checkbox as HTMLInputElement;
+      
+      // Éviter de dupliquer les gestionnaires
+      if (checkboxElement.dataset.agileCheckboxSetup === 'true') {
+        return;
+      }
+      
+      checkboxElement.addEventListener('change', (e) => {
+        e.stopPropagation();
+        console.log('Checkbox changed:', checkboxElement.checked);
+        
+        // Sauvegarder immédiatement le changement
+        this.saveCheckboxChange();
+      });
+      
+      // Marquer comme configuré
+      checkboxElement.dataset.agileCheckboxSetup = 'true';
+    });
+    
+    console.log(`Configured ${checkboxes.length} checkboxes for auto-save`);
+  }
+
+  /**
+   * Sauvegarde les changements de checkbox dans le contenu markdown.
+   */
+  private saveCheckboxChange(): void {
+    if (!this.containerEl) return;
+    
+    // Récupérer l'état actuel de toutes les checkboxes
+    const checkboxes = this.containerEl.querySelectorAll('input[type="checkbox"]');
+    
+    // Mettre à jour le contenu markdown en fonction de l'état des checkboxes
+    let updatedContent = this.markdownContent;
+    let checkboxIndex = 0;
+    
+    // Remplacer les checkbox dans le markdown selon leur état actuel
+    updatedContent = updatedContent.replace(/- \[([ x])\]/g, (match, current) => {
+      if (checkboxIndex < checkboxes.length) {
+        const checkbox = checkboxes[checkboxIndex] as HTMLInputElement;
+        const newState = checkbox.checked ? 'x' : ' ';
+        checkboxIndex++;
+        return `- [${newState}]`;
+      }
+      return match;
+    });
+    
+    // Mettre à jour le contenu et notifier le changement
+    this.markdownContent = updatedContent;
+    this.onChange(this.markdownContent);
+    
+    console.log('Checkbox changes saved to content');
+  }
 
   /**
    * Nettoie les composants actifs.
