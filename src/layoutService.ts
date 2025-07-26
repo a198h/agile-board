@@ -1,103 +1,106 @@
 // src/layoutService.ts
-import { LayoutBlock } from "./types";
-import { Plugin, Notice, FileSystemAdapter } from "obsidian";
-import * as fs from "fs/promises";
-import * as path from "path";
+import { Plugin } from "obsidian";
+import { 
+  LayoutModel, 
+  LayoutRegistry,
+  LayoutLoader as ILayoutLoader,
+  PluginError
+} from "./types";
+import { LayoutLoader } from "./core/layout/layoutLoader";
+import { ErrorHandler, ErrorSeverity } from "./core/errorHandler";
+import { ValidationUtils } from "./core/validation";
+import { createContextLogger } from "./core/logger";
 
+/**
+ * Service principal de gestion des modèles de layout.
+ * Orchestrateur qui délègue le chargement et la validation aux services spécialisés.
+ */
 export class LayoutService {
-  private models: Map<string, LayoutBlock[]> = new Map();
+  private models: LayoutRegistry = new Map();
+  private readonly loader: ILayoutLoader;
+  private readonly logger = createContextLogger('LayoutService');
 
-  constructor(private plugin: Plugin) {}
+  constructor(private readonly plugin: Plugin) {
+    this.loader = new LayoutLoader(plugin);
+  }
 
-  async load(): Promise<void> {
-    try {
-      const adapter = this.plugin.app.vault.adapter;
-      if (!(adapter instanceof FileSystemAdapter)) {
-        new Notice("❌ Le plugin nécessite un FileSystemAdapter.");
-        return;
-      }
+  /**
+   * Charge tous les modèles de layout depuis le fichier de configuration.
+   * @returns Promise résolue quand le chargement est terminé
+   */
+  public async load(): Promise<void> {
+    this.logger.info('Chargement des modèles de layout');
+    this.models = await this.loader.loadLayouts();
+    this.logger.info(`${this.models.size} modèle(s) chargé(s): ${Array.from(this.models.keys()).join(', ')}`);
+  }
 
-      const pluginId = this.plugin.manifest.id;
-      const basePath = adapter.getBasePath();
-      const layoutPath = path.join(basePath, ".obsidian", "plugins", pluginId, "layout.json");
-
-      console.log("📁 Lecture layout.json depuis :", layoutPath);
-
-      const raw = await fs.readFile(layoutPath, "utf-8");
-      const parsed = JSON.parse(raw);
-
-      if (typeof parsed !== "object" || Array.isArray(parsed)) {
-        new Notice("❌ layout.json doit être un objet avec des modèles nommés.", 0);
-        return;
-      }
-
-      this.models.clear();
-
-      for (const [model, blocks] of Object.entries(parsed)) {
-        if (!Array.isArray(blocks)) {
-          new Notice(`❌ Le modèle "${model}" doit être un tableau de blocs.`, 0);
-          continue;
-        }
-
-        if (!this.validateModel(model, blocks)) {
-          new Notice(`❌ Modèle "${model}" invalide – voir console pour détails.`, 0);
-          continue;
-        }
-
-        this.models.set(model, blocks);
-      }
-
-      console.log("📐 Modèles chargés :", Array.from(this.models.keys()));
-    } catch (err) {
-      console.error("❌ Erreur lecture layout.json :", err);
-      new Notice("Erreur lors du chargement de layout.json", 0);
+  /**
+   * Récupère un modèle par son nom avec validation.
+   * @param name Nom du modèle recherché
+   * @returns Modèle trouvé ou undefined
+   */
+  public getModel(name: string): LayoutModel | undefined {
+    const validation = ValidationUtils.validateLayoutModelName(name);
+    if (!validation.isValid) {
+      ErrorHandler.handleError(validation.error!, 'LayoutService.getModel', {
+        severity: ErrorSeverity.WARNING,
+        userMessage: `Nom de modèle invalide: ${name}`
+      });
+      return undefined;
     }
+
+    const model = this.models.get(name);
+    if (!model) {
+      const availableLayouts = Array.from(this.models.keys());
+      const notFoundError: PluginError = {
+        type: 'LAYOUT_NOT_FOUND',
+        layoutName: name,
+        availableLayouts
+      };
+      ErrorHandler.handleError(notFoundError, 'LayoutService.getModel', {
+        severity: ErrorSeverity.WARNING
+      });
+    }
+
+    return model;
   }
 
-  getModel(name: string): LayoutBlock[] | undefined {
-    return this.models.get(name);
-  }
-
-  getAllModelNames(): string[] {
+  /**
+   * Récupère tous les noms de modèles disponibles.
+   * @returns Liste des noms de modèles
+   */
+  public getAllModelNames(): readonly string[] {
     return Array.from(this.models.keys());
   }
 
-  private validateModel(name: string, blocks: LayoutBlock[]): boolean {
-    const grid = Array.from({ length: 24 }, () => Array(100).fill(false));
-    let valid = true;
-
-    for (const b of blocks) {
-      if (
-        typeof b.title !== "string" ||
-        typeof b.x !== "number" || typeof b.y !== "number" ||
-        typeof b.w !== "number" || typeof b.h !== "number"
-      ) {
-        console.warn(`❌ [${name}] Cadre invalide (types incorrects) :`, b);
-        valid = false;
-        continue;
-      }
-
-      if (
-        b.x < 0 || b.y < 0 ||
-        b.w <= 0 || b.h <= 0 ||
-        b.x + b.w > 24 || b.y + b.h > 100
-      ) {
-        console.warn(`❌ [${name}] Cadre hors limites :`, b);
-        valid = false;
-        continue;
-      }
-
-      for (let x = b.x; x < b.x + b.w; x++) {
-        for (let y = b.y; y < b.y + b.h; y++) {
-          if (grid[x][y]) {
-            console.warn(`❌ [${name}] Chevauchement détecté au cadre "${b.title}" à (${x}, ${y})`);
-            valid = false;
-          }
-          grid[x][y] = true;
-        }
-      }
+  /**
+   * Vérifie si un modèle existe avec validation du nom.
+   * @param name Nom du modèle à vérifier
+   * @returns true si le modèle existe
+   */
+  public hasModel(name: string): boolean {
+    const validation = ValidationUtils.validateLayoutModelName(name);
+    if (!validation.isValid) {
+      return false;
     }
+    return this.models.has(name);
+  }
 
-    return valid;
+  /**
+   * Récupère le nombre total de modèles chargés.
+   * @returns Nombre de modèles disponibles
+   */
+  public getModelCount(): number {
+    return this.models.size;
+  }
+
+  /**
+   * Recharge tous les modèles depuis le fichier.
+   * Utile pour rafraîchir après modification du fichier layout.json.
+   * @returns Promise résolue quand le rechargement est terminé
+   */
+  public async reload(): Promise<void> {
+    this.logger.info('Rechargement des modèles de layout');
+    await this.load();
   }
 }

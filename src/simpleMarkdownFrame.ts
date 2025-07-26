@@ -1,683 +1,863 @@
 // src/simpleMarkdownFrame.ts
 import { App, TFile, Component, MarkdownRenderer } from "obsidian";
 import { SectionInfo } from "./sectionParser";
-import { debounce } from "ts-debounce";
+import { BaseUIComponent } from "./core/baseComponent";
 
-export class SimpleMarkdownFrame {
-  private previewContainer: HTMLElement;
-  private editorContainer: HTMLElement;
-  private textArea: HTMLTextAreaElement;
+/**
+ * Frame markdown simplifié utilisant une architecture modulaire.
+ * Gère l'affichage et l'édition de sections markdown dans un layout en grille.
+ */
+export class SimpleMarkdownFrame extends BaseUIComponent {
   private isEditing = false;
-  private component: Component;
-  private debouncedOnChange: (content: string) => void;
   private markdownContent: string;
+  private component: Component;
 
   constructor(
+    container: HTMLElement,
     private app: App,
-    private container: HTMLElement,
     private file: TFile,
     private section: SectionInfo,
     private onChange: (content: string) => void
   ) {
-    this.component = new Component();
+    super(container, app);
     this.markdownContent = this.section.lines.join('\n');
-    this.debouncedOnChange = debounce(this.onChange, 1000); // Augmenter le délai pour lire les logs
+    this.component = new Component();
+    
+    // Enregistrer le component pour nettoyage automatique
+    this.registerDisposable({
+      dispose: () => this.component.unload()
+    });
     
     this.initializeFrame();
   }
 
-  private initializeFrame(): void {
+  /**
+   * Initialise le frame avec le mode prévisualisation.
+   */
+  private async initializeFrame(): Promise<void> {
     this.setupContainer();
-    this.createPreviewContainer();
-    this.createEditorContainer();
-    this.showPreviewMode();
+    await this.showPreviewMode();
   }
 
+  /**
+   * Configure le container principal.
+   */
   private setupContainer(): void {
-    this.container.empty();
-    this.container.style.cssText = `
+    if (!this.containerEl) return;
+    
+    this.containerEl.empty();
+    this.containerEl.style.cssText = `
       width: 100%;
       height: 100%;
       position: relative;
       overflow: hidden;
+      box-sizing: border-box;
     `;
   }
 
-  private createPreviewContainer(): void {
-    this.previewContainer = this.container.createDiv('simple-markdown-preview');
-    this.previewContainer.style.cssText = `
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      padding: 0.5rem;
-      cursor: text;
-      box-sizing: border-box;
-    `;
+  /**
+   * Affiche le mode prévisualisation.
+   */
+  private async showPreviewMode(): Promise<void> {
     
-    this.renderMarkdown();
-    this.setupPreviewEvents();
+    // Nettoyer les composants existants
+    this.cleanupComponents();
+
+    // Rendu de prévisualisation avec support Dataview/Tasks
+    if (this.containerEl) {
+      this.containerEl.empty();
+      this.containerEl.style.cssText = `
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        padding: 0.5rem;
+        cursor: text;
+        box-sizing: border-box;
+      `;
+      
+      if (!this.markdownContent.trim()) {
+        const placeholder = this.containerEl.createDiv();
+        placeholder.textContent = "Cliquez pour commencer à écrire...";
+        placeholder.style.cssText = `
+          color: var(--text-muted);
+          font-style: italic;
+        `;
+      } else {
+        try {
+          // Utiliser MarkdownRenderer d'Obsidian pour Dataview/Tasks
+          await MarkdownRenderer.renderMarkdown(
+            this.markdownContent,
+            this.containerEl,
+            this.file.path,
+            this.component
+          );
+          
+          // Configurer manuellement les liens après le rendu d'Obsidian
+          this.setupInternalLinks();
+          // Configurer spécifiquement les liens Dataview/Tasks
+          this.setupDataviewTasksLinks();
+          // Configurer la sauvegarde des checkboxes
+          this.setupCheckboxHandlers();
+          
+        } catch (error) {
+          console.warn('MarkdownRenderer failed, falling back to simple HTML:', error);
+          // Fallback vers rendu simple
+          this.containerEl.innerHTML = this.parseMarkdownToHTML(this.markdownContent);
+          this.setupInternalLinks();
+          this.setupDataviewTasksLinks();
+          this.setupCheckboxHandlers();
+        }
+      }
+      
+      // Gestionnaire de clic pour passer en mode édition
+      this.containerEl.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        
+        // NOUVEAU: Gestionnaire universel de liens - vérifier si c'est un lien avant tout
+        if (this.handleUniversalLink(target, e)) {
+          return; // Le lien a été traité, ne pas continuer
+        }
+        
+        // Vérifier tous les types d'éléments interactifs d'Obsidian
+        if (target.tagName === 'A' || 
+            target.tagName === 'BUTTON' || 
+            target.tagName === 'INPUT' ||
+            target.closest('a') || 
+            target.closest('button') ||
+            target.closest('input') ||
+            target.classList.contains('dataview') ||
+            target.closest('.dataview') ||
+            target.closest('.block-language-dataview') ||
+            target.closest('.dataview-result') ||
+            target.closest('.tasks-layout') ||
+            target.closest('.task-list-item') ||
+            target.classList.contains('internal-link') ||
+            target.classList.contains('external-link') ||
+            target.classList.contains('tag') ||
+            target.classList.contains('cm-link') ||
+            target.classList.contains('file-embed') ||
+            target.classList.contains('image-embed') ||
+            target.classList.contains('task-list-item') ||
+            target.classList.contains('task-list-item-checkbox') ||
+            target.closest('.internal-link') ||
+            target.closest('.external-link') ||
+            target.closest('.tag') ||
+            target.closest('.file-embed') ||
+            target.closest('.image-embed') ||
+            target.closest('.task-list-item') ||
+            target.closest('.task-list-item-checkbox') ||
+            target.getAttribute('data-href') ||
+            target.closest('[data-href]')) {
+          return; // Laisser les éléments interactifs fonctionner
+        }
+        
+        this.enterEditMode();
+      });
+    }
+    
+    this.isEditing = false;
   }
 
-  private createEditorContainer(): void {
-    this.editorContainer = this.container.createDiv('simple-markdown-editor');
-    this.editorContainer.style.cssText = `
-      width: 100%;
-      height: 100%;
-      display: none;
-      box-sizing: border-box;
-    `;
-
-    this.textArea = this.editorContainer.createEl('textarea');
-    this.textArea.style.cssText = `
-      width: 100%;
-      height: 100%;
-      border: none;
-      outline: none;
-      resize: none;
-      font-family: var(--font-text);
-      font-size: var(--font-size-normal);
-      background: transparent;
-      color: var(--text-normal);
-      padding: 0.5rem;
-      box-sizing: border-box;
-      line-height: 1.6;
-    `;
-    
-    this.textArea.value = this.markdownContent;
-    this.setupEditorEvents();
+  /**
+   * Convertit le markdown en HTML simple.
+   */
+  private parseMarkdownToHTML(markdown: string): string {
+    return markdown
+      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+      .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+      .replace(/\*(.*)\*/gim, '<em>$1</em>')
+      .replace(/\n/gim, '<br>');
   }
 
-  private async renderMarkdown(): Promise<void> {
-    this.previewContainer.empty();
+  /**
+   * Passe en mode édition.
+   */
+  private enterEditMode(): void {
+    if (this.isEditing) {
+        return;
+    }
+
+    // Convertir la grille CSS en positionnement absolu
+    this.createDimensionPreservingWrapper();
+    this.continueEnterEditMode();
+  }
+  
+  /**
+   * Continue le processus d'entrée en mode édition après verrouillage.
+   */
+  private continueEnterEditMode(): void {
     
-    if (!this.markdownContent.trim()) {
-      this.renderEmptyState();
+    // Nettoyer les composants existants
+    this.cleanupComponents();
+
+    // Créer directement un textarea simple
+    if (this.containerEl) {
+      this.containerEl.empty();
+      
+      const textArea = this.containerEl.createEl('textarea');
+      textArea.style.cssText = `
+        width: 100%;
+        height: 100%;
+        border: none;
+        outline: none;
+        resize: none;
+        font-family: var(--font-text);
+        font-size: var(--font-size-normal);
+        background: transparent;
+        color: var(--text-normal);
+        padding: 0.5rem;
+        box-sizing: border-box;
+        line-height: 1.6;
+      `;
+      
+      textArea.value = this.markdownContent;
+      
+      // Focus immédiat
+      textArea.focus();
+      textArea.setSelectionRange(textArea.value.length, textArea.value.length);
+      
+      // Gestionnaires d'événements simples
+      textArea.addEventListener('input', () => {
+        this.markdownContent = textArea.value;
+        this.onChange(this.markdownContent);
+      });
+      
+      textArea.addEventListener('blur', () => {
+        setTimeout(() => this.exitEditMode(), 100);
+      });
+      
+      textArea.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          this.exitEditMode();
+        } else if (e.key === 'Enter') {
+          this.handleEnterKey(e, textArea);
+        }
+      });
+    }
+
+    this.isEditing = true;
+  }
+
+  /**
+   * Gère la touche Entrée pour continuer automatiquement les listes et checkboxes.
+   */
+  private handleEnterKey(e: KeyboardEvent, textArea: HTMLTextAreaElement): void {
+    const cursorPos = textArea.selectionStart;
+    const value = textArea.value;
+    
+    // Trouver le début et la fin de la ligne actuelle
+    const lineStart = value.lastIndexOf('\n', cursorPos - 1) + 1;
+    const lineEnd = value.indexOf('\n', cursorPos);
+    const currentLine = value.substring(lineStart, lineEnd === -1 ? value.length : lineEnd);
+    
+    // Patterns pour détecter les listes et checkboxes
+    const checkboxPattern = /^(\s*)(- \[([ x])\] )(.*)$/;
+    const listPattern = /^(\s*)(- )(.*)$/;
+    const numberedListPattern = /^(\s*)(\d+\. )(.*)$/;
+    
+    const checkboxMatch = currentLine.match(checkboxPattern);
+    const listMatch = currentLine.match(listPattern);
+    const numberedMatch = currentLine.match(numberedListPattern);
+    
+    if (checkboxMatch) {
+      // Ligne de checkbox (priorité sur liste simple)
+      const [, indent, , , content] = checkboxMatch;
+      
+      if (!content.trim()) {
+        // Ligne vide - supprimer la checkbox
+        e.preventDefault();
+        const before = value.substring(0, lineStart);
+        const after = value.substring(lineEnd === -1 ? value.length : lineEnd);
+        textArea.value = before + after;
+        textArea.setSelectionRange(before.length, before.length);
+      } else {
+        // Continuer avec une nouvelle checkbox
+        e.preventDefault();
+        const newLine = `\n${indent}- [ ] `;
+        const before = value.substring(0, cursorPos);
+        const after = value.substring(cursorPos);
+        textArea.value = before + newLine + after;
+        const newPos = cursorPos + newLine.length;
+        textArea.setSelectionRange(newPos, newPos);
+      }
+      
+      this.markdownContent = textArea.value;
+      this.onChange(this.markdownContent);
+      
+    } else if (listMatch) {
+      // Ligne de liste simple
+      const [, indent, marker, content] = listMatch;
+      
+      if (!content.trim()) {
+        // Ligne vide - supprimer la liste
+        e.preventDefault();
+        const before = value.substring(0, lineStart);
+        const after = value.substring(lineEnd === -1 ? value.length : lineEnd);
+        textArea.value = before + after;
+        textArea.setSelectionRange(before.length, before.length);
+      } else {
+        // Continuer la liste
+        e.preventDefault();
+        const newLine = `\n${indent}${marker}`;
+        const before = value.substring(0, cursorPos);
+        const after = value.substring(cursorPos);
+        textArea.value = before + newLine + after;
+        const newPos = cursorPos + newLine.length;
+        textArea.setSelectionRange(newPos, newPos);
+      }
+      
+      this.markdownContent = textArea.value;
+      this.onChange(this.markdownContent);
+      
+    } else if (numberedMatch) {
+      // Ligne de liste numérotée
+      const [, indent, marker, content] = numberedMatch;
+      const currentNumber = parseInt(marker);
+      
+      if (!content.trim()) {
+        // Ligne vide - supprimer la liste
+        e.preventDefault();
+        const before = value.substring(0, lineStart);
+        const after = value.substring(lineEnd === -1 ? value.length : lineEnd);
+        textArea.value = before + after;
+        textArea.setSelectionRange(before.length, before.length);
+      } else {
+        // Continuer avec le numéro suivant
+        e.preventDefault();
+        const nextNumber = currentNumber + 1;
+        const newLine = `\n${indent}${nextNumber}. `;
+        const before = value.substring(0, cursorPos);
+        const after = value.substring(cursorPos);
+        textArea.value = before + newLine + after;
+        const newPos = cursorPos + newLine.length;
+        textArea.setSelectionRange(newPos, newPos);
+      }
+      
+      this.markdownContent = textArea.value;
+      this.onChange(this.markdownContent);
+    }
+  }
+
+  /**
+   * Quitte le mode édition et retourne à la prévisualisation.
+   */
+  private async exitEditMode(): Promise<void> {
+    if (!this.isEditing) {
       return;
     }
 
-    console.log('🔍 Rendu markdown hybride pour contenu:', this.markdownContent);
-
-    try {
-      // PRÉ-TRAITEMENT: Extraire les ![[]] avant MarkdownRenderer
-      const preprocessedContent = this.preprocessMarkdown(this.markdownContent);
-      
-      // Approche hybride: utiliser MarkdownRenderer 
-      await MarkdownRenderer.renderMarkdown(
-        preprocessedContent.content,
-        this.previewContainer,
-        this.file.path,
-        this.component
-      );
-      
-      // POST-TRAITEMENT: Remettre les éléments traités
-      this.postProcessRendering(preprocessedContent.replacements);
-      
-      console.log('✅ Markdown rendu avec approche hybride');
-      console.log('🔍 HTML rendu:', this.previewContainer.innerHTML);
-      
-    } catch (error) {
-      console.error('❌ Erreur rendu markdown, fallback vers parseur manuel:', error);
-      // Fallback vers notre parseur manuel
-      const renderedHTML = this.parseMarkdownToHTML(this.markdownContent);
-      this.previewContainer.innerHTML = renderedHTML;
-      this.setupLinksAndImages();
-    }
+    await this.showPreviewMode();
+    
+    // Restaurer la grille CSS depuis le positionnement absolu
+    this.removeDimensionPreservingWrapper();
   }
 
-  private preprocessMarkdown(content: string): { content: string; replacements: Array<{ placeholder: string; type: 'image' | 'embed'; name: string }> } {
-    console.log('🔍 Pré-traitement du markdown...');
-    
-    let processedContent = content;
-    const replacements: Array<{ placeholder: string; type: 'image' | 'embed'; name: string }> = [];
-    
-    // Traiter tous les ![[]] en une seule fois pour éviter les doublons
-    const allMatches = content.match(/!\[\[([^\]]+)\]\]/g);
-    if (allMatches) {
-      console.log(`🔍 Éléments ![[]] trouvés: ${allMatches.length}`);
-      
-      let placeholderIndex = 0;
-      allMatches.forEach((match) => {
-        const fileName = match.replace(/!\[\[([^\]]+)\]\]/, '$1');
-        
-        // Vérifier si c'est une image ou un fichier
-        const isImage = /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(fileName);
-        
-        if (isImage) {
-          // Utiliser un span HTML valide comme placeholder
-          const placeholder = `<span data-agile-image="${placeholderIndex}" data-name="${fileName}">IMAGE_PLACEHOLDER_${placeholderIndex}</span>`;
-          processedContent = processedContent.replace(match, placeholder);
-          replacements.push({ placeholder: `IMAGE_PLACEHOLDER_${placeholderIndex}`, type: 'image', name: fileName });
-          console.log(`🖼️ Image extraite: ${fileName} → span placeholder`);
-        } else {
-          // Utiliser un span HTML valide comme placeholder
-          const placeholder = `<span data-agile-embed="${placeholderIndex}" data-name="${fileName}">EMBED_PLACEHOLDER_${placeholderIndex}</span>`;
-          processedContent = processedContent.replace(match, placeholder);
-          replacements.push({ placeholder: `EMBED_PLACEHOLDER_${placeholderIndex}`, type: 'embed', name: fileName });
-          console.log(`📄 Embed extrait: ${fileName} → span placeholder`);
-        }
-        
-        placeholderIndex++;
-      });
-    }
-    
-    console.log('🔍 Contenu pré-traité:', processedContent);
-    return { content: processedContent, replacements };
-  }
 
-  private postProcessRendering(replacements: Array<{ placeholder: string; type: 'image' | 'embed'; name: string }>): void {
-    console.log('🔍 Post-traitement du rendu...');
-    console.log(`🔍 Replacements à traiter: ${replacements.length}`);
+  /**
+   * Convertit temporairement la grille CSS en positionnement absolu.
+   */
+  private createDimensionPreservingWrapper(): void {
+    if (!this.containerEl) return;
     
-    // Debug: afficher le HTML actuel
-    console.log('🔍 HTML actuel:', this.previewContainer.innerHTML);
+    // Trouver le container de grille principal
+    let gridContainer: HTMLElement | null = null;
+    let currentElement = this.containerEl.parentElement;
     
-    // Traiter les placeholders d'images
-    const imagePlaceholders = this.previewContainer.querySelectorAll('span[data-agile-image]');
-    console.log(`🖼️ Placeholders d'images trouvés: ${imagePlaceholders.length}`);
-    imagePlaceholders.forEach(span => {
-      const fileName = span.getAttribute('data-name');
-      if (fileName) {
-        console.log(`🖼️ Remplacement placeholder image: ${fileName}`);
-        this.replaceImageSpan(span as HTMLElement, fileName);
-      }
-    });
-    
-    // Traiter les placeholders d'embeds
-    const embedPlaceholders = this.previewContainer.querySelectorAll('span[data-agile-embed]');
-    console.log(`📄 Placeholders d'embeds trouvés: ${embedPlaceholders.length}`);
-    embedPlaceholders.forEach(span => {
-      const fileName = span.getAttribute('data-name');
-      if (fileName) {
-        console.log(`📄 Remplacement placeholder embed: ${fileName}`);
-        this.replaceEmbedSpan(span as HTMLElement, fileName);
-      }
-    });
-    
-    // Rechercher les liens internes qui ne fonctionnent pas
-    const links = this.previewContainer.querySelectorAll('a[data-href]');
-    console.log(`🔗 Liens trouvés: ${links.length}`);
-    links.forEach(link => {
-      const href = link.getAttribute('data-href');
-      if (href && !(link as HTMLAnchorElement).onclick) {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          console.log(`🔗 Clic sur lien post-traité: ${href}`);
-          this.app.workspace.openLinkText(href, this.file.path);
-        });
-      }
-    });
-  }
-
-  private parseMarkdownToHTML(markdown: string): string {
-    let html = markdown;
-    
-    // Traiter les headings
-    html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-    html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-    html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
-    
-    // IMPORTANT: Traiter les images AVANT les liens (pour éviter les conflits)
-    html = html.replace(/!\[\[([^\]]+)\]\]/g, (_, imageName) => {
-      return `<img src="#" class="image-embed" data-src="${imageName}" alt="${imageName}" style="max-width: 100%; height: auto;">`;
-    });
-    
-    // Traiter les liens internes [[text]] (après les images)
-    html = html.replace(/\[\[([^\]]+)\]\]/g, (_, linkText) => {
-      return `<a href="#" class="internal-link" data-href="${linkText}">${linkText}</a>`;
-    });
-    
-    // Traiter les listes
-    html = html.replace(/^[\s]*[-*+] (.*$)/gm, '<li>$1</li>');
-    html = html.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
-    
-    // Traiter les listes numérotées
-    html = html.replace(/^[\s]*\d+\. (.*$)/gm, '<li>$1</li>');
-    
-    // Traiter les paragraphes
-    html = html.replace(/\n\n/g, '</p><p>');
-    html = '<p>' + html + '</p>';
-    
-    // Nettoyer les paragraphes vides
-    html = html.replace(/<p><\/p>/g, '');
-    html = html.replace(/<p><h/g, '<h');
-    html = html.replace(/<\/h([1-6])><\/p>/g, '</h$1>');
-    html = html.replace(/<p><ul>/g, '<ul>');
-    html = html.replace(/<\/ul><\/p>/g, '</ul>');
-    
-    return html;
-  }
-
-  private replaceImageSpan(span: HTMLElement, imageName: string): void {
-    console.log(`🖼️ Remplacement span image: ${imageName}`);
-    
-    // Résoudre le chemin de l'image
-    const imageFile = this.app.metadataCache.getFirstLinkpathDest(imageName, this.file.path);
-    
-    if (imageFile) {
-      const imagePath = this.app.vault.getResourcePath(imageFile);
-      const img = document.createElement('img');
-      img.src = imagePath;
-      img.alt = imageName;
-      img.style.cssText = 'max-width: 100%; height: auto; border-radius: 4px; cursor: pointer;';
-      img.setAttribute('data-src', imageName);
-      
-      // Ajouter l'événement de clic pour l'image
-      img.addEventListener('click', (e) => {
-        e.preventDefault();
-        console.log(`🖼️ Clic sur image: ${imageName}`);
-        this.app.workspace.openLinkText(imageName, this.file.path);
-      });
-      
-      // Remplacer le span par l'image
-      span.parentElement?.replaceChild(img, span);
-      console.log(`✅ Image span remplacée: ${imageName}`);
-    } else {
-      // Image non trouvée, créer un placeholder d'erreur
-      const errorDiv = document.createElement('div');
-      errorDiv.style.cssText = 'padding: 1rem; border: 2px dashed var(--text-error); border-radius: 4px; text-align: center; color: var(--text-error); background: var(--background-secondary); font-family: var(--font-monospace);';
-      errorDiv.textContent = `Image non trouvée: ${imageName}`;
-      
-      span.parentElement?.replaceChild(errorDiv, span);
-      console.log(`❌ Image non trouvée: ${imageName}`);
-    }
-  }
-
-  private replaceEmbedSpan(span: HTMLElement, fileName: string): void {
-    console.log(`📄 Remplacement span embed: ${fileName}`);
-    
-    // Chercher le fichier
-    const targetFile = this.app.metadataCache.getFirstLinkpathDest(fileName, this.file.path);
-    
-    if (targetFile) {
-      // Créer un embed temporaire avec chargement asynchrone
-      const embedDiv = document.createElement('div');
-      embedDiv.className = 'markdown-embed';
-      embedDiv.style.cssText = 'border: 1px solid var(--background-modifier-border); border-radius: 4px; padding: 1rem; margin: 0.5rem 0; background: var(--background-primary-alt); cursor: pointer;';
-      embedDiv.setAttribute('data-file', fileName);
-      
-      const titleDiv = document.createElement('div');
-      titleDiv.style.cssText = 'font-weight: bold; margin-bottom: 0.5rem; color: var(--text-accent); font-size: 0.9em;';
-      titleDiv.textContent = `📄 ${fileName}`;
-      embedDiv.appendChild(titleDiv);
-      
-      const contentDiv = document.createElement('div');
-      contentDiv.style.cssText = 'color: var(--text-muted); font-style: italic;';
-      contentDiv.textContent = 'Chargement...';
-      embedDiv.appendChild(contentDiv);
-      
-      // Remplacer le span par l'embed
-      span.parentElement?.replaceChild(embedDiv, span);
-      
-      // Charger le contenu de façon asynchrone
-      this.loadEmbedContent(fileName);
-      
-      console.log(`✅ Embed span remplacé: ${fileName}`);
-    } else {
-      // Fichier non trouvé, créer un placeholder d'erreur
-      const errorDiv = document.createElement('div');
-      errorDiv.style.cssText = 'padding: 1rem; border: 2px dashed var(--text-error); border-radius: 4px; text-align: center; color: var(--text-error); background: var(--background-secondary); font-family: var(--font-monospace);';
-      errorDiv.textContent = `Fichier non trouvé: ${fileName}`;
-      
-      span.parentElement?.replaceChild(errorDiv, span);
-      console.log(`❌ Fichier non trouvé: ${fileName}`);
-    }
-  }
-
-  private async loadEmbedContent(fileName: string): Promise<void> {
-    const embedEl = this.previewContainer.querySelector(`[data-file="${fileName}"]`);
-    if (!embedEl) return;
-    
-    const targetFile = this.app.metadataCache.getFirstLinkpathDest(fileName, this.file.path);
-    if (!targetFile) return;
-    
-    try {
-      const fileContent = await this.app.vault.read(targetFile);
-      const lines = fileContent.split('\n').slice(0, 10); // Limiter à 10 lignes
-      const preview = lines.join('\n');
-      
-      // Mettre à jour le contenu
-      const contentDiv = embedEl.querySelector('div:last-child');
-      if (contentDiv) {
-        contentDiv.innerHTML = this.parseMarkdownToHTML(preview);
-      }
-      
-      // Ajouter l'événement de clic pour ouvrir le fichier
-      embedEl.addEventListener('click', (e) => {
-        e.preventDefault();
-        console.log(`📄 Clic sur embed: ${fileName}`);
-        this.app.workspace.openLinkText(fileName, this.file.path);
-      });
-      
-      console.log(`✅ Contenu embed chargé: ${fileName}`);
-    } catch (error) {
-      console.error(`❌ Erreur chargement embed: ${fileName}`, error);
-      const contentDiv = embedEl.querySelector('div:last-child');
-      if (contentDiv) {
-        contentDiv.textContent = `❌ Erreur: ${fileName}`;
-      }
-    }
-  }
-
-  private setupTaskCheckboxes(): void {
-    const checkboxes = this.previewContainer.querySelectorAll('input[type="checkbox"].task-list-item-checkbox');
-    console.log(`☑️ Cases à cocher trouvées: ${checkboxes.length}`);
-    
-    checkboxes.forEach((checkbox) => {
-      checkbox.addEventListener('change', (e) => {
-        const target = e.target as HTMLInputElement;
-        const isChecked = target.checked;
-        
-        console.log(`☑️ Case ${isChecked ? 'cochée' : 'décochée'}`);
-        
-        // Trouver l'élément li parent pour identifier la tâche
-        const listItem = target.closest('li.task-list-item');
-        if (listItem) {
-          this.updateTaskInMarkdown(listItem as HTMLElement, isChecked);
-        }
-      });
-    });
-  }
-
-  private updateTaskInMarkdown(listItem: HTMLElement, isChecked: boolean): void {
-    // Récupérer le texte de la tâche
-    const taskText = this.getTaskText(listItem);
-    console.log(`📝 Mise à jour tâche: "${taskText}" → ${isChecked ? 'cochée' : 'décochée'}`);
-    
-    // Mettre à jour le markdown source
-    const currentContent = this.markdownContent;
-    const lines = currentContent.split('\n');
-    
-    // Chercher la ligne correspondante
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      
-      // Pattern pour les tâches: - [ ] ou - [x] suivi du texte
-      const taskPattern = /^(\s*[-*+]\s)\[.\](\s.*)$/;
-      const match = line.match(taskPattern);
-      
-      if (match && this.lineContainsTask(line, taskText)) {
-        const [, prefix, suffix] = match;
-        const newCheckbox = isChecked ? '[x]' : '[ ]';
-        lines[i] = `${prefix}${newCheckbox}${suffix}`;
-        
-        console.log(`✅ Ligne mise à jour: ${lines[i]}`);
+    while (currentElement) {
+      if (currentElement.classList.contains('agile-board-grid')) {
+        gridContainer = currentElement;
         break;
       }
+      currentElement = currentElement.parentElement;
     }
     
-    // Sauvegarder le contenu modifié
-    const newContent = lines.join('\n');
-    this.markdownContent = newContent;
+    if (!gridContainer) {
+      console.warn('Could not find .agile-board-grid container');
+      return;
+    }
     
-    // Déclencher la sauvegarde debounced
-    this.debouncedOnChange(this.markdownContent);
-  }
-
-  private getTaskText(listItem: HTMLElement): string {
-    // Récupérer le texte de la tâche sans la case à cocher
-    const textNode = listItem.childNodes[listItem.childNodes.length - 1];
-    return textNode?.textContent?.trim() || '';
-  }
-
-  private lineContainsTask(line: string, taskText: string): boolean {
-    // Vérifier si la ligne contient le texte de la tâche
-    const lineText = line.replace(/^(\s*[-*+]\s)\[.\](\s)/, '').trim();
-    return lineText === taskText;
-  }
-
-  private setupLinksAndImages(): void {
-    // Gérer les cases à cocher des tâches
-    this.setupTaskCheckboxes();
+    // Éviter la double conversion
+    if (gridContainer.hasAttribute('data-agile-converted')) {
+      return;
+    }
     
-    // Gérer les liens internes
-    const internalLinks = this.previewContainer.querySelectorAll('a.internal-link');
+    
+    // Sauvegarder le display original
+    const originalDisplay = getComputedStyle(gridContainer).display;
+    gridContainer.setAttribute('data-original-display', originalDisplay);
+    
+    // Capturer toutes les positions AVANT tout changement pour éviter les chevauchements
+    const framePositions: Array<{element: HTMLElement, left: number, top: number, width: number, height: number}> = [];
+    
+    const allFrames = gridContainer.querySelectorAll('.agile-board-frame');
+    allFrames.forEach((frame, index) => {
+      const frameElement = frame as HTMLElement;
+      const rect = frameElement.getBoundingClientRect();
+      const containerRect = gridContainer!.getBoundingClientRect();
+      
+      // Calculer la position relative au container
+      const left = rect.left - containerRect.left;
+      const top = rect.top - containerRect.top;
+      
+      framePositions.push({
+        element: frameElement,
+        left,
+        top,
+        width: rect.width,
+        height: rect.height
+      });
+      
+    });
+    
+    // Maintenant appliquer les positions capturées
+    framePositions.forEach((pos, index) => {
+      const frameElement = pos.element;
+      
+      // Sauvegarder les styles originaux
+      frameElement.setAttribute('data-original-position', frameElement.style.position || 'static');
+      frameElement.setAttribute('data-original-left', frameElement.style.left || '');
+      frameElement.setAttribute('data-original-top', frameElement.style.top || '');
+      frameElement.setAttribute('data-original-width', frameElement.style.width || '');
+      frameElement.setAttribute('data-original-height', frameElement.style.height || '');
+      frameElement.setAttribute('data-original-grid-column', frameElement.style.gridColumn || '');
+      frameElement.setAttribute('data-original-grid-row', frameElement.style.gridRow || '');
+      
+      // Appliquer le positionnement absolu avec les positions capturées
+      frameElement.style.position = 'absolute';
+      frameElement.style.left = pos.left + 'px';
+      frameElement.style.top = pos.top + 'px';
+      frameElement.style.width = pos.width + 'px';
+      frameElement.style.height = pos.height + 'px';
+      frameElement.style.gridColumn = 'unset';
+      frameElement.style.gridRow = 'unset';
+      frameElement.style.zIndex = '1'; // Assurer que tous les frames sont au même niveau
+      
+    });
+    
+    // Changer le container en block et le rendre relatif
+    gridContainer.style.display = 'block';
+    gridContainer.style.position = 'relative';
+    gridContainer.setAttribute('data-agile-converted', 'true');
+    
+  }
+
+  /**
+   * Restaure la grille CSS depuis le positionnement absolu.
+   */
+  private removeDimensionPreservingWrapper(): void {
+    
+    // Trouver le container converti
+    const gridContainer = document.querySelector('[data-agile-converted]') as HTMLElement;
+    if (!gridContainer) {
+      return;
+    }
+    
+    // Restaurer tous les frames
+    const allFrames = gridContainer.querySelectorAll('.agile-board-frame');
+    allFrames.forEach((frame, index) => {
+      const frameElement = frame as HTMLElement;
+      
+      
+      // Restaurer les styles originaux
+      frameElement.style.position = frameElement.getAttribute('data-original-position') || '';
+      frameElement.style.left = frameElement.getAttribute('data-original-left') || '';
+      frameElement.style.top = frameElement.getAttribute('data-original-top') || '';
+      frameElement.style.width = frameElement.getAttribute('data-original-width') || '';
+      frameElement.style.height = frameElement.getAttribute('data-original-height') || '';
+      frameElement.style.gridColumn = frameElement.getAttribute('data-original-grid-column') || '';
+      frameElement.style.gridRow = frameElement.getAttribute('data-original-grid-row') || '';
+      frameElement.style.zIndex = ''; // Retirer le z-index
+      
+      // Supprimer les attributs de sauvegarde
+      frameElement.removeAttribute('data-original-position');
+      frameElement.removeAttribute('data-original-left');
+      frameElement.removeAttribute('data-original-top');
+      frameElement.removeAttribute('data-original-width');
+      frameElement.removeAttribute('data-original-height');
+      frameElement.removeAttribute('data-original-grid-column');
+      frameElement.removeAttribute('data-original-grid-row');
+    });
+    
+    // Restaurer le container de grille
+    const originalDisplay = gridContainer.getAttribute('data-original-display') || 'grid';
+    gridContainer.style.display = originalDisplay;
+    gridContainer.style.position = '';
+    gridContainer.removeAttribute('data-agile-converted');
+    gridContainer.removeAttribute('data-original-display');
+    
+  }
+
+
+  /**
+   * Configure les liens internes pour qu'ils fonctionnent correctement.
+   */
+  private setupInternalLinks(): void {
+    if (!this.containerEl) return;
+    
+    // Trouver tous les liens internes dans le contenu rendu (A et SPAN)
+    const internalLinks = this.containerEl.querySelectorAll('a[data-href], a.internal-link, a[href^="#"], span[data-href], span.internal-link');
+    
     internalLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
+      const linkElement = link as HTMLAnchorElement;
+      
+      // Éviter de dupliquer les gestionnaires
+      if (linkElement.dataset.agileLinkSetup === 'true') {
+        return;
+      }
+      
+      linkElement.addEventListener('click', (e) => {
         e.preventDefault();
-        const href = link.getAttribute('data-href');
-        if (href) {
-          console.log(`🔗 Clic sur lien interne: ${href}`);
+        e.stopPropagation();
+        
+        // Récupérer le lien depuis différents attributs possibles
+        const href = linkElement.getAttribute('data-href') || 
+                    linkElement.getAttribute('href') || 
+                    linkElement.textContent;
+        
+        if (href && href !== '#') {
+          // Utiliser l'API d'Obsidian pour ouvrir le lien
           this.app.workspace.openLinkText(href, this.file.path);
         }
       });
-    });
-    
-  }
-
-
-
-
-  private renderEmptyState(): void {
-    const placeholder = this.previewContainer.createDiv('empty-placeholder');
-    placeholder.style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      min-height: 80px;
-      color: var(--text-muted);
-      font-style: italic;
-      cursor: text;
-    `;
-    placeholder.textContent = "Cliquez pour commencer à écrire...";
-  }
-
-  private setupPreviewEvents(): void {
-    this.previewContainer.addEventListener('click', (e) => {
-      if (!this.isInteractiveElement(e.target as HTMLElement)) {
-        console.log('🖱️ Clic sur preview → mode édition');
-        this.enterEditMode();
-      }
-    });
-  }
-
-  private setupEditorEvents(): void {
-    this.textArea.addEventListener('input', () => {
-      this.markdownContent = this.textArea.value;
-      this.debouncedOnChange(this.markdownContent);
-    });
-
-    this.textArea.addEventListener('blur', () => {
-      console.log('📝 Blur sur textarea → mode preview');
-      this.exitEditMode();
-    });
-
-    this.textArea.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        console.log('⌨️ Escape → mode preview');
-        this.exitEditMode();
-      } else if (e.key === 'Enter') {
-        this.handleEnterKey(e);
-      }
-    });
-  }
-
-  private handleEnterKey(e: KeyboardEvent): void {
-    const textarea = this.textArea;
-    const cursorPos = textarea.selectionStart;
-    const content = textarea.value;
-    
-    // Trouver le début de la ligne actuelle
-    const lineStart = content.lastIndexOf('\n', cursorPos - 1) + 1;
-    const lineEnd = content.indexOf('\n', cursorPos);
-    const currentLine = content.substring(lineStart, lineEnd === -1 ? content.length : lineEnd);
-    
-    console.log(`📝 Ligne actuelle: "${currentLine}"`);
-    
-    // Détecter les différents types de listes
-    const listMatch = currentLine.match(/^(\s*)([-*+]|\d+\.)\s(.*)$/);
-    const taskMatch = currentLine.match(/^(\s*)([-*+])\s(\[.\])\s(.*)$/);
-    
-    if (taskMatch) {
-      // Liste de tâches
-      const [, indent, bullet, , text] = taskMatch;
       
-      if (text.trim() === '') {
-        // Ligne de tâche vide → sortir de la liste
-        e.preventDefault();
-        this.exitList(cursorPos, lineStart);
-      } else {
-        // Créer une nouvelle tâche
-        e.preventDefault();
-        const newTask = `\n${indent}${bullet} [ ] `;
-        this.insertTextAtCursor(newTask);
-      }
-    } else if (listMatch) {
-      // Liste normale
-      const [, indent, bullet, text] = listMatch;
+      // Marquer comme configuré
+      linkElement.dataset.agileLinkSetup = 'true';
+    });
+    
+  }
+
+  /**
+   * Configure spécifiquement les liens dans les blocs Dataview et Tasks.
+   */
+  private setupDataviewTasksLinks(): void {
+    if (!this.containerEl) return;
+    
+    // Sélecteurs pour les liens dans Dataview et Tasks - version étendue
+    const dataviewTasksSelectors = [
+      '.dataview a',
+      '.block-language-dataview a', 
+      '.dataview-result a',
+      '.tasks-layout a',
+      '.task-list-item a',
+      '[data-task] a',
+      // Sélecteurs plus génériques pour capturer tous les liens dans les blocs
+      '.dataview-list-item a',
+      '.dataview-table a',
+      '.dataview span[data-href]', // Liens avec data-href
+      '.block-language-dataview span[data-href]',
+      '.tasks-layout span[data-href]'
+    ];
+    
+    let totalLinks = 0;
+    
+    dataviewTasksSelectors.forEach(selector => {
+      const links = this.containerEl!.querySelectorAll(selector);
       
-      if (text.trim() === '') {
-        // Ligne de liste vide → sortir de la liste
-        e.preventDefault();
-        this.exitList(cursorPos, lineStart);
-      } else {
-        // Créer un nouvel item
-        e.preventDefault();
-        let newBullet = bullet;
+      links.forEach(link => {
+        const linkElement = link as HTMLAnchorElement;
         
-        // Si c'est une liste numérotée, incrémenter le numéro
-        if (/\d+\./.test(bullet)) {
-          const num = parseInt(bullet) + 1;
-          newBullet = `${num}.`;
+        // Éviter de dupliquer les gestionnaires
+        if (linkElement.dataset.agileDataviewSetup === 'true') {
+          return;
         }
         
-        const newItem = `\n${indent}${newBullet} `;
-        this.insertTextAtCursor(newItem);
+        linkElement.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Récupérer le lien depuis différents attributs possibles
+          const href = linkElement.getAttribute('data-href') || 
+                      linkElement.getAttribute('href') || 
+                      linkElement.textContent;
+          
+          if (href && href !== '#') {
+            
+            // Nettoyer le href s'il contient des caractères spéciaux de Dataview
+            let cleanHref = href.replace(/^\[\[|\]\]$/g, ''); // Enlever [[ ]]
+            cleanHref = cleanHref.split('|')[0]; // Prendre seulement la partie avant |
+            
+            // Utiliser l'API d'Obsidian pour ouvrir le lien
+            this.app.workspace.openLinkText(cleanHref, this.file.path);
+          }
+        });
+        
+        // Marquer comme configuré
+        linkElement.dataset.agileDataviewSetup = 'true';
+        totalLinks++;
+      });
+    });
+    
+    
+    // Configuration additionnelle : TOUS les éléments avec data-href
+    const allDataHrefElements = this.containerEl.querySelectorAll('[data-href]');
+    allDataHrefElements.forEach(element => {
+      const el = element as HTMLElement;
+      
+      // Skip si déjà configuré
+      if (el.dataset.agileGenericSetup === 'true') {
+        return;
+      }
+      
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const href = el.getAttribute('data-href');
+        if (href) {
+          
+          // Nettoyer le href
+          let cleanHref = href.replace(/^\[\[|\]\]$/g, '');
+          cleanHref = cleanHref.split('|')[0];
+          
+          this.app.workspace.openLinkText(cleanHref, this.file.path);
+        }
+      });
+      
+      el.dataset.agileGenericSetup = 'true';
+    });
+    
+  }
+
+  /**
+   * Gestionnaire universel de liens - analyse chaque clic pour détecter les liens.
+   */
+  private handleUniversalLink(target: HTMLElement, event: MouseEvent): boolean {
+    // Parcourir l'élément cliqué et ses parents pour trouver un lien
+    let currentElement: HTMLElement | null = target;
+    let depth = 0;
+    
+    while (currentElement && depth < 5) {
+      // Vérifier si l'élément actuel est un lien
+      const linkInfo = this.extractLinkInfo(currentElement);
+      if (linkInfo) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Ouvrir le lien
+        this.app.workspace.openLinkText(linkInfo.href, this.file.path);
+        return true; // Lien traité
+      }
+      
+      currentElement = currentElement.parentElement;
+      depth++;
+    }
+    
+    return false; // Pas un lien
+  }
+
+  /**
+   * Extrait les informations de lien d'un élément.
+   */
+  private extractLinkInfo(element: HTMLElement): { href: string } | null {
+    // 1. Tag A avec href ou data-href
+    if (element.tagName === 'A') {
+      const href = element.getAttribute('data-href') || 
+                  element.getAttribute('href') || 
+                  element.textContent;
+      if (href && href !== '#') {
+        return { href: this.cleanHref(href) };
       }
     }
-    // Si ce n'est pas une liste, laisser le comportement par défaut
-  }
-  
-  private exitList(cursorPos: number, lineStart: number): void {
-    const textarea = this.textArea;
-    const content = textarea.value;
     
-    // Supprimer la ligne de liste vide et ajouter une ligne normale
-    const beforeList = content.substring(0, lineStart);
-    const afterList = content.substring(cursorPos);
-    
-    textarea.value = beforeList.trimEnd() + '\n\n' + afterList;
-    
-    // Positionner le curseur après les deux nouvelles lignes
-    const newCursorPos = beforeList.trimEnd().length + 2;
-    textarea.selectionStart = newCursorPos;
-    textarea.selectionEnd = newCursorPos;
-    
-    console.log('📝 Sortie de la liste');
-  }
-  
-  private insertTextAtCursor(text: string): void {
-    const textarea = this.textArea;
-    const cursorPos = textarea.selectionStart;
-    const content = textarea.value;
-    
-    textarea.value = content.substring(0, cursorPos) + text + content.substring(cursorPos);
-    
-    // Positionner le curseur à la fin du texte inséré
-    const newCursorPos = cursorPos + text.length;
-    textarea.selectionStart = newCursorPos;
-    textarea.selectionEnd = newCursorPos;
-  }
-
-  private isInteractiveElement(element: HTMLElement): boolean {
-    let current = element;
-    while (current && current !== this.previewContainer) {
-      const tag = current.tagName.toLowerCase();
-      
-      // Éléments interactifs standard
-      if (['a', 'button', 'input', 'textarea', 'select', 'img'].includes(tag)) {
-        return true;
+    // 2. SPAN avec data-href (Dataview/Tasks)
+    if (element.tagName === 'SPAN' && element.getAttribute('data-href')) {
+      const href = element.getAttribute('data-href');
+      if (href) {
+        return { href: this.cleanHref(href) };
       }
-      
-      // Classes spéciales d'Obsidian
-      if (current.classList.contains('internal-link') || 
-          current.classList.contains('external-link') ||
-          current.classList.contains('image-embed') ||
-          current.classList.contains('file-embed') ||
-          current.classList.contains('tag') ||
-          current.classList.contains('math') ||
-          current.classList.contains('frontmatter')) {
-        return true;
-      }
-      
-      // Attributs interactifs
-      if (current.hasAttribute('href') || 
-          current.hasAttribute('src') ||
-          current.hasAttribute('data-href') ||
-          current.hasAttribute('data-path') ||
-          current.hasAttribute('data-link')) {
-        return true;
-      }
-      
-      current = current.parentElement!;
     }
     
-    return false;
+    // 3. Élément avec classe internal-link et texte
+    if (element.classList.contains('internal-link')) {
+      const href = element.getAttribute('data-href') || 
+                  element.textContent;
+      if (href) {
+        return { href: this.cleanHref(href) };
+      }
+    }
+    
+    // 4. Dans un contexte Dataview/Tasks, vérifier le texte pour des noms de fichiers
+    if (element.closest('.dataview') || element.closest('.tasks-layout')) {
+      const text = element.textContent?.trim();
+      if (text && this.looksLikeFileName(text)) {
+        return { href: this.cleanHref(text) };
+      }
+    }
+    
+    return null;
   }
 
-  private enterEditMode(): void {
-    this.isEditing = true;
-    this.previewContainer.style.display = 'none';
-    this.editorContainer.style.display = 'block';
-    
-    // Synchroniser le contenu
-    this.textArea.value = this.markdownContent;
-    this.textArea.focus();
+  /**
+   * Nettoie un href de ses caractères spéciaux.
+   */
+  private cleanHref(href: string): string {
+    return href.replace(/^\[\[|\]\]$/g, '') // Enlever [[ ]]
+               .split('|')[0]               // Prendre seulement la partie avant |
+               .trim();
   }
 
-  private async exitEditMode(): Promise<void> {
-    if (!this.isEditing) return;
-    
-    this.isEditing = false;
-    this.markdownContent = this.textArea.value;
-    
-    this.editorContainer.style.display = 'none';
-    this.previewContainer.style.display = 'block';
-    
-    // Re-rendre le preview
-    await this.renderMarkdown();
+  /**
+   * Détermine si un texte ressemble à un nom de fichier.
+   */
+  private looksLikeFileName(text: string): boolean {
+    // Heuristiques pour détecter les noms de fichiers
+    return text.length > 0 && 
+           text.length < 200 && 
+           !text.includes('\n') &&
+           (text.includes(' ') || // Nom avec espaces
+            /^[A-Z]/.test(text) || // Commence par majuscule
+            /\w+/.test(text));     // Contient des mots
   }
 
-  private showPreviewMode(): void {
-    this.previewContainer.style.display = 'block';
-    this.editorContainer.style.display = 'none';
-    this.isEditing = false;
+  /**
+   * Configure la sauvegarde automatique des changements de checkbox.
+   */
+  private setupCheckboxHandlers(): void {
+    if (!this.containerEl) return;
+    
+    // Trouver toutes les checkboxes de tâches
+    const checkboxes = this.containerEl.querySelectorAll('input[type="checkbox"]');
+    
+    checkboxes.forEach(checkbox => {
+      const checkboxElement = checkbox as HTMLInputElement;
+      
+      // Éviter de dupliquer les gestionnaires
+      if (checkboxElement.dataset.agileCheckboxSetup === 'true') {
+        return;
+      }
+      
+      checkboxElement.addEventListener('change', (e) => {
+        e.stopPropagation();
+        
+        // Sauvegarder immédiatement le changement
+        this.saveCheckboxChange();
+      });
+      
+      // Marquer comme configuré
+      checkboxElement.dataset.agileCheckboxSetup = 'true';
+    });
+    
   }
 
-  // Méthodes publiques
-  async updateContent(newSection: SectionInfo): Promise<void> {
-    this.section = newSection;
-    this.markdownContent = newSection.lines.join('\n');
+  /**
+   * Sauvegarde les changements de checkbox dans le contenu markdown.
+   */
+  private saveCheckboxChange(): void {
+    if (!this.containerEl) return;
     
-    if (this.isEditing) {
-      this.textArea.value = this.markdownContent;
-    } else {
-      await this.renderMarkdown();
+    // Récupérer l'état actuel de toutes les checkboxes
+    const checkboxes = this.containerEl.querySelectorAll('input[type="checkbox"]');
+    
+    // Mettre à jour le contenu markdown en fonction de l'état des checkboxes
+    let updatedContent = this.markdownContent;
+    let checkboxIndex = 0;
+    
+    // Remplacer les checkbox dans le markdown selon leur état actuel
+    updatedContent = updatedContent.replace(/- \[([ x])\]/g, (match, current) => {
+      if (checkboxIndex < checkboxes.length) {
+        const checkbox = checkboxes[checkboxIndex] as HTMLInputElement;
+        const newState = checkbox.checked ? 'x' : ' ';
+        checkboxIndex++;
+        return `- [${newState}]`;
+      }
+      return match;
+    });
+    
+    // Mettre à jour le contenu et notifier le changement
+    this.markdownContent = updatedContent;
+    this.onChange(this.markdownContent);
+    
+    // Re-rendre le contenu pour appliquer les styles du thème
+    this.refreshPreview();
+    
+  }
+
+  /**
+   * Re-rend le contenu en mode prévisualisation pour appliquer les styles.
+   */
+  private async refreshPreview(): Promise<void> {
+    if (this.isEditing || !this.containerEl) return;
+    
+    
+    // Sauvegarder l'état de scroll avant le re-rendu
+    const scrollTop = this.containerEl.scrollTop;
+    
+    // Re-rendre le contenu
+    await this.showPreviewMode();
+    
+    // Restaurer la position de scroll
+    this.containerEl.scrollTop = scrollTop;
+  }
+
+  /**
+   * Nettoie les composants actifs.
+   */
+  private cleanupComponents(): void {
+    // Nettoyage simple
+    this.containerEl?.empty();
+  }
+
+  /**
+   * Met à jour le contenu du frame.
+   */
+  async updateContent(newContent: string): Promise<void> {
+    this.markdownContent = newContent;
+
+    if (!this.isEditing) {
+      await this.showPreviewMode();
     }
   }
 
+  /**
+   * Retourne le contenu actuel.
+   */
   getContent(): string {
-    if (this.isEditing) {
-      return this.textArea.value;
-    }
     return this.markdownContent;
   }
 
-  focusEditor(): void {
+  /**
+   * Force l'entrée en mode édition.
+   */
+  startEditing(): void {
     this.enterEditMode();
   }
 
-  async focusPreview(): Promise<void> {
-    await this.exitEditMode();
-  }
-
-  isInEditMode(): boolean {
+  /**
+   * Vérifie si le frame est en mode édition.
+   */
+  isEditMode(): boolean {
     return this.isEditing;
   }
 
-  destroy(): void {
-    this.component.unload();
-    this.container.empty();
-    console.log('🗑️ SimpleMarkdownFrame détruite');
+  /**
+   * Obtient le titre de la section.
+   */
+  getSectionTitle(): string {
+    return this.section.title;
+  }
+
+  /**
+   * Met le focus sur l'éditeur si en mode édition.
+   */
+  focus(): void {
+    if (this.isEditing && this.containerEl) {
+      const textArea = this.containerEl.querySelector('textarea');
+      if (textArea) {
+        textArea.focus();
+      }
+    }
+  }
+
+  protected doLoad(): void {
+    // Déjà initialisé dans le constructeur
+  }
+
+  protected doUnload(): void {
+    // Supprimer le wrapper si nécessaire
+    this.removeDimensionPreservingWrapper();
+    this.cleanupComponents();
   }
 }

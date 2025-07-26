@@ -12,7 +12,7 @@
 
 ## 🎯 Fonctionnalités
 
-Transforme vos notes en tableaux de bord visuels avec des cadres éditables. Chaque cadre représente une section (titre de niveau 1) avec support complet de :
+Transforme vos notes en tableaux de bord visuels avec des cadres éditables. Chaque cadre représente une section (titre de niveau 1) avec support de :
 
 - **Markdown riche** : `![[images]]`, `[[liens]]`, `- [ ] tâches`, formatage
 - **Édition intelligente** : listes auto-continuées, cases à cocher cliquables
@@ -57,7 +57,13 @@ L'icône 🏢 apparaît dans la toolbar. Cliquez pour basculer en mode Board.
 
 ## 🔧 Configuration
 
-**Layout inclus** : `layout_eisenhower` (matrice 4 quadrants)
+**Layout disponibles** : 
+- `layout_eisenhower` : Matrice 4 quadrants important/urgant
+- `layout_swot` : Analyser une situation, un projet ou une entreprise
+- `layout_moscow` : Prioriser les fonctionnalités ou besoins
+- `layout_effort_impact` : Décider quelles actions mener selon leur efficacité
+- `layout_cornell`: Prise de notes active
+
 
 **Layouts personnalisés** : Éditez `layout.json` dans le dossier du plugin
 
@@ -65,15 +71,20 @@ L'icône 🏢 apparaît dans la toolbar. Cliquez pour basculer en mode Board.
 {
   "mon_layout": [
     {
-      "title": "Titre du cadre",
+      "title": "Titre du cadre 1",
       "x": 0, "y": 0,     // Position (colonne, ligne)
-      "w": 12, "h": 12    // Taille (largeur, hauteur)
+      "w": 12, "h": 24    // Taille (largeur, hauteur)
+    },
+    {
+      "title": "Titre du cadre 2",
+      "x": 12, "y": 0,     // Position (colonne, ligne)
+      "w": 12, "h": 24    // Taille (largeur, hauteur)
     }
   ]
 }
 ```
 
-Grille 24×100, validation automatique des collisions.
+Grille 24×24, validation automatique des collisions.
 
 ## ✨ Caractéristiques
 
