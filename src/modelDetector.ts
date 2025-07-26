@@ -157,7 +157,7 @@ export class ModelDetector implements IModelDetector {
       return;
     }
 
-    console.log(`🔍 Note Agile Board détectée: ${file.path} avec modèle: ${state.modelName}`);
+    // Debug: console.log(`🔍 Note Agile Board détectée: ${file.path} avec modèle: ${state.modelName}`);
     
     // Délai pour laisser la vue se stabiliser
     setTimeout(async () => {
@@ -199,17 +199,17 @@ export class ModelDetector implements IModelDetector {
     const currentView = this.plugin.app.workspace.getActiveViewOfType(MarkdownView);
     
     if (!currentView || currentView.file?.path !== file.path) {
-      console.log(`❌ Vue non disponible pour basculement automatique de ${file.path}`);
+      // Debug: console.log(`❌ Vue non disponible pour basculement automatique de ${file.path}`);
       return;
     }
 
-    console.log(`🚀 Basculement automatique vers mode Board pour ${file.path}`);
+    // Debug: console.log(`🚀 Basculement automatique vers mode Board pour ${file.path}`);
     
     try {
       const plugin = this.plugin as any;
       if (plugin.viewSwitcher?.switchToBoardView) {
         await plugin.viewSwitcher.switchToBoardView(file);
-        console.log(`✅ Basculement réussi vers mode Board`);
+        // Debug: console.log(`✅ Basculement réussi vers mode Board`);
       } else {
         console.log(`❌ ViewSwitcher non disponible`);
       }
