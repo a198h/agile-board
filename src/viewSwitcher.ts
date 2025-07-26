@@ -102,7 +102,7 @@ export class ViewSwitcher {
     
     this.checkInterval = setInterval(() => {
       this.updateSwitchButton();
-    }, 1000); // Vérifier toutes les secondes
+    }, 10000); // Vérifier toutes les 10 secondes
   }
   
   stop(): void {
@@ -169,11 +169,11 @@ export class ViewSwitcher {
       if (markdownView.file) {
         const hasLayout = this.hasAgileBoardLayout(markdownView.file);
         
-        console.log('🔍 Checking markdown view:', { 
-          fileName: markdownView.file.name, 
-          hasLayout,
-          isActive: leaf === this.plugin.app.workspace.activeLeaf
-        });
+        // Debug: console.log('🔍 Checking markdown view:', { 
+        //   fileName: markdownView.file.name, 
+        //   hasLayout,
+        //   isActive: leaf === this.plugin.app.workspace.activeLeaf
+        // });
         
         if (hasLayout) {
           this.ensureBoardModeButtonForView(markdownView);
@@ -187,10 +187,10 @@ export class ViewSwitcher {
     boardLeaves.forEach(leaf => {
       const boardView = leaf.view as AgileBoardView;
       
-      console.log('🔍 Checking board view:', { 
-        fileName: boardView.file?.name,
-        isActive: leaf === this.plugin.app.workspace.activeLeaf
-      });
+      // Debug: console.log('🔍 Checking board view:', { 
+      //   fileName: boardView.file?.name,
+      //   isActive: leaf === this.plugin.app.workspace.activeLeaf
+      // });
       
       this.ensureNormalModeButtonForView(boardView);
     });
@@ -221,7 +221,7 @@ export class ViewSwitcher {
       // Ajouter un attribut pour identifier le bouton
       button.setAttribute('data-agile-board-button', 'board-mode');
       
-      console.log('🔄 Bouton Mode Board ajouté pour', markdownView.file?.name);
+      // Debug: console.log('🔄 Bouton Mode Board ajouté pour', markdownView.file?.name);
     } catch (error) {
       console.error('Erreur lors de l\'ajout du bouton Mode Board:', error);
     }
@@ -234,7 +234,7 @@ export class ViewSwitcher {
     const existingButton = viewActions.querySelector('.agile-board-switch-button');
     if (existingButton) {
       existingButton.remove();
-      console.log('🗑️ Bouton Mode Board supprimé pour', markdownView.file?.name);
+      // Debug: console.log('🗑️ Bouton Mode Board supprimé pour', markdownView.file?.name);
     }
   }
 
@@ -269,7 +269,7 @@ export class ViewSwitcher {
       // Ajouter un attribut pour identifier le bouton
       button.setAttribute('data-agile-board-button', 'normal-mode');
       
-      console.log('🔄 Bouton Mode Normal ajouté pour', boardView.file?.name);
+      // Debug: console.log('🔄 Bouton Mode Normal ajouté pour', boardView.file?.name);
     } catch (error) {
       console.error('Erreur lors de l\'ajout du bouton Mode Normal:', error);
     }
