@@ -11,10 +11,14 @@
             "id": "fb949a3f4b9af0a5",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "architecture-diagram.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Nouvel onglet"
+              "title": "architecture-diagram"
             }
           }
         ]
@@ -162,5 +166,7 @@
     }
   },
   "active": "fb949a3f4b9af0a5",
-  "lastOpenFiles": []
+  "lastOpenFiles": [
+    "défPluginAgileBoard.md"
+  ]
 }
