@@ -71,9 +71,14 @@ L'icône 🏢 apparaît dans la toolbar. Cliquez pour basculer en mode Board.
 {
   "mon_layout": [
     {
-      "title": "Titre du cadre",
+      "title": "Titre du cadre 1",
       "x": 0, "y": 0,     // Position (colonne, ligne)
-      "w": 12, "h": 12    // Taille (largeur, hauteur)
+      "w": 12, "h": 24    // Taille (largeur, hauteur)
+    },
+    {
+      "title": "Titre du cadre 2",
+      "x": 12, "y": 0,     // Position (colonne, ligne)
+      "w": 12, "h": 24    // Taille (largeur, hauteur)
     }
   ]
 }

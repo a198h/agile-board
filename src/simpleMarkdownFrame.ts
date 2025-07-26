@@ -59,7 +59,6 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
    * Affiche le mode prévisualisation.
    */
   private async showPreviewMode(): Promise<void> {
-    console.log('SimpleMarkdownFrame: showPreviewMode called');
     
     // Nettoyer les composants existants
     this.cleanupComponents();
@@ -95,6 +94,8 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
           
           // Configurer manuellement les liens après le rendu d'Obsidian
           this.setupInternalLinks();
+          // Configurer spécifiquement les liens Dataview/Tasks
+          this.setupDataviewTasksLinks();
           // Configurer la sauvegarde des checkboxes
           this.setupCheckboxHandlers();
           
@@ -103,24 +104,33 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
           // Fallback vers rendu simple
           this.containerEl.innerHTML = this.parseMarkdownToHTML(this.markdownContent);
           this.setupInternalLinks();
+          this.setupDataviewTasksLinks();
           this.setupCheckboxHandlers();
         }
       }
       
       // Gestionnaire de clic pour passer en mode édition
       this.containerEl.addEventListener('click', (e) => {
-        // Éviter de déclencher sur les éléments interactifs
         const target = e.target as HTMLElement;
         
-        // Vérifier tous les types de liens et éléments interactifs d'Obsidian
+        // NOUVEAU: Gestionnaire universel de liens - vérifier si c'est un lien avant tout
+        if (this.handleUniversalLink(target, e)) {
+          return; // Le lien a été traité, ne pas continuer
+        }
+        
+        // Vérifier tous les types d'éléments interactifs d'Obsidian
         if (target.tagName === 'A' || 
             target.tagName === 'BUTTON' || 
-            target.tagName === 'INPUT' ||  // Inclure tous les inputs (checkboxes, etc.)
+            target.tagName === 'INPUT' ||
             target.closest('a') || 
             target.closest('button') ||
             target.closest('input') ||
             target.classList.contains('dataview') ||
             target.closest('.dataview') ||
+            target.closest('.block-language-dataview') ||
+            target.closest('.dataview-result') ||
+            target.closest('.tasks-layout') ||
+            target.closest('.task-list-item') ||
             target.classList.contains('internal-link') ||
             target.classList.contains('external-link') ||
             target.classList.contains('tag') ||
@@ -135,17 +145,17 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
             target.closest('.file-embed') ||
             target.closest('.image-embed') ||
             target.closest('.task-list-item') ||
-            target.closest('.task-list-item-checkbox')) {
+            target.closest('.task-list-item-checkbox') ||
+            target.getAttribute('data-href') ||
+            target.closest('[data-href]')) {
           return; // Laisser les éléments interactifs fonctionner
         }
         
-        console.log('SimpleMarkdownFrame: preview clicked');
         this.enterEditMode();
       });
     }
     
     this.isEditing = false;
-    console.log('SimpleMarkdownFrame: preview mode activated');
   }
 
   /**
@@ -165,10 +175,8 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
    * Passe en mode édition.
    */
   private enterEditMode(): void {
-    console.log('SimpleMarkdownFrame: enterEditMode called');
     if (this.isEditing) {
-      console.log('SimpleMarkdownFrame: already in edit mode, returning');
-      return;
+        return;
     }
 
     // Convertir la grille CSS en positionnement absolu
@@ -180,12 +188,10 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
    * Continue le processus d'entrée en mode édition après verrouillage.
    */
   private continueEnterEditMode(): void {
-    console.log('SimpleMarkdownFrame: continuing enterEditMode after lock');
     
     // Nettoyer les composants existants
     this.cleanupComponents();
 
-    console.log('SimpleMarkdownFrame: creating text area');
     // Créer directement un textarea simple
     if (this.containerEl) {
       this.containerEl.empty();
@@ -219,7 +225,6 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
       });
       
       textArea.addEventListener('blur', () => {
-        console.log('SimpleMarkdownFrame: textarea blur event');
         setTimeout(() => this.exitEditMode(), 100);
       });
       
@@ -227,25 +232,123 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
         if (e.key === 'Escape') {
           e.preventDefault();
           this.exitEditMode();
+        } else if (e.key === 'Enter') {
+          this.handleEnterKey(e, textArea);
         }
       });
     }
 
     this.isEditing = true;
-    console.log('SimpleMarkdownFrame: edit mode activated');
+  }
+
+  /**
+   * Gère la touche Entrée pour continuer automatiquement les listes et checkboxes.
+   */
+  private handleEnterKey(e: KeyboardEvent, textArea: HTMLTextAreaElement): void {
+    const cursorPos = textArea.selectionStart;
+    const value = textArea.value;
+    
+    // Trouver le début et la fin de la ligne actuelle
+    const lineStart = value.lastIndexOf('\n', cursorPos - 1) + 1;
+    const lineEnd = value.indexOf('\n', cursorPos);
+    const currentLine = value.substring(lineStart, lineEnd === -1 ? value.length : lineEnd);
+    
+    // Patterns pour détecter les listes et checkboxes
+    const checkboxPattern = /^(\s*)(- \[([ x])\] )(.*)$/;
+    const listPattern = /^(\s*)(- )(.*)$/;
+    const numberedListPattern = /^(\s*)(\d+\. )(.*)$/;
+    
+    const checkboxMatch = currentLine.match(checkboxPattern);
+    const listMatch = currentLine.match(listPattern);
+    const numberedMatch = currentLine.match(numberedListPattern);
+    
+    if (checkboxMatch) {
+      // Ligne de checkbox (priorité sur liste simple)
+      const [, indent, , , content] = checkboxMatch;
+      
+      if (!content.trim()) {
+        // Ligne vide - supprimer la checkbox
+        e.preventDefault();
+        const before = value.substring(0, lineStart);
+        const after = value.substring(lineEnd === -1 ? value.length : lineEnd);
+        textArea.value = before + after;
+        textArea.setSelectionRange(before.length, before.length);
+      } else {
+        // Continuer avec une nouvelle checkbox
+        e.preventDefault();
+        const newLine = `\n${indent}- [ ] `;
+        const before = value.substring(0, cursorPos);
+        const after = value.substring(cursorPos);
+        textArea.value = before + newLine + after;
+        const newPos = cursorPos + newLine.length;
+        textArea.setSelectionRange(newPos, newPos);
+      }
+      
+      this.markdownContent = textArea.value;
+      this.onChange(this.markdownContent);
+      
+    } else if (listMatch) {
+      // Ligne de liste simple
+      const [, indent, marker, content] = listMatch;
+      
+      if (!content.trim()) {
+        // Ligne vide - supprimer la liste
+        e.preventDefault();
+        const before = value.substring(0, lineStart);
+        const after = value.substring(lineEnd === -1 ? value.length : lineEnd);
+        textArea.value = before + after;
+        textArea.setSelectionRange(before.length, before.length);
+      } else {
+        // Continuer la liste
+        e.preventDefault();
+        const newLine = `\n${indent}${marker}`;
+        const before = value.substring(0, cursorPos);
+        const after = value.substring(cursorPos);
+        textArea.value = before + newLine + after;
+        const newPos = cursorPos + newLine.length;
+        textArea.setSelectionRange(newPos, newPos);
+      }
+      
+      this.markdownContent = textArea.value;
+      this.onChange(this.markdownContent);
+      
+    } else if (numberedMatch) {
+      // Ligne de liste numérotée
+      const [, indent, marker, content] = numberedMatch;
+      const currentNumber = parseInt(marker);
+      
+      if (!content.trim()) {
+        // Ligne vide - supprimer la liste
+        e.preventDefault();
+        const before = value.substring(0, lineStart);
+        const after = value.substring(lineEnd === -1 ? value.length : lineEnd);
+        textArea.value = before + after;
+        textArea.setSelectionRange(before.length, before.length);
+      } else {
+        // Continuer avec le numéro suivant
+        e.preventDefault();
+        const nextNumber = currentNumber + 1;
+        const newLine = `\n${indent}${nextNumber}. `;
+        const before = value.substring(0, cursorPos);
+        const after = value.substring(cursorPos);
+        textArea.value = before + newLine + after;
+        const newPos = cursorPos + newLine.length;
+        textArea.setSelectionRange(newPos, newPos);
+      }
+      
+      this.markdownContent = textArea.value;
+      this.onChange(this.markdownContent);
+    }
   }
 
   /**
    * Quitte le mode édition et retourne à la prévisualisation.
    */
   private async exitEditMode(): Promise<void> {
-    console.log('SimpleMarkdownFrame: exitEditMode called');
     if (!this.isEditing) {
-      console.log('SimpleMarkdownFrame: not in edit mode, returning');
       return;
     }
 
-    console.log('SimpleMarkdownFrame: showing preview mode');
     await this.showPreviewMode();
     
     // Restaurer la grille CSS depuis le positionnement absolu
@@ -278,11 +381,9 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
     
     // Éviter la double conversion
     if (gridContainer.hasAttribute('data-agile-converted')) {
-      console.log('Grid already converted to absolute positioning');
       return;
     }
     
-    console.log('Converting CSS Grid to absolute positioning');
     
     // Sauvegarder le display original
     const originalDisplay = getComputedStyle(gridContainer).display;
@@ -309,7 +410,6 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
         height: rect.height
       });
       
-      console.log(`Frame ${index} original position:`, left, top, rect.width, rect.height);
     });
     
     // Maintenant appliquer les positions capturées
@@ -335,7 +435,6 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
       frameElement.style.gridRow = 'unset';
       frameElement.style.zIndex = '1'; // Assurer que tous les frames sont au même niveau
       
-      console.log(`Applied absolute positioning to frame ${index}:`, pos.left, pos.top, pos.width, pos.height);
     });
     
     // Changer le container en block et le rendre relatif
@@ -343,19 +442,16 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
     gridContainer.style.position = 'relative';
     gridContainer.setAttribute('data-agile-converted', 'true');
     
-    console.log(`Converted ${allFrames.length} frames to absolute positioning`);
   }
 
   /**
    * Restaure la grille CSS depuis le positionnement absolu.
    */
   private removeDimensionPreservingWrapper(): void {
-    console.log('Converting back from absolute positioning to CSS Grid');
     
     // Trouver le container converti
     const gridContainer = document.querySelector('[data-agile-converted]') as HTMLElement;
     if (!gridContainer) {
-      console.log('No converted grid found');
       return;
     }
     
@@ -364,7 +460,6 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
     allFrames.forEach((frame, index) => {
       const frameElement = frame as HTMLElement;
       
-      console.log(`Restoring frame ${index} to grid positioning`);
       
       // Restaurer les styles originaux
       frameElement.style.position = frameElement.getAttribute('data-original-position') || '';
@@ -393,7 +488,6 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
     gridContainer.removeAttribute('data-agile-converted');
     gridContainer.removeAttribute('data-original-display');
     
-    console.log(`Restored ${allFrames.length} frames to CSS Grid`);
   }
 
 
@@ -403,8 +497,8 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
   private setupInternalLinks(): void {
     if (!this.containerEl) return;
     
-    // Trouver tous les liens internes dans le contenu rendu
-    const internalLinks = this.containerEl.querySelectorAll('a[data-href], a.internal-link, a[href^="#"]');
+    // Trouver tous les liens internes dans le contenu rendu (A et SPAN)
+    const internalLinks = this.containerEl.querySelectorAll('a[data-href], a.internal-link, a[href^="#"], span[data-href], span.internal-link');
     
     internalLinks.forEach(link => {
       const linkElement = link as HTMLAnchorElement;
@@ -424,7 +518,6 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
                     linkElement.textContent;
         
         if (href && href !== '#') {
-          console.log('Opening internal link:', href);
           // Utiliser l'API d'Obsidian pour ouvrir le lien
           this.app.workspace.openLinkText(href, this.file.path);
         }
@@ -434,7 +527,189 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
       linkElement.dataset.agileLinkSetup = 'true';
     });
     
-    console.log(`Configured ${internalLinks.length} internal links`);
+  }
+
+  /**
+   * Configure spécifiquement les liens dans les blocs Dataview et Tasks.
+   */
+  private setupDataviewTasksLinks(): void {
+    if (!this.containerEl) return;
+    
+    // Sélecteurs pour les liens dans Dataview et Tasks - version étendue
+    const dataviewTasksSelectors = [
+      '.dataview a',
+      '.block-language-dataview a', 
+      '.dataview-result a',
+      '.tasks-layout a',
+      '.task-list-item a',
+      '[data-task] a',
+      // Sélecteurs plus génériques pour capturer tous les liens dans les blocs
+      '.dataview-list-item a',
+      '.dataview-table a',
+      '.dataview span[data-href]', // Liens avec data-href
+      '.block-language-dataview span[data-href]',
+      '.tasks-layout span[data-href]'
+    ];
+    
+    let totalLinks = 0;
+    
+    dataviewTasksSelectors.forEach(selector => {
+      const links = this.containerEl!.querySelectorAll(selector);
+      
+      links.forEach(link => {
+        const linkElement = link as HTMLAnchorElement;
+        
+        // Éviter de dupliquer les gestionnaires
+        if (linkElement.dataset.agileDataviewSetup === 'true') {
+          return;
+        }
+        
+        linkElement.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Récupérer le lien depuis différents attributs possibles
+          const href = linkElement.getAttribute('data-href') || 
+                      linkElement.getAttribute('href') || 
+                      linkElement.textContent;
+          
+          if (href && href !== '#') {
+            
+            // Nettoyer le href s'il contient des caractères spéciaux de Dataview
+            let cleanHref = href.replace(/^\[\[|\]\]$/g, ''); // Enlever [[ ]]
+            cleanHref = cleanHref.split('|')[0]; // Prendre seulement la partie avant |
+            
+            // Utiliser l'API d'Obsidian pour ouvrir le lien
+            this.app.workspace.openLinkText(cleanHref, this.file.path);
+          }
+        });
+        
+        // Marquer comme configuré
+        linkElement.dataset.agileDataviewSetup = 'true';
+        totalLinks++;
+      });
+    });
+    
+    
+    // Configuration additionnelle : TOUS les éléments avec data-href
+    const allDataHrefElements = this.containerEl.querySelectorAll('[data-href]');
+    allDataHrefElements.forEach(element => {
+      const el = element as HTMLElement;
+      
+      // Skip si déjà configuré
+      if (el.dataset.agileGenericSetup === 'true') {
+        return;
+      }
+      
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const href = el.getAttribute('data-href');
+        if (href) {
+          
+          // Nettoyer le href
+          let cleanHref = href.replace(/^\[\[|\]\]$/g, '');
+          cleanHref = cleanHref.split('|')[0];
+          
+          this.app.workspace.openLinkText(cleanHref, this.file.path);
+        }
+      });
+      
+      el.dataset.agileGenericSetup = 'true';
+    });
+    
+  }
+
+  /**
+   * Gestionnaire universel de liens - analyse chaque clic pour détecter les liens.
+   */
+  private handleUniversalLink(target: HTMLElement, event: MouseEvent): boolean {
+    // Parcourir l'élément cliqué et ses parents pour trouver un lien
+    let currentElement: HTMLElement | null = target;
+    let depth = 0;
+    
+    while (currentElement && depth < 5) {
+      // Vérifier si l'élément actuel est un lien
+      const linkInfo = this.extractLinkInfo(currentElement);
+      if (linkInfo) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Ouvrir le lien
+        this.app.workspace.openLinkText(linkInfo.href, this.file.path);
+        return true; // Lien traité
+      }
+      
+      currentElement = currentElement.parentElement;
+      depth++;
+    }
+    
+    return false; // Pas un lien
+  }
+
+  /**
+   * Extrait les informations de lien d'un élément.
+   */
+  private extractLinkInfo(element: HTMLElement): { href: string } | null {
+    // 1. Tag A avec href ou data-href
+    if (element.tagName === 'A') {
+      const href = element.getAttribute('data-href') || 
+                  element.getAttribute('href') || 
+                  element.textContent;
+      if (href && href !== '#') {
+        return { href: this.cleanHref(href) };
+      }
+    }
+    
+    // 2. SPAN avec data-href (Dataview/Tasks)
+    if (element.tagName === 'SPAN' && element.getAttribute('data-href')) {
+      const href = element.getAttribute('data-href');
+      if (href) {
+        return { href: this.cleanHref(href) };
+      }
+    }
+    
+    // 3. Élément avec classe internal-link et texte
+    if (element.classList.contains('internal-link')) {
+      const href = element.getAttribute('data-href') || 
+                  element.textContent;
+      if (href) {
+        return { href: this.cleanHref(href) };
+      }
+    }
+    
+    // 4. Dans un contexte Dataview/Tasks, vérifier le texte pour des noms de fichiers
+    if (element.closest('.dataview') || element.closest('.tasks-layout')) {
+      const text = element.textContent?.trim();
+      if (text && this.looksLikeFileName(text)) {
+        return { href: this.cleanHref(text) };
+      }
+    }
+    
+    return null;
+  }
+
+  /**
+   * Nettoie un href de ses caractères spéciaux.
+   */
+  private cleanHref(href: string): string {
+    return href.replace(/^\[\[|\]\]$/g, '') // Enlever [[ ]]
+               .split('|')[0]               // Prendre seulement la partie avant |
+               .trim();
+  }
+
+  /**
+   * Détermine si un texte ressemble à un nom de fichier.
+   */
+  private looksLikeFileName(text: string): boolean {
+    // Heuristiques pour détecter les noms de fichiers
+    return text.length > 0 && 
+           text.length < 200 && 
+           !text.includes('\n') &&
+           (text.includes(' ') || // Nom avec espaces
+            /^[A-Z]/.test(text) || // Commence par majuscule
+            /\w+/.test(text));     // Contient des mots
   }
 
   /**
@@ -456,7 +731,6 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
       
       checkboxElement.addEventListener('change', (e) => {
         e.stopPropagation();
-        console.log('Checkbox changed:', checkboxElement.checked);
         
         // Sauvegarder immédiatement le changement
         this.saveCheckboxChange();
@@ -466,7 +740,6 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
       checkboxElement.dataset.agileCheckboxSetup = 'true';
     });
     
-    console.log(`Configured ${checkboxes.length} checkboxes for auto-save`);
   }
 
   /**
@@ -497,7 +770,26 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
     this.markdownContent = updatedContent;
     this.onChange(this.markdownContent);
     
-    console.log('Checkbox changes saved to content');
+    // Re-rendre le contenu pour appliquer les styles du thème
+    this.refreshPreview();
+    
+  }
+
+  /**
+   * Re-rend le contenu en mode prévisualisation pour appliquer les styles.
+   */
+  private async refreshPreview(): Promise<void> {
+    if (this.isEditing || !this.containerEl) return;
+    
+    
+    // Sauvegarder l'état de scroll avant le re-rendu
+    const scrollTop = this.containerEl.scrollTop;
+    
+    // Re-rendre le contenu
+    await this.showPreviewMode();
+    
+    // Restaurer la position de scroll
+    this.containerEl.scrollTop = scrollTop;
   }
 
   /**

@@ -1,8 +1,8 @@
 [Dolphin]
-Timestamp=2025,6,19,9,5,43.412
+Timestamp=2025,7,26,1,19,16.071
 Version=4
 ViewMode=1
-VisibleRoles=Details_text,Details_size,Details_modificationtime,Details_owner,CustomizedDetails
+VisibleRoles=CustomizedDetails,Details_text,Details_size,Details_modificationtime,Details_owner,Details_permissions
 
 [Settings]
 HiddenFilesShown=true
