@@ -37,6 +37,20 @@ export class ViewSwitcher {
     });
   }
 
+  async switchToSourceMode(file: TFile): Promise<void> {
+    const leaf = this.plugin.app.workspace.activeLeaf;
+    if (!leaf) return;
+
+    await leaf.setViewState({
+      type: "markdown",
+      state: { 
+        file: file.path,
+        mode: "source",
+        source: true
+      }
+    });
+  }
+
   isCurrentViewBoardView(): boolean {
     const activeView = this.plugin.app.workspace.getActiveViewOfType(AgileBoardView);
     return activeView !== null;
@@ -163,6 +177,14 @@ export class ViewSwitcher {
     const markdownLeaves = this.plugin.app.workspace.getLeavesOfType("markdown");
     const boardLeaves = this.plugin.app.workspace.getLeavesOfType(AGILE_BOARD_VIEW_TYPE);
     
+    // Si aucune vue Board n'est active, supprimer le bouton de mode de la barre d'état
+    const activeLeaf = this.plugin.app.workspace.activeLeaf;
+    const isBoardViewActive = activeLeaf && activeLeaf.view.getViewType() === AGILE_BOARD_VIEW_TYPE;
+    
+    if (!isBoardViewActive) {
+      this.removeModeButtonFromStatusBar();
+    }
+    
     // Gérer les vues markdown
     markdownLeaves.forEach(leaf => {
       const markdownView = leaf.view as MarkdownView;
@@ -186,13 +208,16 @@ export class ViewSwitcher {
     // Gérer les vues board
     boardLeaves.forEach(leaf => {
       const boardView = leaf.view as AgileBoardView;
+      const isActive = leaf === activeLeaf;
       
       // Debug: console.log('🔍 Checking board view:', { 
       //   fileName: boardView.file?.name,
-      //   isActive: leaf === this.plugin.app.workspace.activeLeaf
+      //   isActive
       // });
       
-      this.ensureNormalModeButtonForView(boardView);
+      if (isActive) {
+        this.ensureNormalModeButtonForView(boardView);
+      }
     });
   }
 
@@ -253,9 +278,10 @@ export class ViewSwitcher {
     if (existingButton) return;
 
     try {
-      const button = (boardView as any).addAction(
+      // Bouton pour mode Live Preview dans la toolbar
+      const livePreviewButton = (boardView as any).addAction(
         "document",
-        "Mode Normal",
+        "Mode Live Preview",
         () => {
           if (boardView.file) {
             this.markAsManualChange(boardView.file);
@@ -263,15 +289,15 @@ export class ViewSwitcher {
           }
         }
       );
+      livePreviewButton.addClass("agile-board-switch-button");
+      livePreviewButton.setAttribute('data-agile-board-button', 'live-preview-mode');
       
-      button.addClass("agile-board-switch-button");
+      // Ajouter le bouton de mode dans la barre d'état
+      this.addModeButtonToStatusBar(boardView);
       
-      // Ajouter un attribut pour identifier le bouton
-      button.setAttribute('data-agile-board-button', 'normal-mode');
-      
-      // Debug: console.log('🔄 Bouton Mode Normal ajouté pour', boardView.file?.name);
+      // Debug: console.log('🔄 Bouton Mode Live Preview et bouton de mode ajoutés pour', boardView.file?.name);
     } catch (error) {
-      console.error('Erreur lors de l\'ajout du bouton Mode Normal:', error);
+      console.error('Erreur lors de l\'ajout des boutons:', error);
     }
   }
 
@@ -279,6 +305,52 @@ export class ViewSwitcher {
     const boardView = this.plugin.app.workspace.getActiveViewOfType(AgileBoardView);
     if (!boardView) return;
     this.ensureNormalModeButtonForView(boardView);
+  }
+
+  private addModeButtonToStatusBar(boardView: AgileBoardView): void {
+    // Rechercher la barre d'état globale d'Obsidian
+    const obsidianStatusBar = document.querySelector('.status-bar');
+    if (!obsidianStatusBar) return;
+
+    // Vérifier si le bouton existe déjà
+    const existingModeButton = obsidianStatusBar.querySelector('.agile-board-mode-button');
+    if (existingModeButton) return;
+
+    // Créer le bouton de mode dans la barre d'état
+    const modeButton = obsidianStatusBar.createEl('div');
+    modeButton.addClass('status-bar-item');
+    modeButton.addClass('agile-board-mode-button');
+    modeButton.addClass('clickable-icon');
+    modeButton.setAttribute('aria-label', 'Changer de mode');
+    
+    // Contenu du bouton - seulement l'icône
+    modeButton.innerHTML = `
+      <svg class="svg-icon lucide-edit-3" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"></path>
+        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+      </svg>
+    `;
+    modeButton.setAttribute('aria-label', 'Passer en mode Source');
+    modeButton.setAttribute('title', 'Passer en mode Source');
+    
+    // Gestionnaire de clic pour basculer vers le mode Source
+    modeButton.addEventListener('click', async () => {
+      if (!boardView.file) return;
+      
+      this.markAsManualChange(boardView.file);
+      await this.switchToSourceMode(boardView.file);
+    });
+  }
+
+
+  private removeModeButtonFromStatusBar(): void {
+    const obsidianStatusBar = document.querySelector('.status-bar');
+    if (obsidianStatusBar) {
+      const modeButton = obsidianStatusBar.querySelector('.agile-board-mode-button');
+      if (modeButton) {
+        modeButton.remove();
+      }
+    }
   }
 
   private removeSwitchButtons(): void {
@@ -293,6 +365,9 @@ export class ViewSwitcher {
         existingButtons.forEach(button => button.remove());
       }
     });
+    
+    // Supprimer le bouton de mode de la barre d'état globale
+    this.removeModeButtonFromStatusBar();
   }
 
 }

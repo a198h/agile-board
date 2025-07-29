@@ -24,6 +24,7 @@ export class MarkdownEditor extends BaseUIComponent {
   private currentContent: string;
   private debouncedOnChange: (content: string) => void;
   private autoExitTimeout?: NodeJS.Timeout;
+  private app: App;
 
   constructor(
     container: HTMLElement,
@@ -31,6 +32,7 @@ export class MarkdownEditor extends BaseUIComponent {
     private config: MarkdownEditorConfig
   ) {
     super(container, app);
+    this.app = app;
     this.currentContent = config.content;
     this.debouncedOnChange = debounce(config.onContentChange, 1000);
 
@@ -107,7 +109,10 @@ export class MarkdownEditor extends BaseUIComponent {
     toolbar.appendChild(closeButton);
     this.containerEl.appendChild(toolbar);
     
-    this.textArea = ElementFactory.createTextArea();
+    // Respecter la configuration de vérification orthographique d'Obsidian
+    // @ts-ignore - accès aux paramètres internes d'Obsidian
+    const spellcheck = this.app.vault.config?.spellcheck ?? false;
+    this.textArea = ElementFactory.createTextArea(spellcheck);
     this.textArea.value = this.currentContent;
     this.containerEl.appendChild(this.textArea);
   }

@@ -48,6 +48,9 @@ export class MarkdownBox {
 
     // Zone d'édition
     this.editorEl = this.boxEl.createEl("textarea", { cls: "editor" });
+    // Respecter la configuration de vérification orthographique d'Obsidian
+    // @ts-ignore - accès aux paramètres internes d'Obsidian
+    this.editorEl.spellcheck = this.app.vault.config?.spellcheck ?? false;
     this.editorEl.style.width = "100%";
     this.editorEl.style.flex = "1"; // prend tout l'espace vertical
     this.editorEl.style.minHeight = "0";
@@ -99,8 +102,11 @@ export class MarkdownBox {
         const textBeforeCursor = textarea.value.substring(0, cursorPos);
         const currentLine = textBeforeCursor.split('\n').pop() || '';
         
-        // Détection des listes
+        // Détection des listes à puces
         const listMatch = currentLine.match(/^(\s*[-*+])\s/);
+        // Détection des listes numérotées
+        const numberedListMatch = currentLine.match(/^(\s*)(\d+)\. (.*)$/);
+        
         if (listMatch) {
           event.preventDefault();
           const listPrefix = listMatch[1];
@@ -113,11 +119,95 @@ export class MarkdownBox {
           // Trigger input event to update preview
           this.content = textarea.value;
           this.renderPreview();
+        } else if (numberedListMatch) {
+          event.preventDefault();
+          const [, indent, currentNumber, content] = numberedListMatch;
+          
+          if (!content.trim()) {
+            // Ligne vide - supprimer la liste
+            const lines = textarea.value.split('\n');
+            const lineIndex = textBeforeCursor.split('\n').length - 1;
+            lines.splice(lineIndex, 1);
+            textarea.value = lines.join('\n');
+            const newPos = cursorPos - currentLine.length - (lineIndex > 0 ? 1 : 0);
+            textarea.setSelectionRange(newPos, newPos);
+          } else {
+            // Continuer avec le numéro suivant
+            const nextNumber = parseInt(currentNumber) + 1;
+            const newLine = `\n${indent}${nextNumber}. `;
+            let newValue = textarea.value.substring(0, cursorPos) + newLine + textarea.value.substring(cursorPos);
+            
+            // Renuméroter les lignes suivantes
+            newValue = this.renumberFollowingListItems(newValue, cursorPos + newLine.length, indent, nextNumber);
+            
+            textarea.value = newValue;
+            const newPos = cursorPos + newLine.length;
+            textarea.setSelectionRange(newPos, newPos);
+          }
+          
+          // Trigger input event to update preview
+          this.content = textarea.value;
+          this.renderPreview();
         }
       }
     });
 
 
+  }
+
+  /**
+   * Renumérotise les éléments de liste numérotée qui suivent la position donnée.
+   * @param content Contenu du textarea
+   * @param startPos Position où commencer la recherche
+   * @param expectedIndent Indentation attendue pour la liste
+   * @param startNumber Numéro à partir duquel commencer la renumérotation
+   * @returns Contenu avec les numéros mis à jour
+   */
+  private renumberFollowingListItems(content: string, startPos: number, expectedIndent: string, startNumber: number): string {
+    const lines = content.split('\n');
+    let lineStartPos = 0;
+    let currentLineIndex = 0;
+    
+    // Trouver l'index de ligne correspondant à startPos
+    for (let i = 0; i < lines.length; i++) {
+      if (lineStartPos + lines[i].length >= startPos) {
+        currentLineIndex = i;
+        break;
+      }
+      lineStartPos += lines[i].length + 1; // +1 pour le \n
+    }
+    
+    let expectedNumber = startNumber + 1;
+    
+    // Parcourir les lignes suivantes et renuméroter
+    for (let i = currentLineIndex + 1; i < lines.length; i++) {
+      const line = lines[i];
+      const numberedListPattern = new RegExp(`^(${expectedIndent.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(\\d+\\. )(.*)$`);
+      const match = line.match(numberedListPattern);
+      
+      if (match) {
+        const [, indent, , content] = match;
+        lines[i] = `${indent}${expectedNumber}. ${content}`;
+        expectedNumber++;
+      } else {
+        // Si on trouve une ligne qui ne match pas le pattern, arrêter la renumérotation
+        // (soit indentation différente, soit pas une liste numérotée)
+        const otherIndentPattern = /^(\s*)(\d+\. )/;
+        const otherMatch = line.match(otherIndentPattern);
+        if (otherMatch && otherMatch[1] !== expectedIndent) {
+          // Indentation différente, arrêter
+          break;
+        } else if (!line.trim() || line.startsWith(expectedIndent)) {
+          // Ligne vide ou même indentation sans numéro, continuer
+          continue;
+        } else {
+          // Autre contenu, arrêter
+          break;
+        }
+      }
+    }
+    
+    return lines.join('\n');
   }
 
   private isInteractiveElement(element: HTMLElement): boolean {

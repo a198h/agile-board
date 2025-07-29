@@ -64,6 +64,9 @@ export class NativeMarkdownView {
     `;
 
     this.textArea = this.editorContainer.createEl('textarea');
+    // Respecter la configuration de vérification orthographique d'Obsidian
+    // @ts-ignore - accès aux paramètres internes d'Obsidian
+    this.textArea.spellcheck = this.app.vault.config?.spellcheck ?? false;
     this.textArea.style.cssText = `
       width: 100%;
       height: 100%;

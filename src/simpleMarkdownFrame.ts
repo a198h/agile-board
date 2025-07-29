@@ -130,21 +130,18 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
             target.closest('.block-language-dataview') ||
             target.closest('.dataview-result') ||
             target.closest('.tasks-layout') ||
-            target.closest('.task-list-item') ||
             target.classList.contains('internal-link') ||
             target.classList.contains('external-link') ||
             target.classList.contains('tag') ||
             target.classList.contains('cm-link') ||
             target.classList.contains('file-embed') ||
             target.classList.contains('image-embed') ||
-            target.classList.contains('task-list-item') ||
             target.classList.contains('task-list-item-checkbox') ||
             target.closest('.internal-link') ||
             target.closest('.external-link') ||
             target.closest('.tag') ||
             target.closest('.file-embed') ||
             target.closest('.image-embed') ||
-            target.closest('.task-list-item') ||
             target.closest('.task-list-item-checkbox') ||
             target.getAttribute('data-href') ||
             target.closest('[data-href]')) {
@@ -197,6 +194,9 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
       this.containerEl.empty();
       
       const textArea = this.containerEl.createEl('textarea');
+      // Respecter la configuration de vérification orthographique d'Obsidian
+      // @ts-ignore - accès aux paramètres internes d'Obsidian
+      textArea.spellcheck = this.app.vault.config?.spellcheck ?? false;
       textArea.style.cssText = `
         width: 100%;
         height: 100%;
@@ -331,7 +331,12 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
         const newLine = `\n${indent}${nextNumber}. `;
         const before = value.substring(0, cursorPos);
         const after = value.substring(cursorPos);
-        textArea.value = before + newLine + after;
+        let newValue = before + newLine + after;
+        
+        // Renuméroter les lignes suivantes
+        newValue = this.renumberFollowingListItems(newValue, cursorPos + newLine.length, indent, nextNumber);
+        
+        textArea.value = newValue;
         const newPos = cursorPos + newLine.length;
         textArea.setSelectionRange(newPos, newPos);
       }
@@ -339,6 +344,61 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
       this.markdownContent = textArea.value;
       this.onChange(this.markdownContent);
     }
+  }
+
+  /**
+   * Renumérotise les éléments de liste numérotée qui suivent la position donnée.
+   * @param content Contenu du textarea
+   * @param startPos Position où commencer la recherche
+   * @param expectedIndent Indentation attendue pour la liste
+   * @param startNumber Numéro à partir duquel commencer la renumérotation
+   * @returns Contenu avec les numéros mis à jour
+   */
+  private renumberFollowingListItems(content: string, startPos: number, expectedIndent: string, startNumber: number): string {
+    const lines = content.split('\n');
+    let lineStartPos = 0;
+    let currentLineIndex = 0;
+    
+    // Trouver l'index de ligne correspondant à startPos
+    for (let i = 0; i < lines.length; i++) {
+      if (lineStartPos + lines[i].length >= startPos) {
+        currentLineIndex = i;
+        break;
+      }
+      lineStartPos += lines[i].length + 1; // +1 pour le \n
+    }
+    
+    let expectedNumber = startNumber + 1;
+    
+    // Parcourir les lignes suivantes et renuméroter
+    for (let i = currentLineIndex + 1; i < lines.length; i++) {
+      const line = lines[i];
+      const numberedListPattern = new RegExp(`^(${expectedIndent.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(\\d+\\. )(.*)$`);
+      const match = line.match(numberedListPattern);
+      
+      if (match) {
+        const [, indent, , content] = match;
+        lines[i] = `${indent}${expectedNumber}. ${content}`;
+        expectedNumber++;
+      } else {
+        // Si on trouve une ligne qui ne match pas le pattern, arrêter la renumérotation
+        // (soit indentation différente, soit pas une liste numérotée)
+        const otherIndentPattern = /^(\s*)(\d+\. )/;
+        const otherMatch = line.match(otherIndentPattern);
+        if (otherMatch && otherMatch[1] !== expectedIndent) {
+          // Indentation différente, arrêter
+          break;
+        } else if (!line.trim() || line.startsWith(expectedIndent)) {
+          // Ligne vide ou même indentation sans numéro, continuer
+          continue;
+        } else {
+          // Autre contenu, arrêter
+          break;
+        }
+      }
+    }
+    
+    return lines.join('\n');
   }
 
   /**

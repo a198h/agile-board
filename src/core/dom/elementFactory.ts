@@ -200,11 +200,13 @@ export class ElementFactory {
 
   /**
    * Crée une textarea pour l'édition.
+   * @param spellcheck - Activer ou désactiver la vérification orthographique
    * @returns Textarea configurée
    */
-  public static createTextArea(): HTMLTextAreaElement {
+  public static createTextArea(spellcheck: boolean = false): HTMLTextAreaElement {
     const textArea = document.createElement("textarea");
     textArea.className = "agile-board-textarea";
+    textArea.spellcheck = spellcheck;
     
     this.applyStyles(textArea, {
       position: "absolute",
