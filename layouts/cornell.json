@@ -1,0 +1,30 @@
+{
+  "name": "cornell",
+  "version": 1,
+  "boxes": [
+    {
+      "id": "box-1756023151531-aysxq9pnk",
+      "title": "Questions",
+      "x": 0,
+      "y": 0,
+      "w": 8,
+      "h": 16
+    },
+    {
+      "id": "box-1756023151531-sm2y4x6rv",
+      "title": "Notes (Infos principales)",
+      "x": 8,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    {
+      "id": "box-1756023151531-hfp4pzwac",
+      "title": "Résumé",
+      "x": 0,
+      "y": 16,
+      "w": 24,
+      "h": 8
+    }
+  ]
+}

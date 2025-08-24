@@ -7,6 +7,7 @@ import { ViewSwitcher } from "./viewSwitcher";
 import { FileSynchronizer } from "./fileSynchronizer";
 import { ErrorHandler, ErrorSeverity, LifecycleManager, LifecycleAware, createContextLogger, LoggingConfig } from "./core";
 import { PluginError } from "./types";
+import { LayoutSettingsTab } from "./ui/layoutSettingsTab";
 
 
 /**
@@ -38,6 +39,9 @@ export default class AgileBoardPlugin extends Plugin {
       
       // Ajouter les commandes de logging
       LoggingConfig.addLogLevelCommands(this);
+      
+      // Ajouter l'onglet de paramètres pour les layouts
+      this.addSettingTab(new LayoutSettingsTab(this.app, this));
       
       this.logger.info('Plugin Agile Board chargé avec succès');
     } catch (error) {
@@ -153,6 +157,9 @@ export default class AgileBoardPlugin extends Plugin {
     }
     if (this.viewSwitcher) {
       this.viewSwitcher.stop();
+    }
+    if (this.layoutService) {
+      this.layoutService.dispose();
     }
   }
 

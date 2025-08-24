@@ -1,0 +1,146 @@
+{
+  "layout_eisenhower": [
+    {
+      "title": "Urgent et Important",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Important mais Pas Urgent",
+      "x": 12,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Urgent mais Pas important",
+      "x": 0,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Ni urgent ni important",
+      "x": 12,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    }
+  ],
+  "layout_swot": [
+    {
+      "title": "Forces",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Faiblesses",
+      "x": 12,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Opportunités",
+      "x": 0,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Menaces",
+      "x": 12,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    }
+  ],
+  "layout_moscow": [
+    {
+      "title": "Must",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 8
+    },
+    {
+      "title": "Should",
+      "x": 12,
+      "y": 0,
+      "w": 12,
+      "h": 8
+    },
+    {
+      "title": "Could",
+      "x": 0,
+      "y": 8,
+      "w": 12,
+      "h": 8
+    },
+    {
+      "title": "Won’t",
+      "x": 12,
+      "y": 8,
+      "w": 12,
+      "h": 8
+    }
+  ],
+  "layout_effort_impact": [
+    {
+      "title": "Impact élevé / Effort bas",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Impact faible / Effort bas",
+      "x": 12,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Impact élevé / Effort élevé",
+      "x": 0,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Impact faible / Effort élevé",
+      "x": 12,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    }
+  ],
+  "layout_cornell": [
+  {
+    "title": "Questions",
+    "x": 0,
+    "y": 0,
+    "w": 8,
+    "h": 16
+  },
+  {
+    "title": "Notes (Infos principales)",
+    "x": 8,
+    "y": 0,
+    "w": 16,
+    "h": 16
+  },
+  {
+    "title": "Résumé",
+    "x": 0,
+    "y": 16,
+    "w": 24,
+    "h": 8
+  }
+  ]
+}
+

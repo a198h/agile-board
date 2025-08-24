@@ -1,0 +1,38 @@
+{
+  "name": "effort_impact",
+  "version": 1,
+  "boxes": [
+    {
+      "id": "box-1756023151530-xs1qhsv6z",
+      "title": "Impact élevé / Effort bas",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "id": "box-1756023151530-mrwutbcbe",
+      "title": "Impact faible / Effort bas",
+      "x": 12,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "id": "box-1756023151530-t5dk86yzc",
+      "title": "Impact élevé / Effort élevé",
+      "x": 0,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "id": "box-1756023151530-nublzn380",
+      "title": "Impact faible / Effort élevé",
+      "x": 12,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    }
+  ]
+}

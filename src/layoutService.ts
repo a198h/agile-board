@@ -7,6 +7,7 @@ import {
   PluginError
 } from "./types";
 import { LayoutLoader } from "./core/layout/layoutLoader";
+import { LayoutFileRepo } from "./core/layout/layoutFileRepo";
 import { ErrorHandler, ErrorSeverity } from "./core/errorHandler";
 import { ValidationUtils } from "./core/validation";
 import { createContextLogger } from "./core/logger";
@@ -18,10 +19,13 @@ import { createContextLogger } from "./core/logger";
 export class LayoutService {
   private models: LayoutRegistry = new Map();
   private readonly loader: ILayoutLoader;
+  private readonly fileRepo: LayoutFileRepo;
   private readonly logger = createContextLogger('LayoutService');
+  private isWatching = false;
 
   constructor(private readonly plugin: Plugin) {
     this.loader = new LayoutLoader(plugin);
+    this.fileRepo = new LayoutFileRepo(plugin);
   }
 
   /**
@@ -32,6 +36,36 @@ export class LayoutService {
     this.logger.info('Chargement des modèles de layout');
     this.models = await this.loader.loadLayouts();
     this.logger.info(`${this.models.size} modèle(s) chargé(s): ${Array.from(this.models.keys()).join(', ')}`);
+
+    // Démarrer la surveillance des fichiers de layout personnalisés
+    if (!this.isWatching) {
+      await this.startFileWatching();
+    }
+  }
+
+  /**
+   * Démarre la surveillance des fichiers de layout pour le hot-reload
+   */
+  private async startFileWatching(): Promise<void> {
+    try {
+      await this.fileRepo.startWatching(async () => {
+        this.logger.info('Changement détecté dans les fichiers de layout, rechargement...');
+        await this.reload();
+      });
+      this.isWatching = true;
+      this.logger.info('Surveillance des layouts personnalisés activée');
+    } catch (error) {
+      this.logger.error('Erreur lors du démarrage de la surveillance', error);
+    }
+  }
+
+
+  /**
+   * Notifie les composants que les layouts ont changé
+   */
+  private notifyLayoutsChanged(): void {
+    // Émettre un événement custom pour informer les autres composants
+    this.plugin.app.workspace.trigger('agile-board:layouts-changed');
   }
 
   /**
@@ -100,7 +134,34 @@ export class LayoutService {
    * @returns Promise résolue quand le rechargement est terminé
    */
   public async reload(): Promise<void> {
-    this.logger.info('Rechargement des modèles de layout');
-    await this.load();
+    try {
+      this.logger.info('Rechargement des modèles de layout');
+      this.models = await this.loader.loadLayouts();
+      this.logger.info(`${this.models.size} modèle(s) rechargé(s): ${Array.from(this.models.keys()).join(', ')}`);
+      
+      // Notifier les autres services du changement si nécessaire
+      this.notifyLayoutsChanged();
+    } catch (error) {
+      this.logger.error('Erreur lors du rechargement des layouts', error);
+      ErrorHandler.handleError({
+        type: 'INITIALIZATION_ERROR', // Utiliser le type existant
+        component: 'LayoutService',
+        details: error instanceof Error ? error.message : String(error)
+      }, 'LayoutService.reload', {
+        severity: ErrorSeverity.WARNING,
+        userMessage: 'Erreur lors du rechargement des layouts'
+      });
+    }
+  }
+
+  /**
+   * Nettoie les ressources utilisées par le service
+   */
+  public dispose(): void {
+    if (this.isWatching) {
+      this.fileRepo.dispose();
+      this.isWatching = false;
+      this.logger.info('Surveillance des layouts arrêtée');
+    }
   }
 }
