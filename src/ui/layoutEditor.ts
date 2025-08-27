@@ -1,9 +1,8 @@
 // src/ui/layoutEditor.ts
 
-import { Modal, App, Setting, ButtonComponent, Notice } from "obsidian";
+import { Modal, App, ButtonComponent, Notice } from "obsidian";
 import { LayoutBox, LayoutFile } from "../core/layout/layoutFileRepo";
-import { LayoutValidator24, CollisionResult } from "../core/layout/layoutValidator24";
-import { createContextLogger } from "../core/logger";
+import { LayoutValidator24 } from "../core/layout/layoutValidator24";
 
 /**
  * Interface pour les interactions avec l'éditeur
@@ -28,7 +27,6 @@ interface BoxState {
  * Éditeur visuel pour les layouts 24x24
  */
 export class LayoutEditor extends Modal {
-  private readonly logger = createContextLogger('LayoutEditor');
   private readonly validator = new LayoutValidator24();
   
   private layout: LayoutFile;
@@ -36,14 +34,13 @@ export class LayoutEditor extends Modal {
   
   // Éléments DOM
   private gridContainer!: HTMLElement;
+  private gridInner!: HTMLElement;
   private sidebar!: HTMLElement;
   private selectedBox: BoxState | null = null;
   private boxes: Map<string, BoxState> = new Map();
   
   // Constantes de grille
   private readonly GRID_SIZE = 24;
-  private readonly CELL_SIZE = 16; // pixels (réduit pour que tout tienne)
-  private readonly GAP_SIZE = 1; // pixels entre les cellules
   
   // État du drag & drop
   private dragState: {
@@ -65,6 +62,7 @@ export class LayoutEditor extends Modal {
 
   // Éléments temporaires pour le drag & drop
   private previewBox: HTMLElement | null = null;
+  private resizePreview: HTMLElement | null = null;
   private originalBoxState: LayoutBox | null = null;
 
   constructor(
@@ -93,145 +91,232 @@ export class LayoutEditor extends Modal {
   private setupUI(): void {
     this.titleEl.setText(`Édition du layout: ${this.layout.name}`);
     
-    // Container principal
+    // Container principal avec taille optimisée
     const mainContainer = this.contentEl.createDiv('layout-editor-container');
-    mainContainer.style.display = 'flex';
-    mainContainer.style.height = '550px'; // Hauteur plus réduite pour laisser place aux boutons
-    mainContainer.style.gap = '15px';
+    mainContainer.style.position = 'relative';
+    mainContainer.style.height = '650px'; // Hauteur pour avoir une grille carrée
     mainContainer.style.marginBottom = '15px'; // Espace pour les boutons
     
-    // Ajuster la taille de la modal pour être plus compacte
-    this.modalEl.style.width = '80vw';
-    this.modalEl.style.maxWidth = '1000px';
+    // Ajuster la taille de la modal pour être compacte - éliminer l'espace gris inutile
+    this.modalEl.style.width = '970px'; // Largeur fixe calculée pour grille + sidebar + marges
+    this.modalEl.style.maxWidth = '95vw'; // Limite pour les petits écrans
     this.modalEl.style.height = 'auto'; // Hauteur automatique
-    this.modalEl.style.maxHeight = '85vh'; // Limite pour éviter le débordement
+    this.modalEl.style.maxHeight = '90vh'; // Limite pour éviter le débordement
+    this.modalEl.style.minHeight = 'auto'; // Pas de hauteur minimale forcée
 
-    // Zone de grille
+    // Zone de grille optimisée pour un carré
     const gridWrapper = mainContainer.createDiv('grid-wrapper');
-    gridWrapper.style.flex = '1';
-    gridWrapper.style.minWidth = '500px'; // Largeur minimale pour utiliser l'espace
-    gridWrapper.style.overflow = 'auto';
+    gridWrapper.style.position = 'absolute';
+    gridWrapper.style.left = '0';
+    gridWrapper.style.top = '0';
+    gridWrapper.style.width = '650px'; // Largeur fixe pour avoir un carré parfait
+    gridWrapper.style.height = '650px'; // Hauteur fixe pour avoir un carré parfait
+    gridWrapper.style.overflow = 'hidden';
     gridWrapper.style.border = '1px solid var(--background-modifier-border)';
     gridWrapper.style.borderRadius = '4px';
-    gridWrapper.style.padding = '20px'; // Padding réduit pour plus d'espace
     gridWrapper.style.backgroundColor = 'var(--background-secondary)';
-    gridWrapper.style.height = '100%';
-    gridWrapper.style.display = 'flex';
-    gridWrapper.style.alignItems = 'flex-start';
-    gridWrapper.style.justifyContent = 'center';
 
     this.gridContainer = gridWrapper.createDiv('layout-grid');
     this.setupGrid();
 
-    // Sidebar
+    // Sidebar avec position absolue - ajustée pour le nouveau layout
     this.sidebar = mainContainer.createDiv('layout-sidebar');
-    this.sidebar.style.width = '280px'; // Réduit la largeur
-    this.sidebar.style.minWidth = '280px'; // Largeur minimale
+    this.sidebar.style.position = 'absolute';
+    this.sidebar.style.left = '665px'; // Positionné après la grille (650px + 15px de marge)
+    this.sidebar.style.top = '0';
+    this.sidebar.style.bottom = '0';
+    this.sidebar.style.width = '280px';
     this.sidebar.style.border = '1px solid var(--background-modifier-border)';
     this.sidebar.style.borderRadius = '4px';
     this.sidebar.style.padding = '15px';
     this.sidebar.style.backgroundColor = 'var(--background-primary)';
     this.sidebar.style.overflow = 'auto'; // Scroll si nécessaire
+    this.sidebar.style.boxSizing = 'border-box';
     
     this.setupSidebar();
     this.setupToolbar();
   }
 
   private setupGrid(): void {
-    // Rendre la grille adaptive : utilise tout l'espace disponible
-    this.gridContainer.style.position = 'relative';
-    this.gridContainer.style.width = '100%'; // Prend toute la largeur disponible
-    this.gridContainer.style.height = '100%'; // Prend toute la hauteur disponible
-    this.gridContainer.style.minWidth = '400px'; // Largeur minimale
-    this.gridContainer.style.minHeight = '400px'; // Hauteur minimale
+    // GRILLE ADAPTIVE : calculer la taille depuis l'espace disponible
+    this.gridContainer.style.position = 'absolute';
+    this.gridContainer.style.top = '0';
+    this.gridContainer.style.left = '0';
+    this.gridContainer.style.right = '0';
+    this.gridContainer.style.bottom = '0';
     this.gridContainer.style.cursor = 'crosshair';
+    this.gridContainer.style.paddingTop = '25px'; // Espace pour les numéros
+    this.gridContainer.style.paddingLeft = '25px'; // Espace pour les numéros
+    this.gridContainer.style.boxSizing = 'border-box';
     
-    // Utiliser CSS Grid pour créer la grille 24x24
-    this.gridContainer.style.display = 'grid';
-    this.gridContainer.style.gridTemplateColumns = 'repeat(24, 1fr)';
-    this.gridContainer.style.gridTemplateRows = 'repeat(24, 1fr)';
-    this.gridContainer.style.gap = '1px';
-    this.gridContainer.style.backgroundColor = 'var(--background-modifier-border)'; // Couleur des lignes
-    this.gridContainer.style.padding = '1px'; // Pour les bordures extérieures
+    // Calculer la taille des cellules depuis l'espace disponible
+    setTimeout(() => {
+      const containerRect = this.gridContainer.getBoundingClientRect();
+      const availableWidth = containerRect.width - 25; // Soustraire le padding
+      const availableHeight = containerRect.height - 25; // Soustraire le padding
+      
+      // Prendre la plus petite dimension pour avoir un carré parfait
+      const availableSpace = Math.min(availableWidth, availableHeight);
+      this.cellSize = Math.floor(availableSpace / this.GRID_SIZE);
+      
+      // Créer la grille avec la taille calculée
+      this.createAdaptiveGrid();
+    }, 0);
+  }
+  
+  private createAdaptiveGrid(): void {
+    // Grille interne avec dimensions calculées
+    const gridInner = this.gridContainer.createDiv('grid-inner');
+    gridInner.style.position = 'relative';
+    const gridSize = this.cellSize * this.GRID_SIZE;
+    gridInner.style.width = `${gridSize}px`; 
+    gridInner.style.height = `${gridSize}px`;  
+    gridInner.style.backgroundColor = 'var(--background-secondary)';
+    gridInner.style.border = '1px solid var(--background-modifier-border)';
     
-    // Créer les cellules de grille visuelles
-    this.createGridCells();
+    // Dessiner la grille avec la nouvelle taille de cellules
+    this.drawGridLines(gridInner);
     
-    // Pas de labels pour le moment avec CSS Grid (on les ajoutera différemment)
-    // this.addGridLabels();
+    // Ajouter les numéros avec la nouvelle taille
+    this.addGridNumbers();
+    
+    // Stocker la référence
+    this.gridInner = gridInner;
+    
+    // Rendre le layout existant avec la nouvelle taille
+    this.renderLayout();
+  }
+
+  private cellSize = 24; // Taille calculée dynamiquement selon l'espace disponible
+  
+  private drawGridLines(gridInner: HTMLElement): void {
+    // Dessiner les lignes verticales (colonnes)
+    for (let i = 1; i < this.GRID_SIZE; i++) {
+      const line = gridInner.createDiv('grid-line-vertical');
+      line.style.position = 'absolute';
+      line.style.left = `${i * this.cellSize}px`;
+      line.style.top = '0';
+      line.style.width = '1px';
+      line.style.height = '100%';
+      line.style.backgroundColor = 'var(--background-modifier-border)';
+      line.style.pointerEvents = 'none';
+    }
+    
+    // Dessiner les lignes horizontales (lignes)
+    for (let i = 1; i < this.GRID_SIZE; i++) {
+      const line = gridInner.createDiv('grid-line-horizontal');
+      line.style.position = 'absolute';
+      line.style.top = `${i * this.cellSize}px`;
+      line.style.left = '0';
+      line.style.height = '1px';
+      line.style.width = '100%';
+      line.style.backgroundColor = 'var(--background-modifier-border)';
+      line.style.pointerEvents = 'none';
+    }
+  }
+  
+  private addGridNumbers(): void {
+    // Numéros de colonnes (1-24)
+    for (let i = 0; i < this.GRID_SIZE; i++) {
+      const label = this.gridContainer.createDiv('grid-number-col');
+      label.textContent = (i + 1).toString();
+      label.style.position = 'absolute';
+      label.style.left = `${25 + i * this.cellSize + this.cellSize / 2 - 6}px`;
+      label.style.top = '2px';
+      label.style.fontSize = '10px';
+      label.style.color = 'var(--text-accent)';
+      label.style.fontWeight = '600';
+      label.style.textAlign = 'center';
+      label.style.width = '12px';
+      label.style.pointerEvents = 'none';
+    }
+    
+    // Numéros de lignes (1-24)
+    for (let i = 0; i < this.GRID_SIZE; i++) {
+      const label = this.gridContainer.createDiv('grid-number-row');
+      label.textContent = (i + 1).toString();
+      label.style.position = 'absolute';
+      label.style.left = '2px';
+      label.style.top = `${25 + i * this.cellSize + this.cellSize / 2 - 6}px`;
+      label.style.fontSize = '10px';
+      label.style.color = 'var(--text-accent)';
+      label.style.fontWeight = '600';
+      label.style.textAlign = 'center';
+      label.style.width = '20px';
+      label.style.pointerEvents = 'none';
+    }
   }
 
   private addGridLabels(): void {
-    // Labels pour les colonnes (0-23)
+    // Les dimensions sont maintenant fixes, on peut calculer directement
+    const containerRect = this.gridContainer.getBoundingClientRect();
+    const gridWidth = containerRect.width - 20; // Soustraire le padding
+    const gridHeight = containerRect.height - 20; // Soustraire le padding
+    
+    const cellWidth = gridWidth / this.GRID_SIZE;
+    const cellHeight = gridHeight / this.GRID_SIZE;
+
+    // Labels pour les colonnes (1-24) - en haut
     for (let i = 0; i < this.GRID_SIZE; i++) {
       const label = this.gridContainer.createDiv('grid-label-col');
-      label.textContent = i.toString();
+      label.textContent = (i + 1).toString();
       label.style.position = 'absolute';
-      label.style.left = `${i * (this.CELL_SIZE + this.GAP_SIZE) + this.CELL_SIZE / 2 - 6}px`;
-      label.style.top = '-18px'; // Ajusté pour le padding réduit
-      label.style.fontSize = '11px';
-      label.style.color = 'var(--text-muted)';
+      label.style.left = `${20 + i * cellWidth + cellWidth / 2 - 6}px`;
+      label.style.top = '2px';
+      label.style.fontSize = '10px';
+      label.style.color = 'var(--text-accent)';
+      label.style.fontWeight = '600';
       label.style.pointerEvents = 'none';
-      label.style.fontWeight = '500';
+      label.style.zIndex = '10';
       label.style.textAlign = 'center';
       label.style.minWidth = '12px';
     }
 
-    // Labels pour les lignes (0-23)
+    // Labels pour les lignes (1-24) - à gauche
     for (let i = 0; i < this.GRID_SIZE; i++) {
       const label = this.gridContainer.createDiv('grid-label-row');
-      label.textContent = i.toString();
+      label.textContent = (i + 1).toString();
       label.style.position = 'absolute';
-      label.style.left = '-18px'; // Ajusté pour le padding réduit
-      label.style.top = `${i * (this.CELL_SIZE + this.GAP_SIZE) + this.CELL_SIZE / 2 - 5}px`;
-      label.style.fontSize = '11px';
-      label.style.color = 'var(--text-muted)';
+      label.style.left = '2px';
+      label.style.top = `${20 + i * cellHeight + cellHeight / 2 - 6}px`;
+      label.style.fontSize = '10px';
+      label.style.color = 'var(--text-accent)';
+      label.style.fontWeight = '600';
       label.style.pointerEvents = 'none';
-      label.style.fontWeight = '500';
-      label.style.textAlign = 'right';
+      label.style.zIndex = '10';
+      label.style.textAlign = 'center';
       label.style.minWidth = '15px';
     }
   }
 
-  private createGridCells(): void {
-    // Créer 24x24 = 576 cellules pour la visualisation
-    for (let row = 0; row < this.GRID_SIZE; row++) {
-      for (let col = 0; col < this.GRID_SIZE; col++) {
-        const cell = this.gridContainer.createDiv('grid-cell');
-        cell.style.backgroundColor = 'var(--background-secondary)';
-        cell.style.border = 'none'; // Le gap du CSS Grid fait les bordures
-        cell.style.position = 'relative';
-        
-        // Ajouter les numéros de ligne/colonne sur les bordures
-        if (row === 0) {
-          // Numéros de colonnes en haut
-          const colLabel = cell.createDiv('col-label');
-          colLabel.textContent = col.toString();
-          colLabel.style.position = 'absolute';
-          colLabel.style.top = '-15px';
-          colLabel.style.left = '50%';
-          colLabel.style.transform = 'translateX(-50%)';
-          colLabel.style.fontSize = '9px';
-          colLabel.style.color = 'var(--text-muted)';
-          colLabel.style.fontWeight = '500';
-          colLabel.style.pointerEvents = 'none';
-        }
-        
-        if (col === 0) {
-          // Numéros de lignes à gauche
-          const rowLabel = cell.createDiv('row-label');
-          rowLabel.textContent = row.toString();
-          rowLabel.style.position = 'absolute';
-          rowLabel.style.left = '-12px';
-          rowLabel.style.top = '50%';
-          rowLabel.style.transform = 'translateY(-50%)';
-          rowLabel.style.fontSize = '9px';
-          rowLabel.style.color = 'var(--text-muted)';
-          rowLabel.style.fontWeight = '500';
-          rowLabel.style.pointerEvents = 'none';
-        }
+  private addGridBackground(): void {
+    // Créer un pseudo-élément avec background pour la grille sans interférer avec CSS Grid
+    const style = document.createElement('style');
+    style.textContent = `
+      .layout-grid::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 0;
+        background-color: var(--background-secondary);
       }
-    }
+      
+      .layout-grid > .layout-box {
+        z-index: 2;
+      }
+      
+      .layout-grid > .preview-box {
+        z-index: 5;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Ajouter des labels pour les numéros de grille
+    this.addGridLabels();
   }
 
   private setupSidebar(): void {
@@ -396,14 +481,15 @@ export class LayoutEditor extends Modal {
   }
 
   private createBoxElement(box: LayoutBox): BoxState {
-    const element = this.gridContainer.createDiv('layout-box');
+    const element = this.gridInner.createDiv('layout-box');
     
-    // Utiliser CSS Grid pour le positionnement (1-indexed pour CSS Grid)
-    element.style.gridColumnStart = (box.x + 1).toString();
-    element.style.gridColumnEnd = (box.x + box.w + 1).toString();
-    element.style.gridRowStart = (box.y + 1).toString();
-    element.style.gridRowEnd = (box.y + box.h + 1).toString();
-    element.style.zIndex = '2'; // Au-dessus des cellules de grille
+    // Positionnement absolu simple en pixels - PARFAITEMENT ALIGNÉ
+    element.style.position = 'absolute';
+    element.style.left = `${box.x * this.cellSize}px`;
+    element.style.top = `${box.y * this.cellSize}px`;
+    element.style.width = `${box.w * this.cellSize}px`;
+    element.style.height = `${box.h * this.cellSize}px`;
+    element.style.zIndex = '10'; // Au-dessus des lignes de grille
     
     // Sauvegarder l'ID et les dimensions dans les data attributes
     element.dataset.boxId = box.id;
@@ -435,6 +521,7 @@ export class LayoutEditor extends Modal {
     element.style.opacity = '0.9';
     element.style.transition = 'all 0.2s ease';
     element.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+    element.style.boxSizing = 'border-box'; // Inclure les bordures dans les dimensions
 
     // Titre
     const title = element.createDiv('box-title');
@@ -448,7 +535,7 @@ export class LayoutEditor extends Modal {
 
     // Coordonnées en petit
     const coords = element.createDiv('box-coords');
-    coords.textContent = `${box.x},${box.y} (${box.w}×${box.h})`;
+    coords.textContent = `${box.x + 1},${box.y + 1} (${box.w}×${box.h})`;
     coords.style.position = 'absolute';
     coords.style.bottom = '2px';
     coords.style.right = '4px';
@@ -579,7 +666,7 @@ export class LayoutEditor extends Modal {
 
   private setupEventListeners(): void {
     // Clic sur la grille pour créer une nouvelle box
-    this.gridContainer.addEventListener('mousedown', (e) => this.onGridMouseDown(e));
+    this.gridInner.addEventListener('mousedown', (e) => this.onGridMouseDown(e));
     
     // Désélection en cliquant ailleurs
     document.addEventListener('click', (e) => {
@@ -596,7 +683,7 @@ export class LayoutEditor extends Modal {
   }
 
   private onGridMouseDown(e: MouseEvent): void {
-    if (e.target !== this.gridContainer) return;
+    if (!this.gridInner.contains(e.target as Node)) return;
     
     const gridPos = this.screenToGrid(e.clientX, e.clientY);
     if (!gridPos) return;
@@ -706,16 +793,13 @@ export class LayoutEditor extends Modal {
   // Méthodes utilitaires
 
   private screenToGrid(screenX: number, screenY: number): { x: number; y: number } | null {
-    const rect = this.gridContainer.getBoundingClientRect();
+    const rect = this.gridInner.getBoundingClientRect();
     const relativeX = screenX - rect.left;
     const relativeY = screenY - rect.top;
     
-    // Avec CSS Grid, chaque cellule fait 1/24 de la largeur/hauteur totale
-    const cellWidth = rect.width / this.GRID_SIZE;
-    const cellHeight = rect.height / this.GRID_SIZE;
-    
-    const gridX = Math.floor(relativeX / cellWidth);
-    const gridY = Math.floor(relativeY / cellHeight);
+    // Calcul simple avec les pixels fixes - chaque cellule fait exactement CELL_SIZE pixels
+    const gridX = Math.floor(relativeX / this.cellSize);
+    const gridY = Math.floor(relativeY / this.cellSize);
     
     if (gridX < 0 || gridX >= this.GRID_SIZE || gridY < 0 || gridY >= this.GRID_SIZE) {
       return null;
@@ -772,7 +856,7 @@ export class LayoutEditor extends Modal {
           <strong>Titre:</strong> ${box.title}
         </div>
         <div style="margin-bottom: 8px;">
-          <strong>Position:</strong> (${box.x}, ${box.y})
+          <strong>Position:</strong> (${box.x + 1}, ${box.y + 1})
         </div>
         <div style="margin-bottom: 8px;">
           <strong>Taille:</strong> ${box.w} × ${box.h}
@@ -904,62 +988,93 @@ export class LayoutEditor extends Modal {
   }
 
   private handleResizeDrag(deltaX: number, deltaY: number): void {
-    if (!this.selectedBox || !this.dragState.handle) return;
+    if (!this.selectedBox || !this.dragState.handle || !this.originalBoxState) return;
 
-    const box = this.selectedBox.box;
+    const originalBox = this.originalBoxState;
     const handle = this.dragState.handle;
-    let newX = box.x, newY = box.y, newW = box.w, newH = box.h;
+    let newX = originalBox.x, newY = originalBox.y, newW = originalBox.w, newH = originalBox.h;
 
+    // Utiliser les deltas depuis le début du drag, pas les deltas accumulés
     switch (handle) {
       case 'se': // Sud-Est (coin bas-droite)
-        newW = Math.max(1, Math.min(this.GRID_SIZE - box.x, box.w + deltaX));
-        newH = Math.max(1, Math.min(this.GRID_SIZE - box.y, box.h + deltaY));
+        // La box peut s'étendre jusqu'à la colonne/ligne 24 (index 23)
+        // donc largeur max = GRID_SIZE - position_x
+        newW = Math.max(1, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
+        newH = Math.max(1, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
         break;
-      case 'nw': // Nord-Ouest (coin haut-gauche)
-        const maxDeltaX = box.x;
-        const maxDeltaY = box.y;
-        const clampedDeltaX = Math.max(-maxDeltaX, Math.min(box.w - 1, deltaX));
-        const clampedDeltaY = Math.max(-maxDeltaY, Math.min(box.h - 1, deltaY));
-        newX = box.x + clampedDeltaX;
-        newY = box.y + clampedDeltaY;
-        newW = box.w - clampedDeltaX;
-        newH = box.h - clampedDeltaY;
+      case 'nw': { // Nord-Ouest (coin haut-gauche)
+        const maxMoveX = originalBox.x; // Ne peut pas dépasser 0
+        const maxMoveY = originalBox.y; // Ne peut pas dépasser 0
+        const maxShrinkX = originalBox.w - 1; // Taille min de 1
+        const maxShrinkY = originalBox.h - 1; // Taille min de 1
+        
+        const clampedDeltaX = Math.max(-maxMoveX, Math.min(maxShrinkX, deltaX));
+        const clampedDeltaY = Math.max(-maxMoveY, Math.min(maxShrinkY, deltaY));
+        
+        newX = originalBox.x + clampedDeltaX;
+        newY = originalBox.y + clampedDeltaY;
+        newW = originalBox.w - clampedDeltaX;
+        newH = originalBox.h - clampedDeltaY;
         break;
-      case 'ne': // Nord-Est
-        newY = Math.max(0, box.y + Math.min(box.h - 1, deltaY));
-        newW = Math.max(1, Math.min(this.GRID_SIZE - box.x, box.w + deltaX));
-        newH = box.h - (newY - box.y);
+      }
+      case 'ne': { // Nord-Est
+        const maxMoveYNE = originalBox.y;
+        const maxShrinkYNE = originalBox.h - 1;
+        const clampedDeltaYNE = Math.max(-maxMoveYNE, Math.min(maxShrinkYNE, deltaY));
+        
+        newY = originalBox.y + clampedDeltaYNE;
+        newW = Math.max(1, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
+        newH = originalBox.h - clampedDeltaYNE;
         break;
-      case 'sw': // Sud-Ouest
-        newX = Math.max(0, box.x + Math.min(box.w - 1, deltaX));
-        newW = box.w - (newX - box.x);
-        newH = Math.max(1, Math.min(this.GRID_SIZE - box.y, box.h + deltaY));
+      }
+      case 'sw': { // Sud-Ouest
+        const maxMoveXSW = originalBox.x;
+        const maxShrinkXSW = originalBox.w - 1;
+        const clampedDeltaXSW = Math.max(-maxMoveXSW, Math.min(maxShrinkXSW, deltaX));
+        
+        newX = originalBox.x + clampedDeltaXSW;
+        newW = originalBox.w - clampedDeltaXSW;
+        newH = Math.max(1, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
         break;
-      case 'n': // Nord
-        newY = Math.max(0, box.y + Math.min(box.h - 1, deltaY));
-        newH = box.h - (newY - box.y);
+      }
+      case 'n': { // Nord
+        const maxMoveYN = originalBox.y;
+        const maxShrinkYN = originalBox.h - 1;
+        const clampedDeltaYN = Math.max(-maxMoveYN, Math.min(maxShrinkYN, deltaY));
+        
+        newY = originalBox.y + clampedDeltaYN;
+        newH = originalBox.h - clampedDeltaYN;
         break;
+      }
       case 's': // Sud
-        newH = Math.max(1, Math.min(this.GRID_SIZE - box.y, box.h + deltaY));
+        newH = Math.max(1, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
         break;
       case 'e': // Est
-        newW = Math.max(1, Math.min(this.GRID_SIZE - box.x, box.w + deltaX));
+        newW = Math.max(1, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
         break;
-      case 'w': // Ouest
-        newX = Math.max(0, box.x + Math.min(box.w - 1, deltaX));
-        newW = box.w - (newX - box.x);
+      case 'w': { // Ouest
+        const maxMoveXW = originalBox.x;
+        const maxShrinkXW = originalBox.w - 1;
+        const clampedDeltaXW = Math.max(-maxMoveXW, Math.min(maxShrinkXW, deltaX));
+        
+        newX = originalBox.x + clampedDeltaXW;
+        newW = originalBox.w - clampedDeltaXW;
         break;
+      }
     }
 
-    const resizedBox = { ...box, x: newX, y: newY, w: newW, h: newH };
+    const resizedBox = { ...originalBox, x: newX, y: newY, w: newW, h: newH };
     const collisionResult = this.validator.wouldCollide(
       resizedBox, 
       this.layout.boxes, 
-      box.id
+      originalBox.id
     );
 
     const hasCollisions = collisionResult.hasCollisions;
     this.updateBoxSizeAndPosition(this.selectedBox.element, newX, newY, newW, newH, hasCollisions);
+    
+    // Afficher les dimensions pendant le redimensionnement
+    this.showResizePreview(newX, newY, newW, newH);
     
     this.selectedBox.box = resizedBox;
   }
@@ -1059,6 +1174,8 @@ export class LayoutEditor extends Modal {
       );
     }
 
+    // Cacher l'aide visuelle
+    this.hideResizePreview();
     this.selectedBox.isResizing = false;
   }
 
@@ -1070,6 +1187,9 @@ export class LayoutEditor extends Modal {
       this.previewBox.remove();
       this.previewBox = null;
     }
+    
+    // Cacher l'aide visuelle de resize
+    this.hideResizePreview();
     
     this.boxes.forEach(boxState => {
       boxState.isDragging = false;
@@ -1100,7 +1220,8 @@ export class LayoutEditor extends Modal {
   }
 
   private createPreviewBox(): HTMLElement {
-    const preview = this.gridContainer.createDiv('preview-box');
+    const preview = this.gridInner.createDiv('preview-box');
+    preview.style.position = 'absolute';
     preview.style.border = '2px dashed var(--interactive-accent)';
     preview.style.backgroundColor = 'var(--interactive-accent)';
     preview.style.opacity = '0.3';
@@ -1113,21 +1234,17 @@ export class LayoutEditor extends Modal {
   private updatePreviewBox(x: number, y: number, w: number, h: number): void {
     if (!this.previewBox) return;
     
-    // Utiliser CSS Grid pour la preview box aussi
-    this.previewBox.style.gridColumnStart = (x + 1).toString();
-    this.previewBox.style.gridColumnEnd = (x + w + 1).toString();
-    this.previewBox.style.gridRowStart = (y + 1).toString();
-    this.previewBox.style.gridRowEnd = (y + h + 1).toString();
+    // Positionnement simple en pixels pour la preview
+    this.previewBox.style.left = `${x * this.cellSize}px`;
+    this.previewBox.style.top = `${y * this.cellSize}px`;
+    this.previewBox.style.width = `${w * this.cellSize}px`;
+    this.previewBox.style.height = `${h * this.cellSize}px`;
   }
 
   private updateBoxPosition(element: HTMLElement, x: number, y: number, hasCollision: boolean): void {
-    // Utiliser CSS Grid pour le positionnement
-    element.style.gridColumnStart = (x + 1).toString();
-    const width = element.dataset.width ? parseInt(element.dataset.width) : 1;
-    element.style.gridColumnEnd = (x + width + 1).toString();
-    element.style.gridRowStart = (y + 1).toString();
-    const height = element.dataset.height ? parseInt(element.dataset.height) : 1;
-    element.style.gridRowEnd = (y + height + 1).toString();
+    // Positionnement simple en pixels
+    element.style.left = `${x * this.cellSize}px`;
+    element.style.top = `${y * this.cellSize}px`;
     
     if (hasCollision) {
       element.style.backgroundColor = 'var(--background-modifier-error)';
@@ -1153,11 +1270,11 @@ export class LayoutEditor extends Modal {
   }
 
   private updateBoxSizeAndPosition(element: HTMLElement, x: number, y: number, w: number, h: number, hasCollision: boolean): void {
-    // Utiliser CSS Grid pour le positionnement et la taille
-    element.style.gridColumnStart = (x + 1).toString();
-    element.style.gridColumnEnd = (x + w + 1).toString();
-    element.style.gridRowStart = (y + 1).toString();
-    element.style.gridRowEnd = (y + h + 1).toString();
+    // Positionnement et taille simples en pixels
+    element.style.left = `${x * this.cellSize}px`;
+    element.style.top = `${y * this.cellSize}px`;
+    element.style.width = `${w * this.cellSize}px`;
+    element.style.height = `${h * this.cellSize}px`;
     
     // Sauvegarder les dimensions dans les data attributes
     element.dataset.width = w.toString();
@@ -1209,9 +1326,41 @@ export class LayoutEditor extends Modal {
     );
   }
 
+  private showResizePreview(x: number, y: number, w: number, h: number): void {
+    if (!this.resizePreview) {
+      this.resizePreview = this.gridContainer.createDiv('resize-preview');
+      this.resizePreview.style.position = 'absolute';
+      this.resizePreview.style.backgroundColor = 'var(--interactive-accent)';
+      this.resizePreview.style.color = 'white';
+      this.resizePreview.style.padding = '2px 6px';
+      this.resizePreview.style.borderRadius = '4px';
+      this.resizePreview.style.fontSize = '11px';
+      this.resizePreview.style.fontWeight = '600';
+      this.resizePreview.style.zIndex = '100';
+      this.resizePreview.style.pointerEvents = 'none';
+      this.resizePreview.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+    }
+    
+    this.resizePreview.textContent = `(${x + 1},${y + 1}) ${w}×${h}`;
+    this.resizePreview.style.left = '10px';
+    this.resizePreview.style.top = '10px';
+    this.resizePreview.style.display = 'block';
+  }
+  
+  private hideResizePreview(): void {
+    if (this.resizePreview) {
+      this.resizePreview.style.display = 'none';
+    }
+  }
+
   private cleanup(): void {
     // Nettoyer les event listeners
     document.removeEventListener('mousemove', this.onMouseMove);
     document.removeEventListener('mouseup', this.onMouseUp);
+    
+    // Nettoyer les éléments temporaires
+    if (this.resizePreview) {
+      this.resizePreview.remove();
+    }
   }
 }
