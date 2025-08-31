@@ -77,10 +77,10 @@ export class DOMHelper {
     /**
      * Ajoute un event listener avec nettoyage automatique
      */
-    static addEventListenerWithCleanup<K extends keyof HTMLElementEventMap>(
-        element: HTMLElement,
+    static addEventListenerWithCleanup<K extends keyof DocumentEventMap>(
+        element: HTMLElement | Document,
         type: K,
-        listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
+        listener: (this: HTMLElement | Document, ev: DocumentEventMap[K]) => any,
         cleanupRegistry?: (() => void)[]
     ): void {
         element.addEventListener(type, listener);
