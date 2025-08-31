@@ -103,31 +103,28 @@ export class PositionCalculator {
     }
 
     /**
-     * Calcule la position CSS pour une box
+     * Calcule la position CSS pour une box avec espacement moderne (comme l'ancien système)
      */
     static getBoxCSSPosition(box: LayoutBox): { left: string; top: string; width: string; height: string } {
         const pixel = this.gridToPixels(box.x, box.y);
         const size = this.gridSizeToPixels(box.w, box.h);
 
+        // Appliquer le même espacement que l'ancien système : gap de 4px
         return {
-            left: `${pixel.left}px`,
-            top: `${pixel.top}px`,
-            width: `${size.width}px`,
-            height: `${size.height}px`
+            left: `${pixel.left + 2}px`,
+            top: `${pixel.top + 2}px`,
+            width: `${size.width - 4}px`,
+            height: `${size.height - 4}px`
         };
     }
 
     /**
      * Calcule l'index de couleur séquentiel pour une box
+     * IMPORTANT: Utilise l'ordre original des boxes (comme l'ancien système)
      */
     static calculateColorIndex(boxes: LayoutBox[], currentBox: LayoutBox): number {
-        // Trier les boxes par position (haut vers bas, gauche vers droite)
-        const sortedBoxes = [...boxes].sort((a, b) => {
-            if (a.y !== b.y) return a.y - b.y;
-            return a.x - b.x;
-        });
-
-        const index = sortedBoxes.findIndex(box => box.id === currentBox.id);
+        // Ne PAS trier - utiliser l'ordre original du fichier JSON pour compatibilité
+        const index = boxes.findIndex(box => box.id === currentBox.id);
         return index >= 0 ? index : 0;
     }
 }

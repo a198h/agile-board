@@ -3,7 +3,7 @@
 import { App, PluginSettingTab, Setting, ButtonComponent, Modal, Notice } from "obsidian";
 import { LayoutFileRepo, LayoutFile } from "../core/layout/layoutFileRepo";
 import { LayoutValidator24 } from "../core/layout/layoutValidator24";
-import { LayoutEditorNew, LayoutEditorCallbacks } from "./layoutEditorNew";
+import { LayoutEditor, LayoutEditorCallbacks } from "./layoutEditor";
 import { createContextLogger } from "../core/logger";
 import { TIMING_CONSTANTS, VALIDATION_CONSTANTS, generateBoxId } from "../core/constants";
 import { UIErrorHandler } from "./utils/ErrorHandler";
@@ -272,7 +272,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
       }
     };
 
-    const editor = new LayoutEditorNew(this.app, layout, callbacks);
+    const editor = new LayoutEditor(this.app, layout, callbacks);
     editor.open();
   }
 
