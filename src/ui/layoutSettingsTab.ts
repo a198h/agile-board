@@ -134,19 +134,26 @@ export class LayoutSettingsTab extends PluginSettingTab {
   private renderLayoutItem(layout: LayoutFile): void {
     if (!this.layoutListContainer) return;
 
-    const item = this.layoutListContainer.createDiv('layout-item');
+    const item = this.createLayoutItemContainer();
+    this.addLayoutInfo(item, layout);
+    this.addLayoutActions(item, layout);
+  }
+
+  private createLayoutItemContainer(): HTMLElement {
+    const item = this.layoutListContainer!.createDiv('layout-item');
     item.style.display = 'grid';
     item.style.gridTemplateColumns = '1fr 120px 200px';
     item.style.gap = '10px';
     item.style.padding = '15px';
     item.style.borderBottom = '1px solid var(--background-modifier-border-hover)';
     item.style.alignItems = 'center';
+    return item;
+  }
 
+  private addLayoutInfo(item: HTMLElement, layout: LayoutFile): void {
     // Nom du layout
     const nameContainer = item.createDiv('layout-name');
     nameContainer.createSpan({ text: layout.name, cls: 'layout-name-text' });
-    
-    // Version supprimée du système
 
     // Nombre de boxes
     const boxCount = item.createSpan({ 
@@ -154,39 +161,36 @@ export class LayoutSettingsTab extends PluginSettingTab {
     });
     boxCount.style.color = 'var(--text-muted)';
     boxCount.style.fontSize = '14px';
+  }
 
-    // Boutons d'action
+  private addLayoutActions(item: HTMLElement, layout: LayoutFile): void {
     const actionsContainer = item.createDiv('layout-actions');
     actionsContainer.style.display = 'flex';
     actionsContainer.style.gap = '5px';
 
-    // Bouton Éditer
-    new ButtonComponent(actionsContainer)
-      .setButtonText('Éditer')
-      .setIcon('edit')
-      .setTooltip('Ouvrir l\'éditeur visuel')
-      .onClick(() => this.editLayout(layout));
+    // Boutons d'action
+    this.createActionButton(actionsContainer, 'Éditer', 'edit', 'Ouvrir l\'éditeur visuel', 
+      () => this.editLayout(layout));
+    this.createActionButton(actionsContainer, 'Dupliquer', 'copy', 'Créer une copie de ce layout', 
+      () => this.duplicateLayout(layout));
+    this.createActionButton(actionsContainer, 'Exporter', 'upload', 'Exporter vers un fichier JSON', 
+      () => this.exportLayout(layout));
+    this.createActionButton(actionsContainer, 'Supprimer', 'trash', 'Supprimer définitivement ce layout', 
+      () => this.deleteLayout(layout));
+  }
 
-    // Bouton Dupliquer
-    new ButtonComponent(actionsContainer)
-      .setButtonText('Dupliquer')
-      .setIcon('copy')
-      .setTooltip('Créer une copie de ce layout')
-      .onClick(() => this.duplicateLayout(layout));
-
-    // Bouton Exporter
-    new ButtonComponent(actionsContainer)
-      .setButtonText('Exporter')
-      .setIcon('upload')
-      .setTooltip('Exporter vers un fichier JSON')
-      .onClick(() => this.exportLayout(layout));
-
-    // Bouton Supprimer
-    new ButtonComponent(actionsContainer)
-      .setButtonText('Supprimer')
-      .setIcon('trash')
-      .setTooltip('Supprimer définitivement ce layout')
-      .onClick(() => this.deleteLayout(layout));
+  private createActionButton(
+    container: HTMLElement, 
+    text: string, 
+    icon: string, 
+    tooltip: string, 
+    onClick: () => void
+  ): void {
+    new ButtonComponent(container)
+      .setButtonText(text)
+      .setIcon(icon)
+      .setTooltip(tooltip)
+      .onClick(onClick);
   }
 
   private async createNewLayout(): Promise<void> {
@@ -220,35 +224,42 @@ export class LayoutSettingsTab extends PluginSettingTab {
   }
 
   private async duplicateLayout(layout: LayoutFile): Promise<void> {
-    const modal = new LayoutNameModal(this.app, 'Dupliquer Layout', `${layout.name} - Copie`, async (name) => {
-      if (!name.trim()) {
-        new Notice('Le nom du layout ne peut pas être vide');
-        return;
-      }
-
-      try {
-        let duplicatedLayout: LayoutFile = {
-          ...layout,
-          name: name.trim(),
-          boxes: layout.boxes.map(box => ({
-            ...box,
-            id: generateBoxId()
-          }))
-        };
-
-        const uniqueName = await this.layoutRepo.generateUniqueName(duplicatedLayout.name);
-        duplicatedLayout = { ...duplicatedLayout, name: uniqueName };
-
-        await this.layoutRepo.saveLayout(duplicatedLayout);
-        UIErrorHandler.showSuccess(`Layout "${uniqueName}" dupliqué avec succès`);
-        
-        this.refreshLayoutList();
-      } catch (error) {
-        UIErrorHandler.handleLayoutError('la duplication', layout.name, error);
-      }
+    const defaultName = `${layout.name} - Copie`;
+    const modal = new LayoutNameModal(this.app, 'Dupliquer Layout', defaultName, async (name) => {
+      await this.performLayoutDuplication(layout, name);
     });
 
     modal.open();
+  }
+
+  private async performLayoutDuplication(sourceLayout: LayoutFile, newName: string): Promise<void> {
+    if (!newName.trim()) {
+      new Notice('Le nom du layout ne peut pas être vide');
+      return;
+    }
+
+    try {
+      const duplicatedLayout = await this.createDuplicatedLayout(sourceLayout, newName.trim());
+      await this.layoutRepo.saveLayout(duplicatedLayout);
+      
+      UIErrorHandler.showSuccess(`Layout "${duplicatedLayout.name}" dupliqué avec succès`);
+      this.refreshLayoutList();
+    } catch (error) {
+      UIErrorHandler.handleLayoutError('la duplication', sourceLayout.name, error);
+    }
+  }
+
+  private async createDuplicatedLayout(sourceLayout: LayoutFile, baseName: string): Promise<LayoutFile> {
+    const uniqueName = await this.layoutRepo.generateUniqueName(baseName);
+    
+    return {
+      ...sourceLayout,
+      name: uniqueName,
+      boxes: sourceLayout.boxes.map(box => ({
+        ...box,
+        id: generateBoxId()
+      }))
+    };
   }
 
   private editLayout(layout: LayoutFile): void {
@@ -324,54 +335,66 @@ export class LayoutSettingsTab extends PluginSettingTab {
   }
 
   private importLayout(): void {
+    this.createFileInput();
+  }
+
+  private createFileInput(): void {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
     
     input.addEventListener('change', (event) => {
       const file = (event.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-      
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          const jsonContent = e.target?.result as string;
-          const importedLayout = JSON.parse(jsonContent) as LayoutFile;
-          
-          // Valider le layout
-          const validation = this.validator.validateLayout(importedLayout);
-          if (!validation.isValid) {
-            UIErrorHandler.handleValidationError(validation.errors);
-            return;
-          }
-
-          // Générer un nom unique
-          const uniqueName = await this.layoutRepo.generateUniqueName(importedLayout.name);
-          
-          // Créer une copie mutable avec le nouveau nom et les nouveaux IDs
-          const finalLayout: LayoutFile = {
-            ...importedLayout,
-            name: uniqueName,
-            boxes: importedLayout.boxes.map(box => ({
-              ...box,
-              id: generateBoxId()
-            }))
-          };
-
-          await this.layoutRepo.saveLayout(finalLayout);
-          UIErrorHandler.showSuccess(`Layout "${uniqueName}" importé avec succès`);
-          
-          this.refreshLayoutList();
-        } catch (error) {
-          this.logger.error('Erreur lors de l\'import du layout', error);
-          new Notice('Erreur lors de l\'import du layout. Vérifiez que le fichier est valide.');
-        }
-      };
-      
-      reader.readAsText(file);
+      if (file) {
+        this.processImportFile(file);
+      }
     });
     
     input.click();
+  }
+
+  private processImportFile(file: File): void {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        await this.handleFileContent(e.target?.result as string);
+      } catch (error) {
+        UIErrorHandler.handleLayoutError('l\'import', 'du fichier', error);
+      }
+    };
+    
+    reader.readAsText(file);
+  }
+
+  private async handleFileContent(jsonContent: string): Promise<void> {
+    const importedLayout = JSON.parse(jsonContent) as LayoutFile;
+    
+    // Valider le layout
+    const validation = this.validator.validateLayout(importedLayout);
+    if (!validation.isValid) {
+      UIErrorHandler.handleValidationError(validation.errors);
+      return;
+    }
+
+    // Créer et sauvegarder le layout final
+    const finalLayout = await this.prepareFinalLayout(importedLayout);
+    await this.layoutRepo.saveLayout(finalLayout);
+    
+    UIErrorHandler.showSuccess(`Layout "${finalLayout.name}" importé avec succès`);
+    this.refreshLayoutList();
+  }
+
+  private async prepareFinalLayout(importedLayout: LayoutFile): Promise<LayoutFile> {
+    const uniqueName = await this.layoutRepo.generateUniqueName(importedLayout.name);
+    
+    return {
+      ...importedLayout,
+      name: uniqueName,
+      boxes: importedLayout.boxes.map(box => ({
+        ...box,
+        id: generateBoxId()
+      }))
+    };
   }
 }
 
