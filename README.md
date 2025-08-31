@@ -54,6 +54,13 @@ agile-board: eisenhower
 ---
 ```
 
+**Layouts disponibles** (fournis par défaut) :
+
+* `eisenhower` : Matrice 4 quadrants important/urgent
+* `swot` : Analyser une situation
+* `moscow` : Prioriser les fonctionnalités ou besoins (Must/Should/Could/Won't)
+* `effort_impact` : Décider quelles actions mener selon leur efficacité
+* `cornell` : Prise de notes active
 L'icône 🏢 apparaît dans la toolbar. Cliquez pour basculer en mode Board.
 
 ### Édition
@@ -62,18 +69,6 @@ L'icône 🏢 apparaît dans la toolbar. Cliquez pour basculer en mode Board.
 * **Listes intelligentes** : Listes à puces et listes numérotées
 * **Cases à cocher** : Clic pour cocher/décocher, sync automatique
 * **Requêtes** : Query, Dataview, Tasks
-
-***
-
-## 🔧 Configuration
-
-**Layouts disponibles** (fournis par défaut) :
-
-* `eisenhower` : Matrice 4 quadrants important/urgent
-* `swot` : Analyser une situation
-* `moscow` : Prioriser les fonctionnalités ou besoins (Must/Should/Could/Won't)
-* `effort_impact` : Décider quelles actions mener selon leur efficacité
-* `cornell` : Prise de notes active
 
 ***
 
