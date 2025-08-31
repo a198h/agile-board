@@ -32,7 +32,12 @@ Basculez entre les modes via les icônes dans la toolbar.
 
 ## 🚀 Installation
 
-1. Dézippez `Agile-Board-vxx.xx.xx.zip`
+### Option 1 - Coffre complet (recommandé)
+1. Téléchargez `Agile-Board-v0.7.0.zip` (coffre Obsidian avec plugin et exemples)
+2. Dézippez et ouvrez directement le dossier dans Obsidian
+
+### Option 2 - Plugin seul
+1. Téléchargez depuis les [releases GitHub](https://github.com/a198h/agile-board/releases)
 2. Copiez le dossier `agile-board` dans `.obsidian/plugins/`
 3. Redémarrez Obsidian et activez le plugin
 
