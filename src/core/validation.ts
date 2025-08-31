@@ -177,13 +177,13 @@ export class ValidationUtils {
 
     const name = modelName as string;
     
-    // Vérifier les caractères autorisés (alphanumériques, tirets, underscores)
-    if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
+    // Vérifier les caractères autorisés (alphanumériques, espaces, tirets, underscores)
+    if (!/^[a-zA-Z0-9_\s-]+$/.test(name)) {
       return {
         isValid: false,
         error: {
           type: 'VALIDATION_ERROR',
-          errors: ['Le nom du modèle ne peut contenir que des lettres, chiffres, tirets et underscores']
+          errors: ['Le nom du modèle ne peut contenir que des lettres, chiffres, espaces, tirets et underscores']
         }
       };
     }

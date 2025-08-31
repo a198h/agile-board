@@ -104,17 +104,18 @@ export class LayoutEditor extends Modal {
     this.modalEl.style.maxHeight = '90vh'; // Limite pour éviter le débordement
     this.modalEl.style.minHeight = 'auto'; // Pas de hauteur minimale forcée
 
-    // Zone de grille optimisée pour un carré
+    // Zone de grille avec marges pour éviter le débordement
     const gridWrapper = mainContainer.createDiv('grid-wrapper');
     gridWrapper.style.position = 'absolute';
     gridWrapper.style.left = '0';
     gridWrapper.style.top = '0';
     gridWrapper.style.width = '650px'; // Largeur fixe pour avoir un carré parfait
     gridWrapper.style.height = '650px'; // Hauteur fixe pour avoir un carré parfait
-    gridWrapper.style.overflow = 'hidden';
+    gridWrapper.style.overflow = 'visible'; // Permet aux ombres d'être visibles
     gridWrapper.style.border = '1px solid var(--background-modifier-border)';
     gridWrapper.style.borderRadius = '4px';
     gridWrapper.style.backgroundColor = 'var(--background-secondary)';
+    gridWrapper.style.paddingRight = '8px'; // Marge à droite uniquement pour éviter le débordement
 
     this.gridContainer = gridWrapper.createDiv('layout-grid');
     this.setupGrid();
@@ -138,46 +139,38 @@ export class LayoutEditor extends Modal {
   }
 
   private setupGrid(): void {
-    // GRILLE ADAPTIVE : calculer la taille depuis l'espace disponible
+    // GRILLE FIXE : utiliser exactement tout l'espace disponible
     this.gridContainer.style.position = 'absolute';
     this.gridContainer.style.top = '0';
     this.gridContainer.style.left = '0';
     this.gridContainer.style.right = '0';
     this.gridContainer.style.bottom = '0';
     this.gridContainer.style.cursor = 'crosshair';
-    this.gridContainer.style.paddingTop = '25px'; // Espace pour les numéros
-    this.gridContainer.style.paddingLeft = '25px'; // Espace pour les numéros
+    this.gridContainer.style.paddingTop = '18px'; // Espace réduit pour les numéros
+    this.gridContainer.style.paddingLeft = '18px'; // Espace réduit pour les numéros
     this.gridContainer.style.boxSizing = 'border-box';
     
-    // Calculer la taille des cellules depuis l'espace disponible
-    setTimeout(() => {
-      const containerRect = this.gridContainer.getBoundingClientRect();
-      const availableWidth = containerRect.width - 25; // Soustraire le padding
-      const availableHeight = containerRect.height - 25; // Soustraire le padding
-      
-      // Prendre la plus petite dimension pour avoir un carré parfait
-      const availableSpace = Math.min(availableWidth, availableHeight);
-      this.cellSize = Math.floor(availableSpace / this.GRID_SIZE);
-      
-      // Créer la grille avec la taille calculée
-      this.createAdaptiveGrid();
-    }, 0);
+    // Taille fixe : 650px - 18px padding - 8px marge droite = 624px disponibles pour 24 cellules
+    const availableSpace = 624;
+    this.cellSize = availableSpace / this.GRID_SIZE; // 624/24 = 26px par cellule exactement
+    
+    // Créer la grille immédiatement
+    this.createFixedGrid();
   }
   
-  private createAdaptiveGrid(): void {
-    // Grille interne avec dimensions calculées
+  private createFixedGrid(): void {
+    // Grille interne avec dimensions ajustées pour les marges
     const gridInner = this.gridContainer.createDiv('grid-inner');
     gridInner.style.position = 'relative';
-    const gridSize = this.cellSize * this.GRID_SIZE;
-    gridInner.style.width = `${gridSize}px`; 
-    gridInner.style.height = `${gridSize}px`;  
+    gridInner.style.width = '624px'; // 650px - 18px padding - 8px marge droite
+    gridInner.style.height = '632px'; // 650px - 18px padding 
     gridInner.style.backgroundColor = 'var(--background-secondary)';
     gridInner.style.border = '1px solid var(--background-modifier-border)';
     
-    // Dessiner la grille avec la nouvelle taille de cellules
+    // Dessiner la grille avec la taille fixe
     this.drawGridLines(gridInner);
     
-    // Ajouter les numéros avec la nouvelle taille
+    // Ajouter les numéros avec la taille fixe
     this.addGridNumbers();
     
     // Stocker la référence
@@ -221,7 +214,7 @@ export class LayoutEditor extends Modal {
       const label = this.gridContainer.createDiv('grid-number-col');
       label.textContent = (i + 1).toString();
       label.style.position = 'absolute';
-      label.style.left = `${25 + i * this.cellSize + this.cellSize / 2 - 6}px`;
+      label.style.left = `${18 + i * this.cellSize + this.cellSize / 2 - 6}px`;
       label.style.top = '2px';
       label.style.fontSize = '10px';
       label.style.color = 'var(--text-accent)';
@@ -237,7 +230,7 @@ export class LayoutEditor extends Modal {
       label.textContent = (i + 1).toString();
       label.style.position = 'absolute';
       label.style.left = '2px';
-      label.style.top = `${25 + i * this.cellSize + this.cellSize / 2 - 6}px`;
+      label.style.top = `${18 + i * this.cellSize + this.cellSize / 2 - 6}px`;
       label.style.fontSize = '10px';
       label.style.color = 'var(--text-accent)';
       label.style.fontWeight = '600';
@@ -396,9 +389,9 @@ export class LayoutEditor extends Modal {
     deleteButton.textContent = '🗑️ Supprimer la box';
     deleteButton.style.width = '100%';
     deleteButton.style.padding = '8px 12px';
-    deleteButton.style.backgroundColor = 'var(--background-modifier-error)';
-    deleteButton.style.color = 'var(--text-error)';
-    deleteButton.style.border = '1px solid var(--background-modifier-error-hover)';
+    deleteButton.style.backgroundColor = '#fee2e2';
+    deleteButton.style.color = '#dc2626';
+    deleteButton.style.border = '1px solid #fca5a5';
     deleteButton.style.borderRadius = '4px';
     deleteButton.style.cursor = 'pointer';
     deleteButton.style.fontSize = '13px';
@@ -483,45 +476,42 @@ export class LayoutEditor extends Modal {
   private createBoxElement(box: LayoutBox): BoxState {
     const element = this.gridInner.createDiv('layout-box');
     
-    // Positionnement absolu simple en pixels - PARFAITEMENT ALIGNÉ
+    // Positionnement avec espacement moderne (gap de 4px)
     element.style.position = 'absolute';
-    element.style.left = `${box.x * this.cellSize}px`;
-    element.style.top = `${box.y * this.cellSize}px`;
-    element.style.width = `${box.w * this.cellSize}px`;
-    element.style.height = `${box.h * this.cellSize}px`;
+    element.style.left = `${box.x * this.cellSize + 2}px`;
+    element.style.top = `${box.y * this.cellSize + 2}px`;
+    element.style.width = `${box.w * this.cellSize - 4}px`;
+    element.style.height = `${box.h * this.cellSize - 4}px`;
     element.style.zIndex = '10'; // Au-dessus des lignes de grille
     
-    // Sauvegarder l'ID et les dimensions dans les data attributes
+    // Sauvegarder l'ID, dimensions et position dans les data attributes
     element.dataset.boxId = box.id;
     element.dataset.width = box.w.toString();
     element.dataset.height = box.h.toString();
-    // Système de couleurs aléatoires mais cohérentes
-    const colors = [
-      { bg: '#6366f1', border: '#4f46e5' }, // Indigo
-      { bg: '#8b5cf6', border: '#7c3aed' }, // Violet
-      { bg: '#06b6d4', border: '#0891b2' }, // Cyan
-      { bg: '#10b981', border: '#059669' }, // Emerald
-      { bg: '#f59e0b', border: '#d97706' }, // Amber
-      { bg: '#ef4444', border: '#dc2626' }, // Red
-      { bg: '#ec4899', border: '#db2777' }, // Pink
-      { bg: '#84cc16', border: '#65a30d' }  // Lime
-    ];
-    const colorIndex = Math.abs(box.id.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % colors.length;
-    const color = colors[colorIndex];
+    element.dataset.boxX = box.x.toString();
+    element.dataset.boxY = box.y.toString();
+    // Attribution séquentielle simple : ordre de création des boxes
+    const boxIndex = this.layout.boxes.findIndex(b => b.id === box.id);
+    const colorIndex = boxIndex % 12; // 12 couleurs disponibles dans le CSS
     
-    element.style.backgroundColor = color.bg;
-    element.style.border = `2px solid ${color.border}`;
-    element.style.borderRadius = '6px';
+    // Utiliser les variables CSS pour les couleurs (personnalisables par l'utilisateur)
+    const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-color-${colorIndex}`).trim();
+    const borderColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-border-${colorIndex}`).trim();
+    
+    element.style.backgroundColor = bgColor;
+    element.style.border = `1px solid ${borderColor}`;
+    element.style.borderRadius = '12px';
     element.style.cursor = 'move';
     element.style.display = 'flex';
     element.style.flexDirection = 'column';
     element.style.alignItems = 'center';
     element.style.justifyContent = 'center';
     element.style.overflow = 'hidden';
-    element.style.opacity = '0.9';
+    element.style.opacity = '0.95';
     element.style.transition = 'all 0.2s ease';
-    element.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-    element.style.boxSizing = 'border-box'; // Inclure les bordures dans les dimensions
+    element.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08)';
+    element.style.boxSizing = 'border-box';
+    element.style.background = `linear-gradient(135deg, ${bgColor}f0, ${bgColor}e0)`;
 
     // Titre
     const title = element.createDiv('box-title');
@@ -561,20 +551,7 @@ export class LayoutEditor extends Modal {
       this.selectBox(boxState);
     });
     
-    // Effet hover
-    element.addEventListener('mouseenter', () => {
-      element.style.opacity = '1';
-      element.style.transform = 'scale(1.02)';
-      element.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
-    });
-    
-    element.addEventListener('mouseleave', () => {
-      if (!boxState.isSelected) {
-        element.style.opacity = '0.9';
-        element.style.transform = 'scale(1)';
-        element.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-      }
-    });
+    // Pas d'effet hover pour éviter la perte de focus pendant le redimensionnement
 
     this.boxes.set(box.id, boxState);
     return boxState;
@@ -668,9 +645,10 @@ export class LayoutEditor extends Modal {
     // Clic sur la grille pour créer une nouvelle box
     this.gridInner.addEventListener('mousedown', (e) => this.onGridMouseDown(e));
     
-    // Désélection en cliquant ailleurs
+    // Désélection en cliquant ailleurs (mais pas dans le sidebar)
     document.addEventListener('click', (e) => {
-      if (!this.gridContainer.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (!this.gridContainer.contains(target) && !this.sidebar.contains(target)) {
         this.deselectAll();
       }
     });
@@ -797,9 +775,9 @@ export class LayoutEditor extends Modal {
     const relativeX = screenX - rect.left;
     const relativeY = screenY - rect.top;
     
-    // Calcul simple avec les pixels fixes - chaque cellule fait exactement CELL_SIZE pixels
-    const gridX = Math.floor(relativeX / this.cellSize);
-    const gridY = Math.floor(relativeY / this.cellSize);
+    // Calcul précis avec la taille de grille fixe de 624px pour 24 cellules
+    const gridX = Math.floor((relativeX * this.GRID_SIZE) / 624);
+    const gridY = Math.floor((relativeY * this.GRID_SIZE) / 624);
     
     if (gridX < 0 || gridX >= this.GRID_SIZE || gridY < 0 || gridY >= this.GRID_SIZE) {
       return null;
@@ -813,7 +791,8 @@ export class LayoutEditor extends Modal {
     
     boxState.isSelected = true;
     boxState.element.style.opacity = '1';
-    boxState.element.style.boxShadow = '0 0 0 2px var(--interactive-accent-hover)';
+    boxState.element.style.boxShadow = '0 4px 16px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.08), 0 0 0 2px var(--interactive-accent)';
+    boxState.element.style.transform = 'translateZ(0)';
     
     // Afficher les poignées de redimensionnement
     const handles = boxState.element.querySelectorAll('.resize-handle') as NodeListOf<HTMLElement>;
@@ -828,8 +807,9 @@ export class LayoutEditor extends Modal {
   private deselectAll(): void {
     this.boxes.forEach(boxState => {
       boxState.isSelected = false;
-      boxState.element.style.opacity = '0.8';
-      boxState.element.style.boxShadow = 'none';
+      boxState.element.style.opacity = '0.95';
+      boxState.element.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08)';
+      boxState.element.style.transform = 'translateZ(0) scale(1)';
       
       const handles = boxState.element.querySelectorAll('.resize-handle') as NodeListOf<HTMLElement>;
       handles.forEach(handle => {
@@ -881,6 +861,11 @@ export class LayoutEditor extends Modal {
     titleInput.addEventListener('input', (e) => {
       const newTitle = (e.target as HTMLInputElement).value;
       this.updateBoxTitle(this.selectedBox!.box.id, newTitle);
+    });
+    
+    // Empêcher la désélection quand on clique sur l'input
+    titleInput.addEventListener('click', (e) => {
+      e.stopPropagation();
     });
   }
 
@@ -967,24 +952,32 @@ export class LayoutEditor extends Modal {
   }
 
   private handleMoveDrag(deltaX: number, deltaY: number): void {
-    if (!this.selectedBox) return;
+    if (!this.selectedBox || !this.originalBoxState) return;
 
-    const box = this.selectedBox.box;
-    const newX = Math.max(0, Math.min(this.GRID_SIZE - box.w, box.x + deltaX));
-    const newY = Math.max(0, Math.min(this.GRID_SIZE - box.h, box.y + deltaY));
+    const originalBox = this.originalBoxState;
+    const newX = Math.max(0, Math.min(this.GRID_SIZE - originalBox.w, originalBox.x + deltaX));
+    const newY = Math.max(0, Math.min(this.GRID_SIZE - originalBox.h, originalBox.y + deltaY));
 
-    const movedBox = { ...box, x: newX, y: newY };
+    // Optimisation : ne valider que si la position grille a changé
+    const currentBox = this.selectedBox.box;
+    if (newX === currentBox.x && newY === currentBox.y) {
+      return; // Pas de changement, pas besoin de valider
+    }
+
+    const movedBox = { ...originalBox, x: newX, y: newY };
     
     const collisionResult = this.validator.wouldCollide(
       movedBox, 
       this.layout.boxes, 
-      box.id
+      originalBox.id
     );
 
-    const hasCollisions = collisionResult.hasCollisions;
-    this.updateBoxPosition(this.selectedBox.element, newX, newY, hasCollisions);
-    
-    this.selectedBox.box = movedBox;
+    // Si collision, ne pas bouger la box - garder la position précédente
+    if (!collisionResult.hasCollisions) {
+      this.updateBoxPosition(this.selectedBox.element, newX, newY, false);
+      this.selectedBox.box = movedBox;
+    }
+    // Si collision, on ne fait rien - la box reste à sa position précédente
   }
 
   private handleResizeDrag(deltaX: number, deltaY: number): void {
@@ -1082,16 +1075,17 @@ export class LayoutEditor extends Modal {
   private finishCreateDrag(): void {
     if (!this.previewBox) return;
 
-    // Récupérer les valeurs CSS Grid de la preview box
-    const gridColumnStart = parseInt(this.previewBox.style.gridColumnStart) - 1; // Convertir en 0-indexé
-    const gridColumnEnd = parseInt(this.previewBox.style.gridColumnEnd) - 1;
-    const gridRowStart = parseInt(this.previewBox.style.gridRowStart) - 1;
-    const gridRowEnd = parseInt(this.previewBox.style.gridRowEnd) - 1;
+    // Récupérer les valeurs en pixels de la preview box
+    const left = parseInt(this.previewBox.style.left);
+    const top = parseInt(this.previewBox.style.top);
+    const width = parseInt(this.previewBox.style.width);
+    const height = parseInt(this.previewBox.style.height);
     
-    const gridX = gridColumnStart;
-    const gridY = gridRowStart;
-    const gridW = gridColumnEnd - gridColumnStart;
-    const gridH = gridRowEnd - gridRowStart;
+    // Convertir en coordonnées de grille
+    const gridX = Math.round((left - 2) / this.cellSize); // -2 pour compenser l'espacement
+    const gridY = Math.round((top - 2) / this.cellSize);
+    const gridW = Math.round((width + 4) / this.cellSize); // +4 pour compenser l'espacement
+    const gridH = Math.round((height + 4) / this.cellSize);
 
     if (gridW >= 1 && gridH >= 1) {
       const newBox: LayoutBox = {
@@ -1130,17 +1124,14 @@ export class LayoutEditor extends Modal {
       box.id
     );
 
-    if (collisionResult.hasCollisions) {
-      this.revertBoxToOriginalPosition();
-    } else {
-      this.layout = {
-        ...this.layout,
-        boxes: this.layout.boxes.map(b => 
-          b.id === box.id ? box : b
-        )
-      };
-      this.updateBoxPosition(this.selectedBox.element, box.x, box.y, false);
-    }
+    // Toujours sauvegarder la position finale (même en cas de collision bloquée)
+    this.layout = {
+      ...this.layout,
+      boxes: this.layout.boxes.map(b => 
+        b.id === box.id ? box : b
+      )
+    };
+    this.updateBoxPosition(this.selectedBox.element, box.x, box.y, false);
 
     this.selectedBox.isDragging = false;
   }
@@ -1216,7 +1207,9 @@ export class LayoutEditor extends Modal {
   // Helpers
 
   private generateBoxId(): string {
-    return `box-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+    // Nettoyer le nom du layout pour l'ID (supprimer espaces et caractères spéciaux)
+    const cleanName = this.layout.name.replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '');
+    return `${cleanName}-box-${this.layout.boxes.length + 1}`;
   }
 
   private createPreviewBox(): HTMLElement {
@@ -1234,72 +1227,66 @@ export class LayoutEditor extends Modal {
   private updatePreviewBox(x: number, y: number, w: number, h: number): void {
     if (!this.previewBox) return;
     
-    // Positionnement simple en pixels pour la preview
-    this.previewBox.style.left = `${x * this.cellSize}px`;
-    this.previewBox.style.top = `${y * this.cellSize}px`;
-    this.previewBox.style.width = `${w * this.cellSize}px`;
-    this.previewBox.style.height = `${h * this.cellSize}px`;
+    // Positionnement avec espacement pour la preview
+    this.previewBox.style.left = `${x * this.cellSize + 2}px`;
+    this.previewBox.style.top = `${y * this.cellSize + 2}px`;
+    this.previewBox.style.width = `${w * this.cellSize - 4}px`;
+    this.previewBox.style.height = `${h * this.cellSize - 4}px`;
   }
 
   private updateBoxPosition(element: HTMLElement, x: number, y: number, hasCollision: boolean): void {
-    // Positionnement simple en pixels
-    element.style.left = `${x * this.cellSize}px`;
-    element.style.top = `${y * this.cellSize}px`;
+    // Positionnement avec espacement moderne
+    element.style.left = `${x * this.cellSize + 2}px`;
+    element.style.top = `${y * this.cellSize + 2}px`;
     
     if (hasCollision) {
       element.style.backgroundColor = 'var(--background-modifier-error)';
       element.style.borderColor = 'var(--text-error)';
     } else {
-      // Restaurer la couleur d'origine basée sur l'ID
-      const colors = [
-        { bg: '#6366f1', border: '#4f46e5' }, // Indigo
-        { bg: '#8b5cf6', border: '#7c3aed' }, // Violet
-        { bg: '#06b6d4', border: '#0891b2' }, // Cyan
-        { bg: '#10b981', border: '#059669' }, // Emerald
-        { bg: '#f59e0b', border: '#d97706' }, // Amber
-        { bg: '#ef4444', border: '#dc2626' }, // Red
-        { bg: '#ec4899', border: '#db2777' }, // Pink
-        { bg: '#84cc16', border: '#65a30d' }  // Lime
-      ];
+      // Restaurer la couleur d'origine depuis les variables CSS
       const boxId = element.dataset.boxId || '';
-      const colorIndex = Math.abs(boxId.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % colors.length;
-      const color = colors[colorIndex];
-      element.style.backgroundColor = color.bg;
-      element.style.borderColor = color.border;
+      // Attribution séquentielle cohérente
+      const boxIndex = this.layout.boxes.findIndex(b => b.id === boxId);
+      const colorIndex = boxIndex % 12; // 12 couleurs disponibles dans le CSS
+      
+      // Utiliser les variables CSS pour les couleurs
+      const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-color-${colorIndex}`).trim();
+      const borderColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-border-${colorIndex}`).trim();
+      
+      element.style.backgroundColor = bgColor;
+      element.style.borderColor = borderColor;
     }
   }
 
   private updateBoxSizeAndPosition(element: HTMLElement, x: number, y: number, w: number, h: number, hasCollision: boolean): void {
-    // Positionnement et taille simples en pixels
-    element.style.left = `${x * this.cellSize}px`;
-    element.style.top = `${y * this.cellSize}px`;
-    element.style.width = `${w * this.cellSize}px`;
-    element.style.height = `${h * this.cellSize}px`;
+    // Positionnement et taille avec espacement moderne
+    element.style.left = `${x * this.cellSize + 2}px`;
+    element.style.top = `${y * this.cellSize + 2}px`;
+    element.style.width = `${w * this.cellSize - 4}px`;
+    element.style.height = `${h * this.cellSize - 4}px`;
     
-    // Sauvegarder les dimensions dans les data attributes
+    // Sauvegarder les dimensions et position dans les data attributes
     element.dataset.width = w.toString();
     element.dataset.height = h.toString();
+    element.dataset.boxX = x.toString();
+    element.dataset.boxY = y.toString();
     
     if (hasCollision) {
       element.style.backgroundColor = 'var(--background-modifier-error)';
       element.style.borderColor = 'var(--text-error)';
     } else {
-      // Restaurer la couleur d'origine basée sur l'ID
-      const colors = [
-        { bg: '#6366f1', border: '#4f46e5' }, // Indigo
-        { bg: '#8b5cf6', border: '#7c3aed' }, // Violet
-        { bg: '#06b6d4', border: '#0891b2' }, // Cyan
-        { bg: '#10b981', border: '#059669' }, // Emerald
-        { bg: '#f59e0b', border: '#d97706' }, // Amber
-        { bg: '#ef4444', border: '#dc2626' }, // Red
-        { bg: '#ec4899', border: '#db2777' }, // Pink
-        { bg: '#84cc16', border: '#65a30d' }  // Lime
-      ];
+      // Restaurer la couleur d'origine depuis les variables CSS
       const boxId = element.dataset.boxId || '';
-      const colorIndex = Math.abs(boxId.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % colors.length;
-      const color = colors[colorIndex];
-      element.style.backgroundColor = color.bg;
-      element.style.borderColor = color.border;
+      // Attribution séquentielle cohérente
+      const boxIndex = this.layout.boxes.findIndex(b => b.id === boxId);
+      const colorIndex = boxIndex % 12; // 12 couleurs disponibles dans le CSS
+      
+      // Utiliser les variables CSS pour les couleurs
+      const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-color-${colorIndex}`).trim();
+      const borderColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-border-${colorIndex}`).trim();
+      
+      element.style.backgroundColor = bgColor;
+      element.style.borderColor = borderColor;
     }
   }
 
@@ -1351,6 +1338,47 @@ export class LayoutEditor extends Modal {
     if (this.resizePreview) {
       this.resizePreview.style.display = 'none';
     }
+  }
+
+  private findBestPosition(targetBox: LayoutBox, originalBox: LayoutBox): { x: number; y: number } | null {
+    // Essayer de placer la box au plus près de sa position cible
+    const deltaX = targetBox.x - originalBox.x;
+    const deltaY = targetBox.y - originalBox.y;
+    
+    // Déterminer la direction principale du mouvement
+    const primaryDirection = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+    
+    // Essayer différentes positions en se rapprochant de la cible
+    for (let distance = 0; distance < this.GRID_SIZE; distance++) {
+      // Essayer dans la direction principale d'abord
+      if (primaryDirection === 'horizontal') {
+        // Mouvement horizontal
+        const xStep = deltaX > 0 ? 1 : -1;
+        for (let i = 0; i <= distance; i++) {
+          const testX = Math.max(0, Math.min(this.GRID_SIZE - targetBox.w, originalBox.x + (xStep * i)));
+          const testY = Math.max(0, Math.min(this.GRID_SIZE - targetBox.h, originalBox.y + (deltaY > 0 ? distance - i : -(distance - i))));
+          
+          const testBox = { ...targetBox, x: testX, y: testY };
+          if (!this.validator.wouldCollide(testBox, this.layout.boxes, targetBox.id).hasCollisions) {
+            return { x: testX, y: testY };
+          }
+        }
+      } else {
+        // Mouvement vertical
+        const yStep = deltaY > 0 ? 1 : -1;
+        for (let i = 0; i <= distance; i++) {
+          const testY = Math.max(0, Math.min(this.GRID_SIZE - targetBox.h, originalBox.y + (yStep * i)));
+          const testX = Math.max(0, Math.min(this.GRID_SIZE - targetBox.w, originalBox.x + (deltaX > 0 ? distance - i : -(distance - i))));
+          
+          const testBox = { ...targetBox, x: testX, y: testY };
+          if (!this.validator.wouldCollide(testBox, this.layout.boxes, targetBox.id).hasCollisions) {
+            return { x: testX, y: testY };
+          }
+        }
+      }
+    }
+    
+    return null; // Aucune position valide trouvée
   }
 
   private cleanup(): void {

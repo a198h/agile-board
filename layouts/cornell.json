@@ -1,9 +1,8 @@
 {
   "name": "cornell",
-  "version": 1,
   "boxes": [
     {
-      "id": "box-1756023151531-aysxq9pnk",
+      "id": "cornell-box-1",
       "title": "Questions",
       "x": 0,
       "y": 0,
@@ -11,7 +10,7 @@
       "h": 16
     },
     {
-      "id": "box-1756023151531-sm2y4x6rv",
+      "id": "cornell-box-2",
       "title": "Notes (Infos principales)",
       "x": 8,
       "y": 0,
@@ -19,7 +18,7 @@
       "h": 16
     },
     {
-      "id": "box-1756023151531-hfp4pzwac",
+      "id": "cornell-box-3",
       "title": "Résumé",
       "x": 0,
       "y": 16,

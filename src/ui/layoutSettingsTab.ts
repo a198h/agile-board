@@ -143,14 +143,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
     const nameContainer = item.createDiv('layout-name');
     nameContainer.createSpan({ text: layout.name, cls: 'layout-name-text' });
     
-    const versionSpan = nameContainer.createSpan({ 
-      text: `v${layout.version.toFixed(1)}`, 
-      cls: 'layout-version' 
-    });
-    versionSpan.style.marginLeft = '10px';
-    versionSpan.style.fontSize = '12px';
-    versionSpan.style.color = 'var(--text-muted)';
-    versionSpan.style.fontWeight = 'normal';
+    // Version supprimée du système
 
     // Nombre de boxes
     const boxCount = item.createSpan({ 
@@ -203,8 +196,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
       try {
         let newLayout: LayoutFile = {
           name: name.trim(),
-          version: 1,
-          boxes: []
+            boxes: []
         };
 
         const uniqueName = await this.layoutRepo.generateUniqueName(newLayout.name);

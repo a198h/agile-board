@@ -1,9 +1,8 @@
 {
   "name": "effort_impact",
-  "version": 1,
   "boxes": [
     {
-      "id": "box-1756023151530-xs1qhsv6z",
+      "id": "effort_impact-box-1",
       "title": "Impact élevé / Effort bas",
       "x": 0,
       "y": 0,
@@ -11,7 +10,7 @@
       "h": 12
     },
     {
-      "id": "box-1756023151530-mrwutbcbe",
+      "id": "effort_impact-box-2",
       "title": "Impact faible / Effort bas",
       "x": 12,
       "y": 0,
@@ -19,7 +18,7 @@
       "h": 12
     },
     {
-      "id": "box-1756023151530-t5dk86yzc",
+      "id": "effort_impact-box-3",
       "title": "Impact élevé / Effort élevé",
       "x": 0,
       "y": 12,
@@ -27,7 +26,7 @@
       "h": 12
     },
     {
-      "id": "box-1756023151530-nublzn380",
+      "id": "effort_impact-box-4",
       "title": "Impact faible / Effort élevé",
       "x": 12,
       "y": 12,

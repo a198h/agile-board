@@ -1,9 +1,8 @@
 {
   "name": "eisenhower",
-  "version": 1,
   "boxes": [
     {
-      "id": "box-1756023151527-fdidg1i6g",
+      "id": "eisenhower-box-1",
       "title": "Urgent et Important",
       "x": 0,
       "y": 0,
@@ -11,7 +10,7 @@
       "h": 12
     },
     {
-      "id": "box-1756023151527-h4mjge3vz",
+      "id": "eisenhower-box-2",
       "title": "Important mais Pas Urgent",
       "x": 12,
       "y": 0,
@@ -19,7 +18,7 @@
       "h": 12
     },
     {
-      "id": "box-1756023151527-ia4fbajlh",
+      "id": "eisenhower-box-3",
       "title": "Urgent mais Pas important",
       "x": 0,
       "y": 12,
@@ -27,7 +26,7 @@
       "h": 12
     },
     {
-      "id": "box-1756023151527-86wx8iz6s",
+      "id": "eisenhower-box-4",
       "title": "Ni urgent ni important",
       "x": 12,
       "y": 12,

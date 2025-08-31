@@ -76,6 +76,34 @@
   white-space: pre-wrap;
 }
 
+/* === Couleurs de l'éditeur de layout === */
+:root {
+  --agile-board-color-0: #8b94a3;
+  --agile-board-border-0: #6b7280;
+  --agile-board-color-1: #a78bfa;
+  --agile-board-border-1: #8b5cf6;
+  --agile-board-color-2: #60a5fa;
+  --agile-board-border-2: #3b82f6;
+  --agile-board-color-3: #34d399;
+  --agile-board-border-3: #10b981;
+  --agile-board-color-4: #fbbf24;
+  --agile-board-border-4: #f59e0b;
+  --agile-board-color-5: #fb7185;
+  --agile-board-border-5: #f43f5e;
+  --agile-board-color-6: #c084fc;
+  --agile-board-border-6: #a855f7;
+  --agile-board-color-7: #4ade80;
+  --agile-board-border-7: #22c55e;
+  --agile-board-color-8: #f472b6;
+  --agile-board-border-8: #ec4899;
+  --agile-board-color-9: #38bdf8;
+  --agile-board-border-9: #0ea5e9;
+  --agile-board-color-10: #a3a3a3;
+  --agile-board-border-10: #737373;
+  --agile-board-color-11: #facc15;
+  --agile-board-border-11: #eab308;
+}
+
 /* === Message d'erreur === */
 .agile-board-error button {
   margin-top: 1em;

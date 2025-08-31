@@ -1,9 +1,8 @@
 {
   "name": "swot",
-  "version": 1,
   "boxes": [
     {
-      "id": "box-1756023151528-istql1c6k",
+      "id": "swot-box-1",
       "title": "Forces",
       "x": 0,
       "y": 0,
@@ -11,7 +10,7 @@
       "h": 12
     },
     {
-      "id": "box-1756023151529-27qnantlw",
+      "id": "swot-box-2",
       "title": "Faiblesses",
       "x": 12,
       "y": 0,
@@ -19,7 +18,7 @@
       "h": 12
     },
     {
-      "id": "box-1756023151529-w844gjcib",
+      "id": "swot-box-3",
       "title": "Opportunités",
       "x": 0,
       "y": 12,
@@ -27,7 +26,7 @@
       "h": 12
     },
     {
-      "id": "box-1756023151529-usnbdnmn0",
+      "id": "swot-box-4",
       "title": "Menaces",
       "x": 12,
       "y": 12,

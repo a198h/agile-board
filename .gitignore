@@ -22,3 +22,4 @@ data.json
 .DS_Store
 CLAUDE.md
 .obsidian/workspace.json
+layouts/today.json

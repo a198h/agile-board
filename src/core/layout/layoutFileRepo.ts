@@ -26,7 +26,6 @@ export interface LayoutBox {
  */
 export interface LayoutFile {
   readonly name: string;
-  readonly version: number;
   readonly boxes: readonly LayoutBox[];
 }
 
@@ -77,7 +76,13 @@ export class LayoutFileRepo {
    */
   public async loadLayout(name: string): Promise<LayoutFile | null> {
     try {
-      const filePath = this.getLayoutFilePath(name);
+      // Chercher le fichier correspondant (avec ou sans espaces)
+      const filePath = await this.findLayoutFile(name);
+      if (!filePath) {
+        this.logger.warn(`Fichier layout introuvable: ${name}`);
+        return null;
+      }
+      
       const content = await fs.readFile(filePath, 'utf-8');
       const layout = JSON.parse(content) as LayoutFile;
       
@@ -224,6 +229,44 @@ export class LayoutFileRepo {
     return path.join(basePath, ".obsidian", "plugins", pluginId, "layouts");
   }
 
+  private async findLayoutFile(name: string): Promise<string | null> {
+    try {
+      // D'abord essayer le nom exact
+      const exactPath = path.join(this.layoutsDir, `${name}.json`);
+      try {
+        await fs.access(exactPath);
+        return exactPath;
+      } catch {
+        // Le fichier avec le nom exact n'existe pas
+      }
+      
+      // Lister tous les fichiers et chercher par le contenu JSON
+      const files = await fs.readdir(this.layoutsDir);
+      for (const file of files) {
+        if (!file.endsWith('.json')) continue;
+        
+        try {
+          const filePath = path.join(this.layoutsDir, file);
+          const content = await fs.readFile(filePath, 'utf-8');
+          const layout = JSON.parse(content) as LayoutFile;
+          
+          // Correspondance par le nom dans le JSON
+          if (layout.name === name) {
+            return filePath;
+          }
+        } catch {
+          // Ignorer les fichiers JSON invalides
+          continue;
+        }
+      }
+      
+      return null;
+    } catch (error) {
+      this.logger.error(`Erreur lors de la recherche du layout ${name}`, error);
+      return null;
+    }
+  }
+
   private getLayoutFilePath(name: string): string {
     return path.join(this.layoutsDir, `${name}.json`);
   }
@@ -245,7 +288,6 @@ export class LayoutFileRepo {
     
     return (
       typeof l.name === 'string' &&
-      typeof l.version === 'number' &&
       Array.isArray(l.boxes) &&
       l.boxes.every((box: any) => this.isValidLayoutBox(box))
     );

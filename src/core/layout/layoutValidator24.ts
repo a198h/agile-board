@@ -45,9 +45,7 @@ export class LayoutValidator24 {
       errors.push('Le nom du layout est requis');
     }
 
-    if (layout.version !== 1) {
-      errors.push('Version de layout non supportée');
-    }
+    // Version supprimée - plus de validation de version nécessaire
 
     if (!Array.isArray(layout.boxes)) {
       errors.push('La liste des boxes est requise');
