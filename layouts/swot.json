@@ -1,0 +1,37 @@
+{
+  "name": "swot",
+  "boxes": [
+    {
+      "id": "swot-box-1",
+      "title": "Forces",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "id": "swot-box-2",
+      "title": "Faiblesses",
+      "x": 12,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "id": "swot-box-3",
+      "title": "Opportunités",
+      "x": 0,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "id": "swot-box-4",
+      "title": "Menaces",
+      "x": 12,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    }
+  ]
+}

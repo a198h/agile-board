@@ -13,6 +13,7 @@ import {
   PluginError 
 } from "../../types";
 import { LayoutValidator } from "./layoutValidator";
+import { LayoutFileRepo } from "./layoutFileRepo";
 import { ErrorHandler, ErrorSeverity } from "../errorHandler";
 import { createContextLogger } from "../logger";
 
@@ -22,15 +23,32 @@ import { createContextLogger } from "../logger";
  */
 export class LayoutLoader implements ILayoutLoader {
   private readonly validator = new LayoutValidator();
+  private readonly fileRepo = new LayoutFileRepo(this.plugin);
   private readonly logger = createContextLogger('LayoutLoader');
 
   constructor(private readonly plugin: Plugin) {}
 
   /**
-   * Charge tous les modèles de layout depuis layout.json.
+   * Charge tous les modèles de layout depuis layout.json et les fichiers individuels.
    * @returns Registry des modèles valides ou erreur
    */
   public async loadLayouts(): Promise<LayoutRegistry> {
+    const registry = new Map<string, LayoutModel>();
+
+    // 1. Charger les layouts du fichier layout.json (anciens layouts)
+    await this.loadLegacyLayouts(registry);
+
+    // 2. Charger les nouveaux layouts depuis les fichiers individuels
+    await this.loadIndividualLayouts(registry);
+
+    this.logger.info(`${registry.size} modèles chargés: ${Array.from(registry.keys()).join(', ')}`);
+    return registry as LayoutRegistry;
+  }
+
+  /**
+   * Charge les layouts depuis l'ancien fichier layout.json (rétrocompatibilité)
+   */
+  private async loadLegacyLayouts(registry: LayoutRegistry): Promise<void> {
     const layoutPath = this.getLayoutFilePath();
     
     try {
@@ -38,24 +56,55 @@ export class LayoutLoader implements ILayoutLoader {
       const parseResult = this.parseRawData(rawData);
       
       if (!parseResult.success) {
-        ErrorHandler.handleError(parseResult.error, 'LayoutLoader.parseLayoutFile');
-        return new Map();
+        this.logger.warn('Impossible de charger layout.json (peut être normal si migration effectuée)');
+        return;
       }
 
       const validatedModels = this.validateAllModels(parseResult.data);
       
-      this.logger.info(`Modèles validés: ${Array.from(validatedModels.keys()).join(', ')}`);
-      return validatedModels;
+      // Ajouter au registry avec le préfixe "legacy_"
+      validatedModels.forEach((model, name) => {
+        (registry as Map<string, LayoutModel>).set(`legacy_${name}`, model);
+      });
+      
+      this.logger.info(`${validatedModels.size} layouts legacy chargés`);
       
     } catch (error) {
-      const pluginError: PluginError = {
-        type: 'FILE_SYSTEM_ERROR',
-        error: error as Error,
-        filePath: 'layout.json',
-        operation: 'lecture'
-      };
-      ErrorHandler.handleError(pluginError, 'LayoutLoader.loadLayouts');
-      return new Map();
+      this.logger.warn('Fichier layout.json introuvable (peut être normal après migration)', error);
+    }
+  }
+
+  /**
+   * Charge les layouts depuis les fichiers individuels dans /layouts/
+   */
+  private async loadIndividualLayouts(registry: LayoutRegistry): Promise<void> {
+    try {
+      const layoutNames = await this.fileRepo.listLayouts();
+      
+      for (const name of layoutNames) {
+        try {
+          const layoutFile = await this.fileRepo.loadLayout(name);
+          
+          if (!layoutFile) continue;
+          
+          // Convertir le nouveau format vers l'ancien pour compatibilité (LayoutModel = readonly LayoutBlock[])
+          const legacyModel: LayoutModel = layoutFile.boxes.map(box => ({
+            title: box.title,
+            x: box.x,
+            y: box.y,
+            w: box.w,
+            h: box.h
+          })) as LayoutModel;
+
+          (registry as Map<string, LayoutModel>).set(layoutFile.name, legacyModel);
+        } catch (error) {
+          this.logger.warn(`Impossible de charger le layout "${name}"`, error);
+        }
+      }
+      
+      this.logger.info(`${layoutNames.length} layouts individuels traités`);
+    } catch (error) {
+      this.logger.warn('Erreur lors du chargement des layouts individuels', error);
     }
   }
 
