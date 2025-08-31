@@ -3,6 +3,7 @@
 import { Modal, App, ButtonComponent, Notice } from "obsidian";
 import { LayoutBox, LayoutFile } from "../core/layout/layoutFileRepo";
 import { LayoutValidator24 } from "../core/layout/layoutValidator24";
+import { GRID_CONSTANTS, UI_CONSTANTS, COLOR_CONSTANTS } from "../core/constants";
 
 /**
  * Interface pour les interactions avec l'éditeur
@@ -40,7 +41,7 @@ export class LayoutEditor extends Modal {
   private boxes: Map<string, BoxState> = new Map();
   
   // Constantes de grille
-  private readonly GRID_SIZE = 24;
+  private readonly GRID_SIZE = GRID_CONSTANTS.SIZE;
   
   // État du drag & drop
   private dragState: {
@@ -94,7 +95,7 @@ export class LayoutEditor extends Modal {
     // Container principal avec taille optimisée
     const mainContainer = this.contentEl.createDiv('layout-editor-container');
     mainContainer.style.position = 'relative';
-    mainContainer.style.height = '650px'; // Hauteur pour avoir une grille carrée
+    mainContainer.style.height = `${UI_CONSTANTS.EDITOR_HEIGHT_PX}px`; // Hauteur pour avoir une grille carrée
     mainContainer.style.marginBottom = '15px'; // Espace pour les boutons
     
     // Ajuster la taille de la modal pour être compacte - éliminer l'espace gris inutile
@@ -109,8 +110,8 @@ export class LayoutEditor extends Modal {
     gridWrapper.style.position = 'absolute';
     gridWrapper.style.left = '0';
     gridWrapper.style.top = '0';
-    gridWrapper.style.width = '650px'; // Largeur fixe pour avoir un carré parfait
-    gridWrapper.style.height = '650px'; // Hauteur fixe pour avoir un carré parfait
+    gridWrapper.style.width = `${UI_CONSTANTS.EDITOR_WIDTH_PX}px`; // Largeur fixe pour avoir un carré parfait
+    gridWrapper.style.height = `${UI_CONSTANTS.EDITOR_HEIGHT_PX}px`; // Hauteur fixe pour avoir un carré parfait
     gridWrapper.style.overflow = 'visible'; // Permet aux ombres d'être visibles
     gridWrapper.style.border = '1px solid var(--background-modifier-border)';
     gridWrapper.style.borderRadius = '4px';
@@ -123,7 +124,7 @@ export class LayoutEditor extends Modal {
     // Sidebar avec position absolue - ajustée pour le nouveau layout
     this.sidebar = mainContainer.createDiv('layout-sidebar');
     this.sidebar.style.position = 'absolute';
-    this.sidebar.style.left = '665px'; // Positionné après la grille (650px + 15px de marge)
+    this.sidebar.style.left = `${UI_CONSTANTS.EDITOR_WIDTH_PX + 15}px`; // Positionné après la grille + marge
     this.sidebar.style.top = '0';
     this.sidebar.style.bottom = '0';
     this.sidebar.style.width = '280px';
@@ -146,13 +147,13 @@ export class LayoutEditor extends Modal {
     this.gridContainer.style.right = '0';
     this.gridContainer.style.bottom = '0';
     this.gridContainer.style.cursor = 'crosshair';
-    this.gridContainer.style.paddingTop = '18px'; // Espace réduit pour les numéros
-    this.gridContainer.style.paddingLeft = '18px'; // Espace réduit pour les numéros
+    this.gridContainer.style.paddingTop = `${GRID_CONSTANTS.PADDING_PX}px`; // Espace réduit pour les numéros
+    this.gridContainer.style.paddingLeft = `${GRID_CONSTANTS.PADDING_PX}px`; // Espace réduit pour les numéros
     this.gridContainer.style.boxSizing = 'border-box';
     
-    // Taille fixe : 650px - 18px padding - 8px marge droite = 624px disponibles pour 24 cellules
-    const availableSpace = 624;
-    this.cellSize = availableSpace / this.GRID_SIZE; // 624/24 = 26px par cellule exactement
+    // Taille fixe calculée depuis les constantes
+    const availableSpace = GRID_CONSTANTS.TOTAL_WIDTH_PX;
+    this.cellSize = GRID_CONSTANTS.CELL_SIZE_PX; // Taille précalculée
     
     // Créer la grille immédiatement
     this.createFixedGrid();
@@ -162,8 +163,8 @@ export class LayoutEditor extends Modal {
     // Grille interne avec dimensions ajustées pour les marges
     const gridInner = this.gridContainer.createDiv('grid-inner');
     gridInner.style.position = 'relative';
-    gridInner.style.width = '624px'; // 650px - 18px padding - 8px marge droite
-    gridInner.style.height = '632px'; // 650px - 18px padding 
+    gridInner.style.width = `${GRID_CONSTANTS.TOTAL_WIDTH_PX}px`; // Largeur grille
+    gridInner.style.height = `${GRID_CONSTANTS.TOTAL_WIDTH_PX + 8}px`; // Hauteur grille + marge 
     gridInner.style.backgroundColor = 'var(--background-secondary)';
     gridInner.style.border = '1px solid var(--background-modifier-border)';
     
@@ -180,7 +181,7 @@ export class LayoutEditor extends Modal {
     this.renderLayout();
   }
 
-  private cellSize = 24; // Taille calculée dynamiquement selon l'espace disponible
+  private cellSize = GRID_CONSTANTS.CELL_SIZE_PX; // Taille des cellules
   
   private drawGridLines(gridInner: HTMLElement): void {
     // Dessiner les lignes verticales (colonnes)
@@ -260,7 +261,7 @@ export class LayoutEditor extends Modal {
       label.style.color = 'var(--text-accent)';
       label.style.fontWeight = '600';
       label.style.pointerEvents = 'none';
-      label.style.zIndex = '10';
+      label.style.zIndex = UI_CONSTANTS.Z_INDEX.SELECTED_BOX.toString();
       label.style.textAlign = 'center';
       label.style.minWidth = '12px';
     }
@@ -276,7 +277,7 @@ export class LayoutEditor extends Modal {
       label.style.color = 'var(--text-accent)';
       label.style.fontWeight = '600';
       label.style.pointerEvents = 'none';
-      label.style.zIndex = '10';
+      label.style.zIndex = UI_CONSTANTS.Z_INDEX.SELECTED_BOX.toString();
       label.style.textAlign = 'center';
       label.style.minWidth = '15px';
     }
@@ -482,7 +483,7 @@ export class LayoutEditor extends Modal {
     element.style.top = `${box.y * this.cellSize + 2}px`;
     element.style.width = `${box.w * this.cellSize - 4}px`;
     element.style.height = `${box.h * this.cellSize - 4}px`;
-    element.style.zIndex = '10'; // Au-dessus des lignes de grille
+    element.style.zIndex = UI_CONSTANTS.Z_INDEX.SELECTED_BOX.toString(); // Au-dessus des lignes de grille
     
     // Sauvegarder l'ID, dimensions et position dans les data attributes
     element.dataset.boxId = box.id;
@@ -492,10 +493,10 @@ export class LayoutEditor extends Modal {
     element.dataset.boxY = box.y.toString();
     // Attribution séquentielle simple : ordre de création des boxes
     const boxIndex = this.layout.boxes.findIndex(b => b.id === box.id);
-    const colorIndex = boxIndex % 12; // 12 couleurs disponibles dans le CSS
+    const colorIndex = boxIndex % COLOR_CONSTANTS.TOTAL_COLORS; // Couleurs disponibles dans le CSS
     
     // Utiliser les variables CSS pour les couleurs (personnalisables par l'utilisateur)
-    const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-color-${colorIndex}`).trim();
+    const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`${COLOR_CONSTANTS.COLOR_PREFIX}${colorIndex}`).trim();
     const borderColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-border-${colorIndex}`).trim();
     
     element.style.backgroundColor = bgColor;
@@ -570,7 +571,7 @@ export class LayoutEditor extends Modal {
       handleEl.style.borderRadius = '50%'; // Cercles au lieu de carrés
       handleEl.style.opacity = '0';
       handleEl.style.transition = 'all 0.15s ease';
-      handleEl.style.zIndex = '10';
+      handleEl.style.zIndex = UI_CONSTANTS.Z_INDEX.SELECTED_BOX.toString();
       handleEl.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
       
       // Effet hover pour les poignées
@@ -1219,7 +1220,7 @@ export class LayoutEditor extends Modal {
     preview.style.backgroundColor = 'var(--interactive-accent)';
     preview.style.opacity = '0.3';
     preview.style.pointerEvents = 'none';
-    preview.style.zIndex = '5';
+    preview.style.zIndex = UI_CONSTANTS.Z_INDEX.BOX.toString();
     preview.style.borderRadius = '4px';
     return preview;
   }
@@ -1247,10 +1248,10 @@ export class LayoutEditor extends Modal {
       const boxId = element.dataset.boxId || '';
       // Attribution séquentielle cohérente
       const boxIndex = this.layout.boxes.findIndex(b => b.id === boxId);
-      const colorIndex = boxIndex % 12; // 12 couleurs disponibles dans le CSS
+      const colorIndex = boxIndex % COLOR_CONSTANTS.TOTAL_COLORS; // Couleurs disponibles dans le CSS
       
       // Utiliser les variables CSS pour les couleurs
-      const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-color-${colorIndex}`).trim();
+      const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`${COLOR_CONSTANTS.COLOR_PREFIX}${colorIndex}`).trim();
       const borderColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-border-${colorIndex}`).trim();
       
       element.style.backgroundColor = bgColor;
@@ -1279,10 +1280,10 @@ export class LayoutEditor extends Modal {
       const boxId = element.dataset.boxId || '';
       // Attribution séquentielle cohérente
       const boxIndex = this.layout.boxes.findIndex(b => b.id === boxId);
-      const colorIndex = boxIndex % 12; // 12 couleurs disponibles dans le CSS
+      const colorIndex = boxIndex % COLOR_CONSTANTS.TOTAL_COLORS; // Couleurs disponibles dans le CSS
       
       // Utiliser les variables CSS pour les couleurs
-      const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-color-${colorIndex}`).trim();
+      const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`${COLOR_CONSTANTS.COLOR_PREFIX}${colorIndex}`).trim();
       const borderColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-border-${colorIndex}`).trim();
       
       element.style.backgroundColor = bgColor;
@@ -1323,7 +1324,7 @@ export class LayoutEditor extends Modal {
       this.resizePreview.style.borderRadius = '4px';
       this.resizePreview.style.fontSize = '11px';
       this.resizePreview.style.fontWeight = '600';
-      this.resizePreview.style.zIndex = '100';
+      this.resizePreview.style.zIndex = UI_CONSTANTS.Z_INDEX.MODAL.toString();
       this.resizePreview.style.pointerEvents = 'none';
       this.resizePreview.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
     }

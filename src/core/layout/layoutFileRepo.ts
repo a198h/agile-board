@@ -4,21 +4,22 @@ import { Plugin, FileSystemAdapter, Notice } from "obsidian";
 import * as fs from "fs/promises";
 import * as path from "path";
 import { createContextLogger } from "../logger";
+import { TIMING_CONSTANTS, GRID_CONSTANTS, FILE_CONSTANTS } from "../constants";
 import { ErrorHandler, ErrorSeverity } from "../errorHandler";
 
 // Import synchronous fs for file watching
 const fsSync = require('fs');
 
 /**
- * Interface pour un layout selon le nouveau format 24x24
+ * Interface pour un layout selon le nouveau format de grille
  */
 export interface LayoutBox {
   readonly id: string;
   readonly title: string;
-  readonly x: number;  // 0-23
-  readonly y: number;  // 0-23  
-  readonly w: number;  // 1-24
-  readonly h: number;  // 1-24
+  readonly x: number;  // 0-${GRID_CONSTANTS.MAX_INDEX}
+  readonly y: number;  // 0-${GRID_CONSTANTS.MAX_INDEX}  
+  readonly w: number;  // ${GRID_CONSTANTS.MIN_SIZE}-${GRID_CONSTANTS.SIZE}
+  readonly h: number;  // ${GRID_CONSTANTS.MIN_SIZE}-${GRID_CONSTANTS.SIZE}
 }
 
 /**
@@ -63,8 +64,8 @@ export class LayoutFileRepo {
     try {
       const files = await fs.readdir(this.layoutsDir);
       return files
-        .filter(file => file.endsWith('.json'))
-        .map(file => path.basename(file, '.json'));
+        .filter(file => file.endsWith(FILE_CONSTANTS.FILE_EXTENSION))
+        .map(file => path.basename(file, FILE_CONSTANTS.FILE_EXTENSION));
     } catch (error) {
       this.logger.error('Erreur lors de la lecture du dossier layouts', error);
       return [];
@@ -187,7 +188,7 @@ export class LayoutFileRepo {
       
       this.fileWatcher.on('change', () => {
         if (timeoutId) clearTimeout(timeoutId);
-        timeoutId = setTimeout(callback, 200);
+        timeoutId = setTimeout(callback, TIMING_CONSTANTS.FILE_OPERATION_DELAY_MS);
       });
 
       this.logger.info('Surveillance des fichiers layouts démarrée');
@@ -226,7 +227,7 @@ export class LayoutFileRepo {
     const pluginId = this.plugin.manifest.id;
     const basePath = adapter.getBasePath();
     
-    return path.join(basePath, ".obsidian", "plugins", pluginId, "layouts");
+    return path.join(basePath, ".obsidian", "plugins", pluginId, FILE_CONSTANTS.LAYOUTS_DIR);
   }
 
   private async findLayoutFile(name: string): Promise<string | null> {
@@ -243,7 +244,7 @@ export class LayoutFileRepo {
       // Lister tous les fichiers et chercher par le contenu JSON
       const files = await fs.readdir(this.layoutsDir);
       for (const file of files) {
-        if (!file.endsWith('.json')) continue;
+        if (!file.endsWith(FILE_CONSTANTS.FILE_EXTENSION)) continue;
         
         try {
           const filePath = path.join(this.layoutsDir, file);

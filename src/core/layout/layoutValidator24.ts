@@ -2,6 +2,7 @@
 
 import { LayoutBox, LayoutFile } from "./layoutFileRepo";
 import { createContextLogger } from "../logger";
+import { GRID_CONSTANTS, VALIDATION_CONSTANTS } from '../constants';
 
 /**
  * Résultat de validation d'un layout
@@ -96,29 +97,29 @@ export class LayoutValidator24 {
       errors.push(`${prefix}: Titre requis et non vide`);
     }
 
-    if (!Number.isInteger(box.x) || box.x < 0 || box.x > 23) {
-      errors.push(`${prefix}: x doit être un entier entre 0 et 23 (actuel: ${box.x})`);
+    if (!Number.isInteger(box.x) || box.x < 0 || box.x > GRID_CONSTANTS.MAX_INDEX) {
+      errors.push(`${prefix}: x doit être un entier entre 0 et ${GRID_CONSTANTS.MAX_INDEX} (actuel: ${box.x})`);
     }
 
-    if (!Number.isInteger(box.y) || box.y < 0 || box.y > 23) {
-      errors.push(`${prefix}: y doit être un entier entre 0 et 23 (actuel: ${box.y})`);
+    if (!Number.isInteger(box.y) || box.y < 0 || box.y > GRID_CONSTANTS.MAX_INDEX) {
+      errors.push(`${prefix}: y doit être un entier entre 0 et ${GRID_CONSTANTS.MAX_INDEX} (actuel: ${box.y})`);
     }
 
-    if (!Number.isInteger(box.w) || box.w < 1 || box.w > 24) {
+    if (!Number.isInteger(box.w) || box.w < GRID_CONSTANTS.MIN_SIZE || box.w > GRID_CONSTANTS.SIZE) {
       errors.push(`${prefix}: w doit être un entier entre 1 et 24 (actuel: ${box.w})`);
     }
 
-    if (!Number.isInteger(box.h) || box.h < 1 || box.h > 24) {
+    if (!Number.isInteger(box.h) || box.h < GRID_CONSTANTS.MIN_SIZE || box.h > GRID_CONSTANTS.SIZE) {
       errors.push(`${prefix}: h doit être un entier entre 1 et 24 (actuel: ${box.h})`);
     }
 
     // Validation des débordements
-    if (box.x + box.w > 24) {
-      errors.push(`${prefix}: débordement horizontal (x=${box.x} + w=${box.w} > 24)`);
+    if (box.x + box.w > GRID_CONSTANTS.SIZE) {
+      errors.push(`${prefix}: débordement horizontal (x=${box.x} + w=${box.w} > ${GRID_CONSTANTS.SIZE})`);
     }
 
-    if (box.y + box.h > 24) {
-      errors.push(`${prefix}: débordement vertical (y=${box.y} + h=${box.h} > 24)`);
+    if (box.y + box.h > GRID_CONSTANTS.SIZE) {
+      errors.push(`${prefix}: débordement vertical (y=${box.y} + h=${box.h} > ${GRID_CONSTANTS.SIZE})`);
     }
 
     return {
@@ -190,13 +191,13 @@ export class LayoutValidator24 {
     existingBoxes: readonly LayoutBox[]
   ): { x: number; y: number } | null {
     // Créer une grille d'occupation
-    const grid = Array.from({ length: 24 }, () => Array(24).fill(false));
+    const grid = Array.from({ length: GRID_CONSTANTS.SIZE }, () => Array(GRID_CONSTANTS.SIZE).fill(false));
     
     // Marquer les cellules occupées
     for (const box of existingBoxes) {
       for (let x = box.x; x < box.x + box.w; x++) {
         for (let y = box.y; y < box.y + box.h; y++) {
-          if (x >= 0 && x < 24 && y >= 0 && y < 24) {
+          if (x >= 0 && x < GRID_CONSTANTS.SIZE && y >= 0 && y < GRID_CONSTANTS.SIZE) {
             grid[x][y] = true;
           }
         }
@@ -204,8 +205,8 @@ export class LayoutValidator24 {
     }
 
     // Chercher une position libre (de gauche à droite, de haut en bas)
-    for (let y = 0; y <= 24 - height; y++) {
-      for (let x = 0; x <= 24 - width; x++) {
+    for (let y = 0; y <= GRID_CONSTANTS.SIZE - height; y++) {
+      for (let x = 0; x <= GRID_CONSTANTS.SIZE - width; x++) {
         if (this.isAreaFree(grid, x, y, width, height)) {
           return { x, y };
         }
@@ -221,17 +222,17 @@ export class LayoutValidator24 {
   public normalizeBox(box: LayoutBox): LayoutBox {
     const normalized = {
       ...box,
-      x: Math.max(0, Math.min(23, Math.round(box.x))),
-      y: Math.max(0, Math.min(23, Math.round(box.y))),
+      x: Math.max(0, Math.min(GRID_CONSTANTS.MAX_INDEX, Math.round(box.x))),
+      y: Math.max(0, Math.min(GRID_CONSTANTS.MAX_INDEX, Math.round(box.y))),
       w: Math.max(1, Math.min(24, Math.round(box.w))),
       h: Math.max(1, Math.min(24, Math.round(box.h)))
     };
 
     // Ajuster si débordement après normalisation
-    if (normalized.x + normalized.w > 24) {
+    if (normalized.x + normalized.w > GRID_CONSTANTS.SIZE) {
       normalized.w = 24 - normalized.x;
     }
-    if (normalized.y + normalized.h > 24) {
+    if (normalized.y + normalized.h > GRID_CONSTANTS.SIZE) {
       normalized.h = 24 - normalized.y;
     }
 

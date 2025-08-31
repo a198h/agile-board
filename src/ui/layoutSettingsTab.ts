@@ -5,6 +5,7 @@ import { LayoutFileRepo, LayoutFile } from "../core/layout/layoutFileRepo";
 import { LayoutValidator24 } from "../core/layout/layoutValidator24";
 import { LayoutEditor, LayoutEditorCallbacks } from "./layoutEditor";
 import { createContextLogger } from "../core/logger";
+import { TIMING_CONSTANTS, VALIDATION_CONSTANTS, generateBoxId } from "../core/constants";
 import AgileBoardPlugin from "../main";
 
 /**
@@ -229,7 +230,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
           name: name.trim(),
           boxes: layout.boxes.map(box => ({
             ...box,
-            id: `box-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
+            id: generateBoxId()
           }))
         };
 
@@ -340,7 +341,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
           // Valider le layout
           const validation = this.validator.validateLayout(importedLayout);
           if (!validation.isValid) {
-            new Notice(`Layout invalide:\n${validation.errors.join('\n')}`, 8000);
+            new Notice(`Layout invalide:\n${validation.errors.join('\n')}`, TIMING_CONSTANTS.IMPORT_TIMEOUT_MS);
             return;
           }
 
@@ -353,7 +354,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
             name: uniqueName,
             boxes: importedLayout.boxes.map(box => ({
               ...box,
-              id: `box-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
+              id: generateBoxId()
             }))
           };
 

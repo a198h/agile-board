@@ -1,5 +1,6 @@
 // src/core/validation.ts
 import { PluginError } from "../types";
+import { VALIDATION_CONSTANTS } from "./constants";
 
 /**
  * Résultat d'une validation.
@@ -178,7 +179,7 @@ export class ValidationUtils {
     const name = modelName as string;
     
     // Vérifier les caractères autorisés (alphanumériques, espaces, tirets, underscores)
-    if (!/^[a-zA-Z0-9_\s-]+$/.test(name)) {
+    if (!VALIDATION_CONSTANTS.NAME_PATTERN.test(name)) {
       return {
         isValid: false,
         error: {
