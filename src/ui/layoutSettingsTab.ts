@@ -6,6 +6,8 @@ import { LayoutValidator24 } from "../core/layout/layoutValidator24";
 import { LayoutEditor, LayoutEditorCallbacks } from "./layoutEditor";
 import { createContextLogger } from "../core/logger";
 import { TIMING_CONSTANTS, VALIDATION_CONSTANTS, generateBoxId } from "../core/constants";
+import { UIErrorHandler } from "./utils/ErrorHandler";
+import { NameGenerator } from "../core/utils/NameGenerator";
 import AgileBoardPlugin from "../main";
 
 /**
@@ -204,7 +206,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
         newLayout = { ...newLayout, name: uniqueName };
 
         await this.layoutRepo.saveLayout(newLayout);
-        new Notice(`Layout "${uniqueName}" créé avec succès`);
+        UIErrorHandler.showSuccess(`Layout "${uniqueName}" créé avec succès`);
         
         this.refreshLayoutList();
         this.editLayout(newLayout);
@@ -238,12 +240,11 @@ export class LayoutSettingsTab extends PluginSettingTab {
         duplicatedLayout = { ...duplicatedLayout, name: uniqueName };
 
         await this.layoutRepo.saveLayout(duplicatedLayout);
-        new Notice(`Layout "${uniqueName}" dupliqué avec succès`);
+        UIErrorHandler.showSuccess(`Layout "${uniqueName}" dupliqué avec succès`);
         
         this.refreshLayoutList();
       } catch (error) {
-        this.logger.error('Erreur lors de la duplication du layout', error);
-        new Notice('Erreur lors de la duplication du layout');
+        UIErrorHandler.handleLayoutError('la duplication', layout.name, error);
       }
     });
 
@@ -255,7 +256,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
       onSave: async (updatedLayout: LayoutFile) => {
         try {
           await this.layoutRepo.saveLayout(updatedLayout);
-          new Notice(`Layout "${updatedLayout.name}" sauvegardé avec succès`);
+          UIErrorHandler.showSuccess(`Layout "${updatedLayout.name}" sauvegardé avec succès`);
           this.refreshLayoutList();
           
           // Recharger le service de layout si nécessaire
@@ -263,8 +264,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
             await this.plugin.layoutService.load();
           }
         } catch (error) {
-          this.logger.error('Erreur lors de la sauvegarde du layout', error);
-          new Notice('Erreur lors de la sauvegarde du layout');
+          UIErrorHandler.handleLayoutError('la sauvegarde', layout.name, error);
         }
       },
       onCancel: () => {
@@ -341,7 +341,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
           // Valider le layout
           const validation = this.validator.validateLayout(importedLayout);
           if (!validation.isValid) {
-            new Notice(`Layout invalide:\n${validation.errors.join('\n')}`, TIMING_CONSTANTS.IMPORT_TIMEOUT_MS);
+            UIErrorHandler.handleValidationError(validation.errors);
             return;
           }
 
@@ -359,7 +359,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
           };
 
           await this.layoutRepo.saveLayout(finalLayout);
-          new Notice(`Layout "${uniqueName}" importé avec succès`);
+          UIErrorHandler.showSuccess(`Layout "${uniqueName}" importé avec succès`);
           
           this.refreshLayoutList();
         } catch (error) {

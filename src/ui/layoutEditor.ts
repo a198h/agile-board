@@ -4,6 +4,8 @@ import { Modal, App, ButtonComponent, Notice } from "obsidian";
 import { LayoutBox, LayoutFile } from "../core/layout/layoutFileRepo";
 import { LayoutValidator24 } from "../core/layout/layoutValidator24";
 import { GRID_CONSTANTS, UI_CONSTANTS, COLOR_CONSTANTS } from "../core/constants";
+import { DOMHelper } from "./utils/DOMHelper";
+import { PositionCalculator } from "./utils/PositionCalculator";
 
 /**
  * Interface pour les interactions avec l'éditeur
@@ -261,7 +263,7 @@ export class LayoutEditor extends Modal {
       label.style.color = 'var(--text-accent)';
       label.style.fontWeight = '600';
       label.style.pointerEvents = 'none';
-      label.style.zIndex = UI_CONSTANTS.Z_INDEX.SELECTED_BOX.toString();
+      DOMHelper.applyZIndex(label, 'SELECTED_BOX');
       label.style.textAlign = 'center';
       label.style.minWidth = '12px';
     }
@@ -277,7 +279,7 @@ export class LayoutEditor extends Modal {
       label.style.color = 'var(--text-accent)';
       label.style.fontWeight = '600';
       label.style.pointerEvents = 'none';
-      label.style.zIndex = UI_CONSTANTS.Z_INDEX.SELECTED_BOX.toString();
+      DOMHelper.applyZIndex(label, 'SELECTED_BOX');
       label.style.textAlign = 'center';
       label.style.minWidth = '15px';
     }
@@ -483,7 +485,7 @@ export class LayoutEditor extends Modal {
     element.style.top = `${box.y * this.cellSize + 2}px`;
     element.style.width = `${box.w * this.cellSize - 4}px`;
     element.style.height = `${box.h * this.cellSize - 4}px`;
-    element.style.zIndex = UI_CONSTANTS.Z_INDEX.SELECTED_BOX.toString(); // Au-dessus des lignes de grille
+    DOMHelper.applyZIndex(element, 'SELECTED_BOX'); // Au-dessus des lignes de grille
     
     // Sauvegarder l'ID, dimensions et position dans les data attributes
     element.dataset.boxId = box.id;
@@ -496,8 +498,8 @@ export class LayoutEditor extends Modal {
     const colorIndex = boxIndex % COLOR_CONSTANTS.TOTAL_COLORS; // Couleurs disponibles dans le CSS
     
     // Utiliser les variables CSS pour les couleurs (personnalisables par l'utilisateur)
-    const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`${COLOR_CONSTANTS.COLOR_PREFIX}${colorIndex}`).trim();
-    const borderColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-border-${colorIndex}`).trim();
+    const bgColor = DOMHelper.getColorFromPalette(colorIndex);
+    const borderColor = DOMHelper.getBorderColorFromPalette(colorIndex);
     
     element.style.backgroundColor = bgColor;
     element.style.border = `1px solid ${borderColor}`;
@@ -571,7 +573,7 @@ export class LayoutEditor extends Modal {
       handleEl.style.borderRadius = '50%'; // Cercles au lieu de carrés
       handleEl.style.opacity = '0';
       handleEl.style.transition = 'all 0.15s ease';
-      handleEl.style.zIndex = UI_CONSTANTS.Z_INDEX.SELECTED_BOX.toString();
+      DOMHelper.applyZIndex(handleEl, 'SELECTED_BOX');
       handleEl.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
       
       // Effet hover pour les poignées
@@ -1220,7 +1222,7 @@ export class LayoutEditor extends Modal {
     preview.style.backgroundColor = 'var(--interactive-accent)';
     preview.style.opacity = '0.3';
     preview.style.pointerEvents = 'none';
-    preview.style.zIndex = UI_CONSTANTS.Z_INDEX.BOX.toString();
+    DOMHelper.applyZIndex(preview, 'BOX');
     preview.style.borderRadius = '4px';
     return preview;
   }
@@ -1251,8 +1253,8 @@ export class LayoutEditor extends Modal {
       const colorIndex = boxIndex % COLOR_CONSTANTS.TOTAL_COLORS; // Couleurs disponibles dans le CSS
       
       // Utiliser les variables CSS pour les couleurs
-      const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`${COLOR_CONSTANTS.COLOR_PREFIX}${colorIndex}`).trim();
-      const borderColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-border-${colorIndex}`).trim();
+      const bgColor = DOMHelper.getColorFromPalette(colorIndex);
+      const borderColor = DOMHelper.getBorderColorFromPalette(colorIndex);
       
       element.style.backgroundColor = bgColor;
       element.style.borderColor = borderColor;
@@ -1283,8 +1285,8 @@ export class LayoutEditor extends Modal {
       const colorIndex = boxIndex % COLOR_CONSTANTS.TOTAL_COLORS; // Couleurs disponibles dans le CSS
       
       // Utiliser les variables CSS pour les couleurs
-      const bgColor = getComputedStyle(document.documentElement).getPropertyValue(`${COLOR_CONSTANTS.COLOR_PREFIX}${colorIndex}`).trim();
-      const borderColor = getComputedStyle(document.documentElement).getPropertyValue(`--agile-board-border-${colorIndex}`).trim();
+      const bgColor = DOMHelper.getColorFromPalette(colorIndex);
+      const borderColor = DOMHelper.getBorderColorFromPalette(colorIndex);
       
       element.style.backgroundColor = bgColor;
       element.style.borderColor = borderColor;
@@ -1324,7 +1326,7 @@ export class LayoutEditor extends Modal {
       this.resizePreview.style.borderRadius = '4px';
       this.resizePreview.style.fontSize = '11px';
       this.resizePreview.style.fontWeight = '600';
-      this.resizePreview.style.zIndex = UI_CONSTANTS.Z_INDEX.MODAL.toString();
+      DOMHelper.applyZIndex(this.resizePreview, 'MODAL');
       this.resizePreview.style.pointerEvents = 'none';
       this.resizePreview.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
     }
