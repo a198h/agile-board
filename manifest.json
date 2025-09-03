@@ -1,7 +1,7 @@
 {
 	"id": "agile-board",
 	"name": "Agile Board",
-	"version": "0.7.0",
+	"version": "0.7.1",
 	"minAppVersion": "0.15.0",
 	"description": "Agile Board est un plugin Obsidian qui transforme vos notes en tableaux visuels selon des modèles de mise en page personnalisables (ex. matrice d’Eisenhower)",
 	"author": "a198h",
