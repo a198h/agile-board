@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.7.0-blue)
+![version](https://img.shields.io/badge/version-0.7.1-blue)
 
 ***
 # Agile Board
@@ -32,14 +32,19 @@ Basculez entre les modes via les icônes dans la toolbar.
 
 ## 🚀 Installation
 
-### Option 1 - Coffre complet (recommandé)
-1. Téléchargez `Agile-Board-v0.7.0.zip` (coffre Obsidian avec plugin et exemples)
-2. Dézippez et ouvrez directement le dossier dans Obsidian
+### Option 1 - Via BRAT (Beta Testing - Recommandé)
+1. Installez le plugin [BRAT](https://github.com/TfTHacker/obsidian42-brat) depuis la communauté Obsidian
+2. Ouvrez les paramètres BRAT et ajoutez ce repository : `a198h/agile-board`
+3. BRAT installera automatiquement la dernière version et gérera les mises à jour
 
-### Option 2 - Plugin seul
-1. Téléchargez depuis les [releases GitHub](https://github.com/a198h/agile-board/releases)
-2. Copiez le dossier `agile-board` dans `.obsidian/plugins/`
+### Option 2 - Installation manuelle  
+1. Téléchargez la dernière release depuis [GitHub Releases](https://github.com/a198h/agile-board/releases)
+2. Extrayez `main.js`, `manifest.json` et `styles.css` dans `.obsidian/plugins/agile-board/`
 3. Redémarrez Obsidian et activez le plugin
+
+### Option 3 - Coffre complet (pour tester)
+1. Téléchargez `Agile-Board-v0.7.1.zip` (coffre Obsidian avec plugin et exemples)
+2. Dézippez et ouvrez directement le dossier dans Obsidian
 
 ***
 
@@ -109,7 +114,34 @@ Chaque box correspond à une **section de la note** : un titre de **niveau 1** (
 
 ***
 
+## 🔮 Roadmap & Améliorations prévues
+
+### Version actuelle (v0.7.1)
+- ✅ **Architecture refactorisée** : Code enterprise-grade avec TypeScript strict
+- ✅ **Gestion d'erreurs fonctionnelle** : Patterns Result<T> 
+- ✅ **Documentation complète** : JSDoc pour toutes les APIs
+- ✅ **Lifecycle management** : Nettoyage approprié des ressources
+
+### Prochaines améliorations
+- 🚧 **CodeMirror 6 Integration** : Remplacement des textarea par l'éditeur CM6 natif d'Obsidian
+  - Meilleure intégration avec l'écosystème Obsidian
+  - Support amélioré des plugins (Vim, divers thèmes, etc.)
+  - Performance et UX améliorées
+- 🔄 **Gestion avancée des images** : Support complet des `![[image.png]]` 
+- 🎨 **Thèmes personnalisés** : Support des thèmes pour les layouts
+- ⚡ **Performance** : Optimisations du rendu pour les grandes notes
+
+### Feedback souhaité via BRAT
+- 📝 **Expérience utilisateur** générale
+- 🐛 **Bugs ou comportements inattendus** 
+- 💡 **Idées d'améliorations** et cas d'usage
+- 🔌 **Compatibilité** avec vos plugins favoris
+
+***
+
 ## 📂 Votre contribution compte !
 
+* **Beta Testing** : Testez via [BRAT](https://github.com/TfTHacker/obsidian42-brat) et partagez vos retours !
 * **Bugs/Issues** : [https://github.com/a198h/agile-board/issues](https://github.com/a198h/agile-board/issues)
 * **Discussions** : [https://github.com/a198h/agile-board/discussions/8](https://github.com/a198h/agile-board/discussions/8)
+* **Discord Obsidian** : Mention `@agile-board` dans #plugin-dev ou #general
