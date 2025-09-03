@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.7.1-blue)
+![version](https://img.shields.io/badge/version-0.7.2-blue)
 
 ***
 # Agile Board
@@ -36,14 +36,18 @@ Basculez entre les modes via les icônes dans la toolbar.
 1. Installez le plugin [BRAT](https://github.com/TfTHacker/obsidian42-brat) depuis la communauté Obsidian
 2. Ouvrez les paramètres BRAT et ajoutez ce repository : `a198h/agile-board`
 3. BRAT installera automatiquement la dernière version et gérera les mises à jour
+4. **Les layouts par défaut se téléchargent automatiquement** au premier démarrage
 
 ### Option 2 - Installation manuelle  
 1. Téléchargez la dernière release depuis [GitHub Releases](https://github.com/a198h/agile-board/releases)
 2. Extrayez `main.js`, `manifest.json` et `styles.css` dans `.obsidian/plugins/agile-board/`
 3. Redémarrez Obsidian et activez le plugin
+4. **Les layouts par défaut se téléchargent automatiquement** au premier démarrage
+
+> **✨ Nouveau v0.7.2**: Plus besoin de télécharger `layouts.zip` manuellement ! Le plugin télécharge automatiquement tous les layouts par défaut (eisenhower, swot, moscow, etc.) depuis GitHub au premier lancement.
 
 ### Option 3 - Coffre complet (pour tester)
-1. Téléchargez `Agile-Board-v0.7.1.zip` (coffre Obsidian avec plugin et exemples)
+1. Téléchargez `Agile-Board-v0.7.2.zip` (coffre Obsidian avec plugin et exemples)
 2. Dézippez et ouvrez directement le dossier dans Obsidian
 
 ***
@@ -116,11 +120,12 @@ Chaque box correspond à une **section de la note** : un titre de **niveau 1** (
 
 ## 🔮 Roadmap & Améliorations prévues
 
-### Version actuelle (v0.7.1)
+### Version actuelle (v0.7.2)
 - ✅ **Architecture refactorisée** : Code enterprise-grade avec TypeScript strict
 - ✅ **Gestion d'erreurs fonctionnelle** : Patterns Result<T> 
 - ✅ **Documentation complète** : JSDoc pour toutes les APIs
 - ✅ **Lifecycle management** : Nettoyage approprié des ressources
+- ✅ **Téléchargement automatique** : Layouts par défaut récupérés depuis GitHub au premier lancement
 
 ### Prochaines améliorations
 - 🚧 **CodeMirror 6 Integration** : Remplacement des textarea par l'éditeur CM6 natif d'Obsidian

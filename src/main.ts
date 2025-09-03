@@ -8,6 +8,7 @@ import { FileSynchronizer } from "./fileSynchronizer";
 import { ErrorHandler, ErrorSeverity, LifecycleManager, LifecycleAware, createContextLogger, LoggingConfig } from "./core";
 import { PluginError, Result } from "./types";
 import { LayoutSettingsTab } from "./ui/layoutSettingsTab";
+import { LayoutDownloader } from "./core/layout/layoutDownloader";
 
 
 /**
@@ -73,19 +74,26 @@ export default class AgileBoardPlugin extends Plugin {
       this.setupLogging();
       this.createLifecycleManager();
       
-      // Étape 2: Initialisation des services métier
+      // Étape 2: Téléchargement automatique des layouts (pour BRAT)
+      const layoutsResult = await this.ensureDefaultLayouts();
+      if (!layoutsResult.success) {
+        this.logger.warn('Téléchargement automatique des layouts échoué, mais on continue', layoutsResult.error);
+        // Ne pas échouer l'initialisation pour ça
+      }
+      
+      // Étape 3: Initialisation des services métier
       const servicesResult = await this.initializeServices();
       if (!servicesResult.success) {
         return servicesResult;
       }
       
-      // Étape 3: Configuration de l'interface utilisateur
+      // Étape 4: Configuration de l'interface utilisateur
       this.setupUserInterface();
       
-      // Étape 4: Démarrage de la surveillance
+      // Étape 5: Démarrage de la surveillance
       this.startMonitoring();
       
-      // Étape 5: Initialisation des composants du cycle de vie
+      // Étape 6: Initialisation des composants du cycle de vie
       await this.lifecycleManager.initializeComponents();
       
       return { success: true, data: undefined };
@@ -96,6 +104,27 @@ export default class AgileBoardPlugin extends Plugin {
         error: {
           type: 'INITIALIZATION_ERROR',
           component: 'AgileBoardPlugin',
+          details: error instanceof Error ? error.message : String(error)
+        }
+      };
+    }
+  }
+
+  /**
+   * S'assure que les layouts par défaut sont disponibles.
+   * Télécharge automatiquement depuis GitHub si nécessaire (pour BRAT).
+   * @returns Result indiquant le succès de l'opération
+   */
+  private async ensureDefaultLayouts(): Promise<Result<void>> {
+    try {
+      const downloader = new LayoutDownloader(this);
+      return await downloader.ensureDefaultLayouts();
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          type: 'INITIALIZATION_ERROR',
+          component: 'LayoutDownloader',
           details: error instanceof Error ? error.message : String(error)
         }
       };
