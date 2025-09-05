@@ -76,6 +76,8 @@ L'icône 🏢 apparaît dans la toolbar. Cliquez pour basculer en mode Board.
 
 Depuis le panneau **Paramètres → Modules complémentaires → Agile Board**, vous pouvez gérer vos layouts directement depuis Obsidian.
 
+![Agile Board – Config](./agile-board-customize-board.png)
+
 ### 📋 Gestion des layouts
 
 La liste des layouts disponibles apparaît automatiquement dans les paramètres.
