@@ -130,7 +130,7 @@ export class LayoutService {
 
   /**
    * Recharge tous les modèles depuis le fichier.
-   * Utile pour rafraîchir après modification du fichier layout.json.
+   * Utile pour rafraîchir après modification des fichiers de layout.
    * @returns Promise résolue quand le rechargement est terminé
    */
   public async reload(): Promise<void> {

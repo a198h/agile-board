@@ -25,7 +25,7 @@ export type LayoutModel = readonly LayoutBlock[];
 export type LayoutRegistry = ReadonlyMap<string, LayoutModel>;
 
 /**
- * Données brutes du fichier layout.json avant validation.
+ * Données brutes des fichiers de layout avant validation.
  */
 export type RawLayoutData = Record<string, unknown>;
 
