@@ -53,6 +53,14 @@ Switch between modes via the toolbar icons.
 2. Copy the `agile-board` folder to `.obsidian/plugins/`
 3. Restart Obsidian and enable the plugin
 
+### Option 3 - BRAT (Beta Testing)
+
+Install via [BRAT](https://github.com/TfTHacker/obsidian42-brat) to get the latest updates:
+
+1. Install and enable the BRAT plugin
+2. Add `a198h/agile-board` as a beta plugin
+3. BRAT will automatically update the plugin
+
 ---
 
 ## 📝 Usage
@@ -190,9 +198,13 @@ Basculez entre les modes via les icônes dans la toolbar.
 
 > **✨ Nouveau v0.7.2**: Plus besoin de télécharger `layouts.zip` manuellement ! Le plugin télécharge automatiquement tous les layouts par défaut (eisenhower, swot, moscow, etc.) depuis GitHub au premier lancement.
 
-### Option 3 - Coffre complet (pour tester)
-1. Téléchargez `Agile-Board-v0.7.2.zip` (coffre Obsidian avec plugin et exemples)
-2. Dézippez et ouvrez directement le dossier dans Obsidian
+### Option 3 - BRAT (Test Beta)
+
+Installation via [BRAT](https://github.com/TfTHacker/obsidian42-brat) pour recevoir les dernières mises à jour :
+
+1. Installez et activez le plugin BRAT
+2. Ajoutez `a198h/agile-board` comme plugin beta
+3. BRAT mettra automatiquement le plugin à jour
 
 ---
 
@@ -267,7 +279,7 @@ Chaque box correspond à une **section de la note** : un titre de **niveau 1** (
 
 ## 🔮 Roadmap & Améliorations prévues
 
-### Version actuelle (v0.7.2)
+### Version actuelle (v0.7.3)
 - ✅ **Architecture refactorisée** : Code enterprise-grade avec TypeScript strict
 - ✅ **Gestion d'erreurs fonctionnelle** : Patterns Result<T> 
 - ✅ **Documentation complète** : JSDoc pour toutes les APIs
@@ -279,9 +291,8 @@ Chaque box correspond à une **section de la note** : un titre de **niveau 1** (
   - Meilleure intégration avec l'écosystème Obsidian
   - Support amélioré des plugins (Vim, divers thèmes, etc.)
   - Performance et UX améliorées
-- 🔄 **Gestion avancée des images** : Support complet des `![[image.png]]` 
-- 🎨 **Thèmes personnalisés** : Support des thèmes pour les layouts
-- ⚡ **Performance** : Optimisations du rendu pour les grandes notes
+  - Support complet des `![[image.png]]` et des liens internes
+
 
 ### Feedback souhaité via BRAT
 - 📝 **Expérience utilisateur** générale
