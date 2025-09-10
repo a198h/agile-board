@@ -48,7 +48,6 @@ export class EmbeddedMarkdownView {
     // Créer le fichier temporaire dans le dossier du plugin
     try {
       this.tempFile = await this.app.vault.create(tempFileName, sectionContent);
-      console.log('📄 Fichier temporaire créé:', tempFileName);
     } catch (error) {
       console.error('Erreur création fichier temporaire:', error);
       throw error;
@@ -101,7 +100,6 @@ export class EmbeddedMarkdownView {
           }, {});
         }
         
-        console.log('✅ Leaf embarquée créée pour:', this.sectionTitle);
       }
     } catch (error) {
       console.error('Erreur création leaf:', error);
@@ -207,7 +205,6 @@ export class EmbeddedMarkdownView {
     if (this.tempFile) {
       try {
         await this.app.vault.delete(this.tempFile);
-        console.log('🗑️ Fichier temporaire supprimé:', this.tempFile.name);
       } catch (error) {
         console.error('Erreur suppression fichier temporaire:', error);
       }

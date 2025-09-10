@@ -48,7 +48,6 @@ export class LayoutFileRepo {
   public async initialize(): Promise<void> {
     try {
       await this.ensureLayoutsDirectoryExists();
-      this.logger.info('LayoutFileRepo initialisé');
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'LayoutFileRepo.initialize', {
         severity: ErrorSeverity.CRITICAL
@@ -117,7 +116,6 @@ export class LayoutFileRepo {
       await fs.writeFile(tempPath, content, 'utf-8');
       await fs.rename(tempPath, filePath);
       
-      this.logger.info(`Layout sauvegardé: ${layout.name}`);
       return true;
     } catch (error) {
       this.logger.error(`Erreur lors de la sauvegarde du layout ${layout.name}`, error);
@@ -136,7 +134,6 @@ export class LayoutFileRepo {
     try {
       const filePath = this.getLayoutFilePath(name);
       await fs.unlink(filePath);
-      this.logger.info(`Layout supprimé: ${name}`);
       return true;
     } catch (error) {
       this.logger.error(`Erreur lors de la suppression du layout ${name}`, error);
@@ -203,7 +200,6 @@ export class LayoutFileRepo {
     if (this.fileWatcher) {
       this.fileWatcher.close();
       this.fileWatcher = undefined;
-      this.logger.info('Surveillance des fichiers layouts arrêtée');
     }
   }
 
