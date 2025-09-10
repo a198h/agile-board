@@ -69,8 +69,7 @@ flowchart TD
     B --> H["core/layout/layoutLoader.ts
 📥 Class: LayoutLoader
     - loadLayouts()
-    - readLayoutFile()
-    - parseLayoutData()"]
+    - loadIndividualLayouts()"]
     B --> I["core/errorHandler.ts
 ❌ Class: ErrorHandler
     - handleError()
@@ -81,6 +80,28 @@ flowchart TD
     - validateLayoutModel()
     - validateLayoutModelName()
     - checkGridCollisions()"]
+    B --> HH1["core/layout/layoutFileRepo.ts
+📁 Class: LayoutFileRepo
+    - listLayouts()
+    - loadLayout()
+    - saveLayout()
+    - deleteLayout()
+    - watchFiles()"]
+    B --> II1["ui/layoutSettingsTab.ts
+⚙️ Class: LayoutSettingsTab
+    - display()
+    - refreshLayoutList()
+    - openLayoutEditor()"]
+    A --> LL1["settings.ts
+⚙️ Class: AgileBoardSettings
+    - loadSettings()
+    - saveSettings()
+    - getDefaults()"]
+    A --> MM1["settingsTab.ts
+🔧 Class: SettingsTab
+    - display()
+    - addGeneralSettings()
+    - addLayoutSettings()"]
     
     C --> B
     
@@ -147,6 +168,18 @@ flowchart TD
     - validateModel()
     - validateBlock()
     - checkBounds()"]
+    HH1 --> JJ1["core/layout/layoutValidator24.ts
+✅ Class: LayoutValidator24
+    - validateLayout()
+    - wouldCollide()
+    - findFreePosition()"]
+    II1 --> KK1["ui/layoutEditor.ts
+🎨 Class: LayoutEditor
+    - setupUI()
+    - renderLayout()
+    - createBoxElement()
+    - handleDrag()
+    - saveLayout()"]
     
     %% DOM
     G --> W["core/dom/index.ts
@@ -216,10 +249,10 @@ flowchart TD
     classDef legendStyle fill:#f8f9fa,stroke:#6c757d,stroke-width:1px
 
     %% Application des styles
-    class A,G,I,R,S,J,T,U,W,X,Y,Z,AA,BB,CC,DD,EE,FF,GG coreLayer
-    class B,C,E,F,H,V serviceLayer
-    class K,M renderLayer
-    class D,N,O,P,Q viewLayer
+    class A,G,I,R,S,J,T,U,W,X,Y,Z,AA,BB,CC,DD,EE,FF,GG,LL1 coreLayer
+    class B,C,E,F,H,V,HH1,JJ1 serviceLayer
+    class K,M,KK1 renderLayer
+    class D,N,O,P,Q,II1,MM1 viewLayer
     class HH,L typeLayer
     class LEGEND,CORE_LEG,SERVICE_LEG,RENDER_LEG,VIEW_LEG,TYPE_LEG legendStyle
 ```
@@ -240,33 +273,39 @@ flowchart TD
 - **main.ts** - Point d'entrée orchestrant tous les services
 - Méthodes clés : `onload()`, `initializeServices()`, `startMonitoring()`
 
-### ⚙️ Services Métier (B-F, H, V)
+### ⚙️ Services Métier (B-F, H, V, HH1, JJ1)
 - **LayoutService (B)** - Gestion des modèles de layout
 - **ModelDetector (C)** - Détection automatique des fichiers avec layout
 - **AgileBoardView (D)** - Vue principale du plugin
 - **ViewSwitcher (E)** - Basculement entre vues Board et Markdown
 - **FileSynchronizer (F)** - Synchronisation en temps réel
-- **LayoutLoader (H)** - Chargement des configurations
-- **LayoutValidator (V)** - Validation des modèles
+- **LayoutLoader (H)** - Chargement depuis fichiers individuels `/layouts/`
+- **LayoutValidator (V)** - Validation des modèles (legacy)
+- **LayoutFileRepo (HH1)** - Repository pour gestion CRUD des layouts
+- **LayoutValidator24 (JJ1)** - Validation optimisée grille 24x24
 
-### 🎨 Rendu et Interface (K, M)
+### 🎨 Rendu et Interface (K, M, KK1)
 - **LayoutRenderer (K)** - Rendu de la grille visuelle
 - **MarkdownBox (M)** - Composant d'édition inline avec prévisualisation
+- **LayoutEditor (KK1)** - Éditeur visuel drag & drop pour créer/modifier layouts
 
-### 🏗️ Infrastructure Core (G, I, R, S, J, T-GG)
+### 🏗️ Infrastructure Core (G, I, R, S, J, T-GG, LL1)
 - **ErrorHandler (I)** - Gestion centralisée des erreurs
 - **Logger (R)** - Système de logging contextualisé
 - **LifecycleManager (S)** - Gestion du cycle de vie des composants
 - **ValidationUtils (J)** - Utilitaires de validation
 - **DOM Factory (X)** - Création d'éléments DOM
 - **Business Logic (FF, GG)** - Processeurs et calculateurs métier
+- **AgileBoardSettings (LL1)** - Système de configuration du plugin
 
 ### 📋 Types et Utilitaires (HH, L)
 - **types.ts (HH)** - Définitions TypeScript communes
 - **sectionParser.ts (L)** - Parsing des sections Markdown
 
-### 🖼️ Vues Spécialisées (N-Q)
-- Différentes implémentations de vues Markdown pour contextes variés
+### 🖼️ Vues Spécialisées (N-Q, II1, MM1)
+- **NativeMarkdownView (N-Q)** - Différentes implémentations de vues Markdown
+- **LayoutSettingsTab (II1)** - Onglet paramètres pour gestion des layouts
+- **SettingsTab (MM1)** - Interface de configuration générale du plugin
 
 ## 🚀 Points d'Entrée Principaux
 
@@ -280,7 +319,8 @@ flowchart TD
 ### 1. **Initialisation** (🔧 main.ts)
 ```
 onload() → initializeServices() → startMonitoring()
-├── LayoutService.load() - Charge layout.json
+├── AgileBoardSettings.loadSettings() - Charge la configuration
+├── LayoutService.load() - Charge layouts depuis /layouts/
 ├── ModelDetector.onLoad() - Active la surveillance
 ├── ViewSwitcher.addSwitchButton() - Ajoute boutons
 └── FileSynchronizer.start() - Lance sync fichiers
@@ -319,18 +359,49 @@ Fichier modifié → onFileModified()
 └── updateBoardView() - Met à jour frames
 ```
 
+### 6. **Gestion des Layouts** (⚙️ LayoutSettingsTab)
+```
+Paramètres → LayoutSettingsTab.display()
+├── listLayouts() - Liste layouts disponibles
+├── openLayoutEditor() - Ouvre éditeur visuel
+├── LayoutEditor.setupUI() - Interface drag & drop
+├── saveLayout() - Sauvegarde layout.json individuel
+└── LayoutFileRepo.watchFiles() - Hot-reload
+```
+
+### 7. **Création/Édition Visuelle** (🎨 LayoutEditor)
+```
+Nouveau Layout → LayoutEditor.onOpen()
+├── setupGrid() - Grille 24x24 avec numérotation
+├── createBoxElement() - Créer/modifier boxes
+├── handleDrag() - Drag & drop + redimensionnement
+├── LayoutValidator24.validateLayout() - Validation en temps réel
+└── saveLayout() - Génère fichier /layouts/nom.json
+```
+
 ## 🎯 Interactions Clés
 
 **🔄 Cycle Principal**
+- **Configuration** : AgileBoardSettings gère les préférences utilisateur
 - **Détection** : ModelDetector surveille les fichiers et frontmatter
 - **Basculement** : ViewSwitcher gère les transitions entre vues
 - **Rendu** : LayoutRenderer + MarkdownBox affichent la grille éditable
 - **Synchronisation** : FileSynchronizer maintient la cohérence
+- **Gestion Layouts** : LayoutFileRepo + LayoutEditor permettent CRUD visuel
 
 **⚡ Événements Temps Réel**
 - Modification fichier → Mise à jour automatique des frames
 - Changement frontmatter → Re-détection du modèle
 - Édition inline → Sauvegarde immédiate + sync autres vues
+- Création/modification layout → Hot-reload automatique
+- Drag & drop dans éditeur → Validation en temps réel des collisions
+
+**🎨 Nouveautés Architecture**
+- **Système de fichiers individuels** : Chaque layout = 1 fichier `/layouts/nom.json`
+- **Éditeur visuel drag & drop** : Création/modification layouts sans code
+- **Validation grille 24x24** : Prévention collisions + optimisation positions
+- **Hot-reload layouts** : Modifications prises en compte instantanément
+- **Interface de gestion** : CRUD layouts via onglet paramètres dédié
 
 ---
 

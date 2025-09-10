@@ -6,6 +6,17 @@ tags: [excalidraw]
 ---
 ==⚠  Switch to EXCALIDRAW VIEW in the MORE OPTIONS menu of this document. ⚠== You can decompress Drawing data with the command palette: 'Decompress current Excalidraw file'. For more info check in plugin settings under 'Saving'
 
+## 🔄 MISE À JOUR REQUISE
+**Ce diagramme contient maintenant de nouveaux composants qui ne sont pas visibles dans le dessin :**
+- ✅ **LayoutFileRepo** - Repository pour gestion CRUD des layouts
+- ✅ **LayoutValidator24** - Validation optimisée grille 24x24  
+- ✅ **LayoutEditor** - Éditeur visuel drag & drop
+- ✅ **LayoutSettingsTab** - Interface de gestion des layouts
+- ✅ **AgileBoardSettings** - Système de configuration
+- ✅ **SettingsTab** - Interface de configuration générale
+
+**Pour voir ces nouveaux éléments :** Ouvrez en mode Excalidraw et ajoutez manuellement les nouveaux composants au diagramme, ou régénérez le diagramme complet.
+
 
 # Excalidraw Data
 
@@ -81,8 +92,7 @@ core/index.ts
 core/layout/layoutLoader.ts
 📥 Class: LayoutLoader
     - loadLayouts()
-    - readLayoutFile()
-    - parseLayoutData() ^WDPXp2Ao
+    - loadIndividualLayouts() ^WDPXp2Ao
 
 core/errorHandler.ts
 ❌ Class: ErrorHandler
@@ -218,6 +228,47 @@ types.ts
     - PluginError
     - ValidationResult
     - FileDetectionState ^qbXSz991
+
+core/layout/layoutFileRepo.ts
+📁 Class: LayoutFileRepo
+    - listLayouts()
+    - loadLayout()
+    - saveLayout()
+    - deleteLayout()
+    - watchFiles() ^HH1FileRepo
+
+core/layout/layoutValidator24.ts
+✅ Class: LayoutValidator24
+    - validateLayout()
+    - wouldCollide()
+    - findFreePosition() ^JJ1Validator24
+
+ui/layoutEditor.ts
+🎨 Class: LayoutEditor
+    - setupUI()
+    - renderLayout()
+    - createBoxElement()
+    - handleDrag()
+    - saveLayout()
+    - clearAllBoxes() ^KK1LayoutEditor
+
+ui/layoutSettingsTab.ts
+⚙️ Class: LayoutSettingsTab
+    - display()
+    - refreshLayoutList()
+    - openLayoutEditor() ^II1SettingsTab
+
+settings.ts
+⚙️ Class: AgileBoardSettings
+    - loadSettings()
+    - saveSettings()
+    - getDefaults() ^LL1Settings
+
+settingsTab.ts
+🔧 Class: SettingsTab
+    - display()
+    - addGeneralSettings()
+    - addLayoutSettings() ^MM1SettingsTab
 
 %%
 ## Drawing
