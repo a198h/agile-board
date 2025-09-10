@@ -56,13 +56,7 @@ export type LayoutModel = readonly LayoutBlock[];
 export type LayoutRegistry = ReadonlyMap<string, LayoutModel>;
 
 /**
- * Données brutes du fichier layout.json avant validation.
- * Type de sécurité pour le parsing initial des fichiers de configuration.
- * 
- * @example
- * ```typescript
- * const rawData: RawLayoutData = JSON.parse(layoutContent);
- * ```
+ * Données brutes des fichiers de layout avant validation.
  */
 export type RawLayoutData = Record<string, unknown>;
 

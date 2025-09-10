@@ -51,7 +51,10 @@ export default class AgileBoardPlugin extends Plugin {
    * @throws Jamais (capture toutes les erreurs en interne)
    */
   async onload(): Promise<void> {
-    const initResult = await this.initializePlugin();
+    // Configurer le système de logging automatiquement
+    LoggingConfig.setupAutomatic();
+    
+    this.lifecycleManager = new LifecycleManager(this.app);
     
     if (!initResult.success) {
       this.initializationError = initResult.error;
@@ -98,6 +101,8 @@ export default class AgileBoardPlugin extends Plugin {
       
       return { success: true, data: undefined };
       
+      // Ajouter l'onglet de paramètres pour les layouts
+      this.addSettingTab(new LayoutSettingsTab(this.app, this));
     } catch (error) {
       return {
         success: false,

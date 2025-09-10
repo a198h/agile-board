@@ -75,12 +75,6 @@ export class ModelDetector implements IModelDetector {
 
     this.plugin.app.workspace.on("file-open" as any, fileOpenListener);
     (this.plugin.app.metadataCache.on as any)("resolved", metadataResolvedListener);
-    
-    // Garder référence pour le nettoyage
-    this.eventListeners.add(fileOpenListener);
-    this.eventListeners.add(metadataResolvedListener);
-    
-    this.logger.debug('Event listeners enregistrés');
   }
 
   /**
@@ -265,9 +259,11 @@ export class ModelDetector implements IModelDetector {
    * Évite le traitement redondant et les boucles infinies.
    */
   private readonly handleMetadataResolved = (file: TFile): void => {
-    if (!file || !this.isActive) {
-      return;
-    }
+    // Vérifier que le fichier existe
+    if (!file) return;
+    
+    // Éviter de traiter le même fichier deux fois consécutivement
+    if (file.path === this.lastProcessedFile) return;
 
     // Éviter le traitement redondant
     if (file.path === this.lastProcessedFile) {

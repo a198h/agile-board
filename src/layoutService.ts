@@ -45,16 +45,8 @@ export class LayoutService {
    * @throws {PluginError} En cas d'erreur de chargement ou de validation
    */
   public async load(): Promise<void> {
-    try {
-      this.logger.info('Chargement des modèles de layout');
-      const result = await this.loadWithResult();
-      
-      if (!result.success) {
-        throw result.error;
-      }
-      
-      this.models = new Map(result.data);
-      this.logger.info(`${this.models.size} modèle(s) chargé(s): ${Array.from(this.models.keys()).join(', ')}`);
+    this.models = await this.loader.loadLayouts();
+    this.logger.info(`${this.models.size} layout(s) chargé(s)`);
 
       // Démarrer la surveillance des fichiers de layout personnalisés
       if (!this.isWatching) {
@@ -108,7 +100,6 @@ export class LayoutService {
       const changeHandler = this.createFileChangeHandler();
       await this.fileRepo.startWatching(changeHandler);
       this.isWatching = true;
-      this.logger.info('Surveillance des layouts personnalisés activée');
     } catch (error) {
       this.logger.error('Erreur lors du démarrage de la surveillance', error);
       const pluginError: PluginError = {
@@ -280,24 +271,8 @@ export class LayoutService {
   }
 
   /**
-   * Indique si la registry est vide.
-   * @returns true si aucun modèle n'est chargé
-   */
-  public isEmpty(): boolean {
-    return this.models.size === 0;
-  }
-
-  /**
-   * Vérifie si le service est dans un état valide.
-   * @returns true si le service est prêt à être utilisé
-   */
-  public isReady(): boolean {
-    return this.models.size > 0;
-  }
-
-  /**
-   * Recharge tous les modèles depuis le fichier de configuration.
-   * Opération idempotente qui préserve l'état en cas d'erreur.
+   * Recharge tous les modèles depuis le fichier.
+   * Utile pour rafraîchir après modification des fichiers de layout.
    * @returns Promise résolue quand le rechargement est terminé
    * @throws {PluginError} En cas d'erreur de rechargement
    */

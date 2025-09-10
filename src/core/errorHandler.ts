@@ -228,7 +228,7 @@ export class ErrorHandler {
         return `Le modèle "${error.layoutName}" n'existe pas. Vérifiez le nom dans le frontmatter.${suggestions}`;
       
       case 'INVALID_LAYOUT_FORMAT':
-        return 'Le fichier layout.json contient des erreurs de format. Vérifiez la syntaxe JSON.';
+        return 'Les fichiers de layout contiennent des erreurs de format. Vérifiez la syntaxe JSON.';
       
       case 'FILE_SYSTEM_ERROR':
         return 'Impossible d\'accéder au fichier. Vérifiez les permissions et l\'emplacement.';

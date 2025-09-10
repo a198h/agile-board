@@ -191,7 +191,6 @@ export class LayoutFileRepo {
         timeoutId = setTimeout(callback, TIMING_CONSTANTS.FILE_OPERATION_DELAY_MS);
       });
 
-      this.logger.info('Surveillance des fichiers layouts démarrée');
     } catch (error) {
       this.logger.error('Erreur lors du démarrage de la surveillance', error);
     }

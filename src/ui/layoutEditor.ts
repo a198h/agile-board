@@ -342,6 +342,9 @@ export class LayoutEditor extends Modal {
     
     // Section Aide
     this.createHelpSection();
+    
+    // Bouton pour effacer toutes les boxes (en dehors de la frame d'aide)
+    this.createClearAllButton();
   }
 
   private createSelectionSection(): void {
@@ -424,6 +427,33 @@ export class LayoutEditor extends Modal {
         <p style="margin: 0;"><strong>Sélectionner:</strong> Cliquez sur une box</p>
       </div>
     `;
+  }
+
+  private createClearAllButton(): void {
+    // Bouton pour effacer toutes les boxes
+    const clearAllButton = this.sidebar.createEl('button');
+    clearAllButton.textContent = '🗑️ Effacer toutes les boxes';
+    clearAllButton.style.width = '100%';
+    clearAllButton.style.padding = '10px 12px';
+    clearAllButton.style.marginTop = '16px';
+    clearAllButton.style.backgroundColor = '#dc2626';
+    clearAllButton.style.color = 'white';
+    clearAllButton.style.border = 'none';
+    clearAllButton.style.borderRadius = '4px';
+    clearAllButton.style.cursor = 'pointer';
+    clearAllButton.style.fontSize = '13px';
+    clearAllButton.style.fontWeight = '600';
+    clearAllButton.style.transition = 'background-color 0.2s ease';
+    
+    // Effet hover
+    clearAllButton.addEventListener('mouseenter', () => {
+      clearAllButton.style.backgroundColor = '#b91c1c';
+    });
+    clearAllButton.addEventListener('mouseleave', () => {
+      clearAllButton.style.backgroundColor = '#dc2626';
+    });
+    
+    clearAllButton.addEventListener('click', () => this.clearAllBoxes());
   }
 
   private setupToolbar(): void {
@@ -865,6 +895,12 @@ export class LayoutEditor extends Modal {
       const newTitle = (e.target as HTMLInputElement).value;
       this.updateBoxTitle(this.selectedBox!.box.id, newTitle);
     });
+
+    // Sauvegarder le titre quand l'input perd le focus
+    titleInput.addEventListener('blur', (e) => {
+      const newTitle = (e.target as HTMLInputElement).value;
+      this.updateBoxTitle(this.selectedBox!.box.id, newTitle);
+    });
     
     // Empêcher la désélection quand on clique sur l'input
     titleInput.addEventListener('click', (e) => {
@@ -887,8 +923,8 @@ export class LayoutEditor extends Modal {
       title: `Box ${this.layout.boxes.length + 1}`,
       x: freePosition.x,
       y: freePosition.y,
-      w: 4,
-      h: 3
+      w: 4, // Taille par défaut (respecte le minimum de 2x2)
+      h: 3  // Taille par défaut (respecte le minimum de 2x2)
     };
 
     this.layout = {
@@ -920,18 +956,56 @@ export class LayoutEditor extends Modal {
   }
 
   private updateBoxTitle(boxId: string, newTitle: string): void {
+    const cleanTitle = newTitle.trim() || 'Sans titre';
+    
     this.layout = {
       ...this.layout,
       boxes: this.layout.boxes.map(box => 
-        box.id === boxId ? { ...box, title: newTitle.trim() || 'Sans titre' } : box
+        box.id === boxId ? { ...box, title: cleanTitle } : box
       )
     };
 
     const boxState = this.boxes.get(boxId);
     if (boxState) {
       const titleElement = boxState.element.querySelector('.box-title') as HTMLElement;
-      titleElement.textContent = newTitle.trim() || 'Sans titre';
+      titleElement.textContent = cleanTitle;
+      
+      // Mettre à jour l'objet box de l'état local avec un nouvel objet
+      boxState.box = { ...boxState.box, title: cleanTitle };
     }
+  }
+
+  private clearAllBoxes(): void {
+    if (this.layout.boxes.length === 0) {
+      return; // Rien à effacer
+    }
+
+    // Demander confirmation
+    const confirmed = confirm(
+      `Êtes-vous sûr de vouloir effacer toutes les ${this.layout.boxes.length} box(es) ?\n\nCette action ne peut pas être annulée.`
+    );
+    
+    if (!confirmed) {
+      return;
+    }
+
+    // Supprimer tous les éléments visuels
+    this.boxes.forEach(boxState => {
+      boxState.element.remove();
+    });
+    
+    // Vider les structures de données
+    this.boxes.clear();
+    this.selectedBox = null;
+    
+    // Mettre à jour le layout
+    this.layout = {
+      ...this.layout,
+      boxes: []
+    };
+    
+    // Mettre à jour l'interface
+    this.updateSelectionInfo();
   }
 
   // Drag & Drop handlers (simplifiés pour l'exemple)
@@ -995,14 +1069,14 @@ export class LayoutEditor extends Modal {
       case 'se': // Sud-Est (coin bas-droite)
         // La box peut s'étendre jusqu'à la colonne/ligne 24 (index 23)
         // donc largeur max = GRID_SIZE - position_x
-        newW = Math.max(1, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
-        newH = Math.max(1, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
+        newW = Math.max(2, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
+        newH = Math.max(2, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
         break;
       case 'nw': { // Nord-Ouest (coin haut-gauche)
         const maxMoveX = originalBox.x; // Ne peut pas dépasser 0
         const maxMoveY = originalBox.y; // Ne peut pas dépasser 0
-        const maxShrinkX = originalBox.w - 1; // Taille min de 1
-        const maxShrinkY = originalBox.h - 1; // Taille min de 1
+        const maxShrinkX = originalBox.w - 2; // Taille min de 2
+        const maxShrinkY = originalBox.h - 2; // Taille min de 2
         
         const clampedDeltaX = Math.max(-maxMoveX, Math.min(maxShrinkX, deltaX));
         const clampedDeltaY = Math.max(-maxMoveY, Math.min(maxShrinkY, deltaY));
@@ -1015,27 +1089,27 @@ export class LayoutEditor extends Modal {
       }
       case 'ne': { // Nord-Est
         const maxMoveYNE = originalBox.y;
-        const maxShrinkYNE = originalBox.h - 1;
+        const maxShrinkYNE = originalBox.h - 2;
         const clampedDeltaYNE = Math.max(-maxMoveYNE, Math.min(maxShrinkYNE, deltaY));
         
         newY = originalBox.y + clampedDeltaYNE;
-        newW = Math.max(1, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
+        newW = Math.max(2, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
         newH = originalBox.h - clampedDeltaYNE;
         break;
       }
       case 'sw': { // Sud-Ouest
         const maxMoveXSW = originalBox.x;
-        const maxShrinkXSW = originalBox.w - 1;
+        const maxShrinkXSW = originalBox.w - 2;
         const clampedDeltaXSW = Math.max(-maxMoveXSW, Math.min(maxShrinkXSW, deltaX));
         
         newX = originalBox.x + clampedDeltaXSW;
         newW = originalBox.w - clampedDeltaXSW;
-        newH = Math.max(1, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
+        newH = Math.max(2, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
         break;
       }
       case 'n': { // Nord
         const maxMoveYN = originalBox.y;
-        const maxShrinkYN = originalBox.h - 1;
+        const maxShrinkYN = originalBox.h - 2;
         const clampedDeltaYN = Math.max(-maxMoveYN, Math.min(maxShrinkYN, deltaY));
         
         newY = originalBox.y + clampedDeltaYN;
@@ -1043,14 +1117,14 @@ export class LayoutEditor extends Modal {
         break;
       }
       case 's': // Sud
-        newH = Math.max(1, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
+        newH = Math.max(2, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
         break;
       case 'e': // Est
-        newW = Math.max(1, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
+        newW = Math.max(2, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
         break;
       case 'w': { // Ouest
         const maxMoveXW = originalBox.x;
-        const maxShrinkXW = originalBox.w - 1;
+        const maxShrinkXW = originalBox.w - 2;
         const clampedDeltaXW = Math.max(-maxMoveXW, Math.min(maxShrinkXW, deltaX));
         
         newX = originalBox.x + clampedDeltaXW;
@@ -1090,7 +1164,7 @@ export class LayoutEditor extends Modal {
     const gridW = Math.round((width + 4) / this.cellSize); // +4 pour compenser l'espacement
     const gridH = Math.round((height + 4) / this.cellSize);
 
-    if (gridW >= 1 && gridH >= 1) {
+    if (gridW >= 2 && gridH >= 2) {
       const newBox: LayoutBox = {
         id: this.generateBoxId(),
         title: `Box ${this.layout.boxes.length + 1}`,
