@@ -890,8 +890,8 @@ export class LayoutEditor extends Modal {
       title: `Box ${this.layout.boxes.length + 1}`,
       x: freePosition.x,
       y: freePosition.y,
-      w: 4,
-      h: 3
+      w: 4, // Taille par défaut (respecte le minimum de 2x2)
+      h: 3  // Taille par défaut (respecte le minimum de 2x2)
     };
 
     this.layout = {
@@ -1003,14 +1003,14 @@ export class LayoutEditor extends Modal {
       case 'se': // Sud-Est (coin bas-droite)
         // La box peut s'étendre jusqu'à la colonne/ligne 24 (index 23)
         // donc largeur max = GRID_SIZE - position_x
-        newW = Math.max(1, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
-        newH = Math.max(1, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
+        newW = Math.max(2, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
+        newH = Math.max(2, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
         break;
       case 'nw': { // Nord-Ouest (coin haut-gauche)
         const maxMoveX = originalBox.x; // Ne peut pas dépasser 0
         const maxMoveY = originalBox.y; // Ne peut pas dépasser 0
-        const maxShrinkX = originalBox.w - 1; // Taille min de 1
-        const maxShrinkY = originalBox.h - 1; // Taille min de 1
+        const maxShrinkX = originalBox.w - 2; // Taille min de 2
+        const maxShrinkY = originalBox.h - 2; // Taille min de 2
         
         const clampedDeltaX = Math.max(-maxMoveX, Math.min(maxShrinkX, deltaX));
         const clampedDeltaY = Math.max(-maxMoveY, Math.min(maxShrinkY, deltaY));
@@ -1023,27 +1023,27 @@ export class LayoutEditor extends Modal {
       }
       case 'ne': { // Nord-Est
         const maxMoveYNE = originalBox.y;
-        const maxShrinkYNE = originalBox.h - 1;
+        const maxShrinkYNE = originalBox.h - 2;
         const clampedDeltaYNE = Math.max(-maxMoveYNE, Math.min(maxShrinkYNE, deltaY));
         
         newY = originalBox.y + clampedDeltaYNE;
-        newW = Math.max(1, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
+        newW = Math.max(2, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
         newH = originalBox.h - clampedDeltaYNE;
         break;
       }
       case 'sw': { // Sud-Ouest
         const maxMoveXSW = originalBox.x;
-        const maxShrinkXSW = originalBox.w - 1;
+        const maxShrinkXSW = originalBox.w - 2;
         const clampedDeltaXSW = Math.max(-maxMoveXSW, Math.min(maxShrinkXSW, deltaX));
         
         newX = originalBox.x + clampedDeltaXSW;
         newW = originalBox.w - clampedDeltaXSW;
-        newH = Math.max(1, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
+        newH = Math.max(2, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
         break;
       }
       case 'n': { // Nord
         const maxMoveYN = originalBox.y;
-        const maxShrinkYN = originalBox.h - 1;
+        const maxShrinkYN = originalBox.h - 2;
         const clampedDeltaYN = Math.max(-maxMoveYN, Math.min(maxShrinkYN, deltaY));
         
         newY = originalBox.y + clampedDeltaYN;
@@ -1051,14 +1051,14 @@ export class LayoutEditor extends Modal {
         break;
       }
       case 's': // Sud
-        newH = Math.max(1, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
+        newH = Math.max(2, Math.min(this.GRID_SIZE - originalBox.y, originalBox.h + deltaY));
         break;
       case 'e': // Est
-        newW = Math.max(1, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
+        newW = Math.max(2, Math.min(this.GRID_SIZE - originalBox.x, originalBox.w + deltaX));
         break;
       case 'w': { // Ouest
         const maxMoveXW = originalBox.x;
-        const maxShrinkXW = originalBox.w - 1;
+        const maxShrinkXW = originalBox.w - 2;
         const clampedDeltaXW = Math.max(-maxMoveXW, Math.min(maxShrinkXW, deltaX));
         
         newX = originalBox.x + clampedDeltaXW;
@@ -1098,7 +1098,7 @@ export class LayoutEditor extends Modal {
     const gridW = Math.round((width + 4) / this.cellSize); // +4 pour compenser l'espacement
     const gridH = Math.round((height + 4) / this.cellSize);
 
-    if (gridW >= 1 && gridH >= 1) {
+    if (gridW >= 2 && gridH >= 2) {
       const newBox: LayoutBox = {
         id: this.generateBoxId(),
         title: `Box ${this.layout.boxes.length + 1}`,
