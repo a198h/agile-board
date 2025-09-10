@@ -339,6 +339,9 @@ export class LayoutEditor extends Modal {
     
     // Section Aide
     this.createHelpSection();
+    
+    // Bouton pour effacer toutes les boxes (en dehors de la frame d'aide)
+    this.createClearAllButton();
   }
 
   private createSelectionSection(): void {
@@ -421,6 +424,33 @@ export class LayoutEditor extends Modal {
         <p style="margin: 0;"><strong>Sélectionner:</strong> Cliquez sur une box</p>
       </div>
     `;
+  }
+
+  private createClearAllButton(): void {
+    // Bouton pour effacer toutes les boxes
+    const clearAllButton = this.sidebar.createEl('button');
+    clearAllButton.textContent = '🗑️ Effacer toutes les boxes';
+    clearAllButton.style.width = '100%';
+    clearAllButton.style.padding = '10px 12px';
+    clearAllButton.style.marginTop = '16px';
+    clearAllButton.style.backgroundColor = '#dc2626';
+    clearAllButton.style.color = 'white';
+    clearAllButton.style.border = 'none';
+    clearAllButton.style.borderRadius = '4px';
+    clearAllButton.style.cursor = 'pointer';
+    clearAllButton.style.fontSize = '13px';
+    clearAllButton.style.fontWeight = '600';
+    clearAllButton.style.transition = 'background-color 0.2s ease';
+    
+    // Effet hover
+    clearAllButton.addEventListener('mouseenter', () => {
+      clearAllButton.style.backgroundColor = '#b91c1c';
+    });
+    clearAllButton.addEventListener('mouseleave', () => {
+      clearAllButton.style.backgroundColor = '#dc2626';
+    });
+    
+    clearAllButton.addEventListener('click', () => this.clearAllBoxes());
   }
 
   private setupToolbar(): void {
@@ -940,6 +970,39 @@ export class LayoutEditor extends Modal {
       // Mettre à jour l'objet box de l'état local avec un nouvel objet
       boxState.box = { ...boxState.box, title: cleanTitle };
     }
+  }
+
+  private clearAllBoxes(): void {
+    if (this.layout.boxes.length === 0) {
+      return; // Rien à effacer
+    }
+
+    // Demander confirmation
+    const confirmed = confirm(
+      `Êtes-vous sûr de vouloir effacer toutes les ${this.layout.boxes.length} box(es) ?\n\nCette action ne peut pas être annulée.`
+    );
+    
+    if (!confirmed) {
+      return;
+    }
+
+    // Supprimer tous les éléments visuels
+    this.boxes.forEach(boxState => {
+      boxState.element.remove();
+    });
+    
+    // Vider les structures de données
+    this.boxes.clear();
+    this.selectedBox = null;
+    
+    // Mettre à jour le layout
+    this.layout = {
+      ...this.layout,
+      boxes: []
+    };
+    
+    // Mettre à jour l'interface
+    this.updateSelectionInfo();
   }
 
   // Drag & Drop handlers (simplifiés pour l'exemple)
