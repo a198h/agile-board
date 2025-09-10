@@ -35,7 +35,6 @@ export class LayoutService {
    */
   public async load(): Promise<void> {
     this.models = await this.loader.loadLayouts();
-    this.logger.info(`${this.models.size} layout(s) chargé(s)`);
 
     // Démarrer la surveillance des fichiers de layout personnalisés
     if (!this.isWatching) {
@@ -49,7 +48,6 @@ export class LayoutService {
   private async startFileWatching(): Promise<void> {
     try {
       await this.fileRepo.startWatching(async () => {
-        this.logger.info('Changement détecté dans les fichiers de layout, rechargement...');
         await this.reload();
       });
       this.isWatching = true;
@@ -134,9 +132,7 @@ export class LayoutService {
    */
   public async reload(): Promise<void> {
     try {
-      this.logger.info('Rechargement des modèles de layout');
       this.models = await this.loader.loadLayouts();
-      this.logger.info(`${this.models.size} modèle(s) rechargé(s): ${Array.from(this.models.keys()).join(', ')}`);
       
       // Notifier les autres services du changement si nécessaire
       this.notifyLayoutsChanged();
@@ -160,7 +156,6 @@ export class LayoutService {
     if (this.isWatching) {
       this.fileRepo.dispose();
       this.isWatching = false;
-      this.logger.info('Surveillance des layouts arrêtée');
     }
   }
 }

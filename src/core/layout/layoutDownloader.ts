@@ -47,11 +47,9 @@ export class LayoutDownloader {
       const checkResult = await this.checkDefaultLayouts();
       
       if (checkResult.allPresent) {
-        this.logger.debug(`Tous les layouts par défaut sont présents (${checkResult.foundCount}/${this.DEFAULT_LAYOUTS.length})`);
         return { success: true, data: undefined };
       }
 
-      this.logger.info(`Layouts manquants détectés (${checkResult.foundCount}/${this.DEFAULT_LAYOUTS.length}). Téléchargement automatique...`);
       
       // Étape 2: Télécharger et installer
       const downloadResult = await this.downloadAndInstallLayouts();
@@ -62,7 +60,6 @@ export class LayoutDownloader {
         return this.createFallbackLayouts();
       }
 
-      this.logger.info('Layouts par défaut installés avec succès via téléchargement automatique');
       return { success: true, data: undefined };
 
     } catch (error) {
@@ -117,7 +114,6 @@ export class LayoutDownloader {
       const currentVersion = this.plugin.manifest.version;
       const downloadUrl = `https://github.com/${this.GITHUB_REPO}/releases/download/${currentVersion}/${this.LAYOUTS_FILENAME}`;
       
-      this.logger.debug(`Téléchargement depuis: ${downloadUrl}`);
       
       // Étape 2: Télécharger le fichier zip
       const response = await requestUrl({
@@ -188,7 +184,6 @@ export class LayoutDownloader {
         if (response.status === 200) {
           const filePath = `${layoutsPath}/${layoutFile}`;
           await this.plugin.app.vault.adapter.write(filePath, response.text);
-          this.logger.debug(`Layout téléchargé: ${layoutFile}`);
         }
         
       } catch (error) {
@@ -228,7 +223,6 @@ export class LayoutDownloader {
       // Notifier l'utilisateur
       new Notice('Agile Board: Layout de base créé. Téléchargement complet échoué, mais fonctionnalité de base disponible.', 5000);
       
-      this.logger.info('Layout de fallback Eisenhower créé');
       return { success: true, data: undefined };
 
     } catch (error) {
