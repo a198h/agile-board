@@ -30,7 +30,6 @@ export class LayoutLoader implements ILayoutLoader {
     // Charger les layouts depuis les fichiers individuels
     await this.loadIndividualLayouts(registry);
 
-    this.logger.info(`${registry.size} modèles chargés: ${Array.from(registry.keys()).join(', ')}`);
     return registry as LayoutRegistry;
   }
 
@@ -63,7 +62,6 @@ export class LayoutLoader implements ILayoutLoader {
         }
       }
       
-      this.logger.info(`${layoutNames.length} layouts individuels traités`);
     } catch (error) {
       this.logger.warn('Erreur lors du chargement des layouts individuels', error);
     }

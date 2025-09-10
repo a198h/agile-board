@@ -29,7 +29,6 @@ export class ModelDetector implements IModelDetector {
     this.plugin.app.workspace.on("file-open", this.handleFileOpen);
     (this.plugin.app.metadataCache.on as any)("resolved", this.handleMetadataResolved);
     
-    console.log("🔍 ModelDetector initialisé");
   }
 
   /**

@@ -29,7 +29,6 @@ export default class AgileBoardPlugin extends Plugin {
     // Configurer le système de logging automatiquement
     LoggingConfig.setupAutomatic();
     
-    this.logger.info('Initialisation du plugin Agile Board');
     this.lifecycleManager = new LifecycleManager(this.app);
     
     try {
@@ -43,7 +42,6 @@ export default class AgileBoardPlugin extends Plugin {
       // Ajouter l'onglet de paramètres pour les layouts
       this.addSettingTab(new LayoutSettingsTab(this.app, this));
       
-      this.logger.info('Plugin Agile Board chargé avec succès');
     } catch (error) {
       const pluginError: PluginError = {
         type: 'INITIALIZATION_ERROR',

@@ -33,9 +33,8 @@ export class LayoutService {
    * @returns Promise résolue quand le chargement est terminé
    */
   public async load(): Promise<void> {
-    this.logger.info('Chargement des modèles de layout');
     this.models = await this.loader.loadLayouts();
-    this.logger.info(`${this.models.size} modèle(s) chargé(s): ${Array.from(this.models.keys()).join(', ')}`);
+    this.logger.info(`${this.models.size} layout(s) chargé(s)`);
 
     // Démarrer la surveillance des fichiers de layout personnalisés
     if (!this.isWatching) {
@@ -53,7 +52,6 @@ export class LayoutService {
         await this.reload();
       });
       this.isWatching = true;
-      this.logger.info('Surveillance des layouts personnalisés activée');
     } catch (error) {
       this.logger.error('Erreur lors du démarrage de la surveillance', error);
     }
