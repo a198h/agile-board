@@ -43,7 +43,6 @@ export class ModelDetector implements IModelDetector {
    */
   public onLoad(): void {
     if (this.isActive) {
-      this.logger.debug('Détecteur déjà actif, ignorer la demande d\'initialisation');
       return;
     }
 
@@ -82,7 +81,6 @@ export class ModelDetector implements IModelDetector {
    */
   public onUnload(): void {
     if (!this.isActive) {
-      this.logger.debug('Détecteur déjà inactif, ignorer la demande de nettoyage');
       return;
     }
 
@@ -90,7 +88,6 @@ export class ModelDetector implements IModelDetector {
       this.unregisterEventListeners();
       this.resetInternalState();
       this.isActive = false;
-      this.logger.info('ModelDetector nettoyé avec succès');
     } catch (error) {
       this.logger.error('Erreur lors du nettoyage du détecteur', error);
     }
@@ -106,7 +103,6 @@ export class ModelDetector implements IModelDetector {
     (this.plugin.app.metadataCache.off as any)("resolved", this.handleMetadataResolved);
     
     this.eventListeners.clear();
-    this.logger.debug('Event listeners désenregistrés');
   }
 
   /**
@@ -115,7 +111,6 @@ export class ModelDetector implements IModelDetector {
   private resetInternalState(): void {
     this.fileStates.clear();
     this.lastProcessedFile = null;
-    this.logger.debug('État interne réinitialisé');
   }
 
   /**
@@ -127,9 +122,7 @@ export class ModelDetector implements IModelDetector {
     const result = this.updateFileState(filePath, { isManuallyChanged: true });
     
     if (result.success) {
-      this.logger.info(`Changement manuel marqué pour ${filePath}`);
     } else {
-      this.logger.warn(`Impossible de marquer le changement manuel pour ${filePath}:`, result.error);
     }
   }
 
@@ -173,7 +166,6 @@ export class ModelDetector implements IModelDetector {
     const filesWithManualChanges = this.getFilesWithManualChanges();
     
     if (filesWithManualChanges.length === 0) {
-      this.logger.debug('Aucun changement manuel à réinitialiser');
       return;
     }
 
@@ -184,7 +176,6 @@ export class ModelDetector implements IModelDetector {
     const successCount = resetResults.filter(r => r.success).length;
     const failureCount = resetResults.length - successCount;
     
-    this.logger.info(`Historique nettoyé: ${successCount} fichiers réinitialisés${failureCount > 0 ? `, ${failureCount} erreurs` : ''}`);
   }
 
   /**
@@ -213,7 +204,6 @@ export class ModelDetector implements IModelDetector {
       if (processingResult.success) {
         this.processFileForAutoSwitch(file, processingResult.data);
       } else {
-        this.logger.warn(`Erreur lors du traitement de l'ouverture du fichier ${file.path}:`, processingResult.error);
       }
     } catch (error) {
       this.logger.error(`Exception lors du traitement de l'ouverture du fichier ${file.path}:`, error);
@@ -236,7 +226,6 @@ export class ModelDetector implements IModelDetector {
     const shouldResetManualFlag = timeSinceLastOpen > PLUGIN_CONSTANTS.TIMING.FILE_REOPEN_THRESHOLD;
     
     if (shouldResetManualFlag && currentState.isManuallyChanged) {
-      this.logger.debug(`Réinitialisation auto-switch pour ${file.path} (${timeSinceLastOpen}ms écoulées)`);
     }
 
     const newState: FileDetectionState = {
@@ -266,7 +255,6 @@ export class ModelDetector implements IModelDetector {
 
     // Éviter le traitement redondant
     if (file.path === this.lastProcessedFile) {
-      this.logger.debug(`Ignorer le traitement redondant des métadonnées pour ${file.path}`);
       return;
     }
 
@@ -301,7 +289,6 @@ export class ModelDetector implements IModelDetector {
     };
     
     this.fileStates.set(file.path, newState);
-    this.logger.debug(`Modèle changé pour ${file.path}: ${currentState.modelName} → ${modelName}`);
     
     return { success: true, data: newState };
   }
@@ -349,7 +336,6 @@ export class ModelDetector implements IModelDetector {
       
       return null;
     } catch (error) {
-      this.logger.warn(`Erreur lors de l'extraction du modèle pour ${file.path}:`, error);
       return null;
     }
   }
@@ -365,12 +351,10 @@ export class ModelDetector implements IModelDetector {
     
     if (!switchDecision.shouldSwitch) {
       if (switchDecision.reason) {
-        this.logger.debug(`Auto-switch ignoré pour ${file.path}: ${switchDecision.reason}`);
       }
       return;
     }
 
-    this.logger.info(`Note Agile Board détectée: ${file.path} avec modèle: ${state.modelName}`);
     
     // Délai pour stabiliser la vue avant basculement
     this.scheduleAutoSwitch(file, state.modelName!);
@@ -434,9 +418,7 @@ export class ModelDetector implements IModelDetector {
     const switchResult = await this.executeSafeAutoSwitch(file, modelName);
     
     if (switchResult.success) {
-      this.logger.info(`Basculement automatique réussi vers mode Board pour ${file.path}`);
     } else {
-      this.logger.warn(`Échec du basculement automatique pour ${file.path}:`, switchResult.error);
     }
   }
 

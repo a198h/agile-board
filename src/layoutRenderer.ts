@@ -102,7 +102,6 @@ export class LayoutRenderer implements ILayoutRenderer {
       
       // Prévenir le rendu concurrent sur la même vue
       if (this.renderingState.get(viewId)) {
-        this.logger.debug(`Rendu déjà en cours pour la vue ${viewId}`);
         return { success: true, data: undefined };
       }
 
@@ -122,7 +121,6 @@ export class LayoutRenderer implements ILayoutRenderer {
           await this.renderSuccessState(view, container, renderPlan);
         }
         
-        this.logger.info(`Layout rendu avec succès: ${blocks.length} bloc(s)`);
         return { success: true, data: undefined };
         
       } finally {
@@ -257,7 +255,6 @@ export class LayoutRenderer implements ILayoutRenderer {
     container: HTMLElement,
     renderPlan: RenderPlan
   ): Promise<void> {
-    this.logger.warn(`Rendu en état d'erreur: ${renderPlan.missingTitles.length} section(s) manquante(s)`);
     
     const errorOverlay = this.createErrorOverlay(
       view,
@@ -279,7 +276,6 @@ export class LayoutRenderer implements ILayoutRenderer {
     container: HTMLElement,
     renderPlan: RenderPlan
   ): Promise<void> {
-    this.logger.debug(`Rendu en état de succès: ${renderPlan.blocks.length} bloc(s)`);
     
     const grid = this.createGrid(renderPlan.blocks);
     
@@ -481,7 +477,6 @@ export class LayoutRenderer implements ILayoutRenderer {
         const merged = [...before, ...newContent.split('\n'), ...after].join('\n');
         
         await this.app.vault.modify(view.file, merged);
-        this.logger.debug(`Contenu mis à jour pour la section: ${sectionInfo.title}`);
       } catch (error) {
         this.logger.error('Erreur lors de la mise à jour du contenu:', error);
         ErrorHandler.handleError(
@@ -606,7 +601,6 @@ export class LayoutRenderer implements ILayoutRenderer {
       const updatedSections = await parseHeadingsInFile(this.app, view.file);
       await this.renderLayout(blocks, view, updatedSections);
       
-      this.logger.info('Correction automatique appliquée avec succès');
     } catch (error) {
       this.logger.error('Erreur lors de la correction automatique:', error);
       ErrorHandler.handleError(
@@ -648,7 +642,6 @@ export class LayoutRenderer implements ILayoutRenderer {
         : sectionsContent;
       
       await this.app.vault.modify(file, newContent.trimStart());
-      this.logger.info(`Fichier réinitialisé avec ${blocks.length} section(s): ${file.path}`);
       
     } catch (error) {
       const pluginError: PluginError = {
@@ -704,7 +697,6 @@ export class LayoutRenderer implements ILayoutRenderer {
     // mais on peut forcer le nettoyage des WeakSet
     // (les WeakSet se nettoient automatiquement quand les objets sont garbage collected)
     
-    this.logger.info('LayoutRenderer nettoyé');
   }
 
   /**

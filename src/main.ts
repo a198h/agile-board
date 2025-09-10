@@ -60,36 +60,28 @@ export default class AgileBoardPlugin extends Plugin {
    * Nettoie les ressources lors du déchargement.
    */
   onunload(): void {
-    this.logger.info('Déchargement du plugin Agile Board');
-    
     this.cleanup();
     if (this.lifecycleManager) {
       this.lifecycleManager.dispose();
     }
     
-    this.logger.info('Plugin Agile Board déchargé');
   }
 
   /**
    * Initialise les services principaux du plugin.
    */
   private async initializeServices(): Promise<void> {
-    this.logger.debug('Initialisation des services');
-    
     // Initialisation du service de layout
-    this.logger.debug('Initialisation du LayoutService');
     this.layoutService = new LayoutService(this);
     await this.layoutService.load();
 
     // Enregistrement de la vue personnalisée
-    this.logger.debug('Enregistrement de la vue personnalisée');
     this.registerView(
       AGILE_BOARD_VIEW_TYPE,
       (leaf) => new AgileBoardView(leaf, this)
     );
 
     // Initialisation des services complémentaires
-    this.logger.debug('Initialisation des services complémentaires');
     this.viewSwitcher = new ViewSwitcher(this);
     this.fileSynchronizer = new FileSynchronizer(this);
     
@@ -107,20 +99,17 @@ export default class AgileBoardPlugin extends Plugin {
       this.lifecycleManager.registerComponent(this.modelDetector);
     }
     
-    this.logger.debug('Services initialisés avec succès');
   }
 
   /**
    * Démarre la surveillance des fichiers et les services.
    */
   private startMonitoring(): void {
-    this.logger.debug('Démarrage de la surveillance');
     
     this.viewSwitcher.addSwitchButton();
     this.fileSynchronizer.start();
     this.modelDetector.onLoad();
     
-    this.logger.debug('Surveillance démarrée');
   }
 
   /**

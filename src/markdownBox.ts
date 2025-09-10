@@ -47,10 +47,6 @@ export class MarkdownBox {
     // Mémoriser la configuration originale du container
     this.containerOriginalHeight = container.style.height || getComputedStyle(container).height;
     
-    this.logger.debug('Initialisation MarkdownBox', { 
-      initialLength: this.content.length,
-      containerHeight: this.containerOriginalHeight
-    });
 
     // ATTENTION : Ne pas modifier le display du container car cela interfère avec CSS Grid
     // Le container garde son display original pour préserver les propriétés de grille
@@ -153,7 +149,6 @@ export class MarkdownBox {
     // Configuration des interactions
     this.setupEventListeners();
     
-    this.logger.debug('Interface MarkdownBox initialisée');
   }
 
   /**
@@ -405,7 +400,6 @@ export class MarkdownBox {
       // Placer le curseur à la fin du texte
       this.editorEl.setSelectionRange(this.content.length, this.content.length);
       
-      this.logger.debug('Éditeur ouvert');
     } catch (error) {
       this.logger.error('Erreur lors de l\'ouverture de l\'éditeur:', error);
       this.isEditing = false;
@@ -450,7 +444,6 @@ export class MarkdownBox {
       this.isEditing = false;
       this.isDirty = false;
       
-      this.logger.debug('Éditeur fermé', { hasChanged });
     } catch (error) {
       this.logger.error('Erreur lors de la fermeture de l\'éditeur:', error);
     }
@@ -493,6 +486,5 @@ export class MarkdownBox {
    */
   public dispose(): void {
     // Les event listeners seront automatiquement nettoyés avec les éléments DOM
-    this.logger.debug('MarkdownBox nettoyé');
   }
 }
