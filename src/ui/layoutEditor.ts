@@ -862,6 +862,12 @@ export class LayoutEditor extends Modal {
       const newTitle = (e.target as HTMLInputElement).value;
       this.updateBoxTitle(this.selectedBox!.box.id, newTitle);
     });
+
+    // Sauvegarder le titre quand l'input perd le focus
+    titleInput.addEventListener('blur', (e) => {
+      const newTitle = (e.target as HTMLInputElement).value;
+      this.updateBoxTitle(this.selectedBox!.box.id, newTitle);
+    });
     
     // Empêcher la désélection quand on clique sur l'input
     titleInput.addEventListener('click', (e) => {
@@ -917,17 +923,22 @@ export class LayoutEditor extends Modal {
   }
 
   private updateBoxTitle(boxId: string, newTitle: string): void {
+    const cleanTitle = newTitle.trim() || 'Sans titre';
+    
     this.layout = {
       ...this.layout,
       boxes: this.layout.boxes.map(box => 
-        box.id === boxId ? { ...box, title: newTitle.trim() || 'Sans titre' } : box
+        box.id === boxId ? { ...box, title: cleanTitle } : box
       )
     };
 
     const boxState = this.boxes.get(boxId);
     if (boxState) {
       const titleElement = boxState.element.querySelector('.box-title') as HTMLElement;
-      titleElement.textContent = newTitle.trim() || 'Sans titre';
+      titleElement.textContent = cleanTitle;
+      
+      // Mettre à jour l'objet box de l'état local avec un nouvel objet
+      boxState.box = { ...boxState.box, title: cleanTitle };
     }
   }
 
