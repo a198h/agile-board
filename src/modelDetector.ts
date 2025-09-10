@@ -50,7 +50,6 @@ export class ModelDetector implements IModelDetector {
     try {
       this.registerEventListeners();
       this.isActive = true;
-      this.logger.info('ModelDetector initialisé avec succès');
     } catch (error) {
       this.logger.error('Erreur lors de l\'initialisation du détecteur', error);
       ErrorHandler.handleError(
