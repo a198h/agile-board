@@ -111,6 +111,9 @@ export class ModelDetector implements IModelDetector {
    * Handler pour la résolution des métadonnées.
    */
   private readonly handleMetadataResolved = (file: TFile): void => {
+    // Vérifier que le fichier existe
+    if (!file) return;
+    
     // Éviter de traiter le même fichier deux fois consécutivement
     if (file.path === this.lastProcessedFile) return;
 
