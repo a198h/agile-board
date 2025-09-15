@@ -1,0 +1,28 @@
+{
+  "name": "cornell",
+  "displayName": "Notes Cornell",
+  "description": "Système de prise de notes structuré avec indices, notes et résumé",
+  "boxes": [
+    {
+      "title": "Indices et Questions",
+      "x": 0,
+      "y": 0,
+      "w": 6,
+      "h": 20
+    },
+    {
+      "title": "Notes Détaillées",
+      "x": 6,
+      "y": 0,
+      "w": 18,
+      "h": 20
+    },
+    {
+      "title": "Résumé",
+      "x": 0,
+      "y": 20,
+      "w": 24,
+      "h": 4
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "effort_impact",
+  "displayName": "Effort vs Impact",
+  "description": "Matrice d'analyse effort/impact pour prioriser les actions",
+  "boxes": [
+    {
+      "title": "Faible Effort - Fort Impact",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Fort Effort - Fort Impact",
+      "x": 12,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Faible Effort - Faible Impact",
+      "x": 0,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Fort Effort - Faible Impact",
+      "x": 12,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "swot",
+  "displayName": "Analyse SWOT",
+  "description": "Matrice d'analyse stratégique Forces/Faiblesses/Opportunités/Menaces",
+  "boxes": [
+    {
+      "title": "Forces",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Faiblesses",
+      "x": 12,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Opportunités",
+      "x": 0,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Menaces",
+      "x": 12,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    }
+  ]
+}

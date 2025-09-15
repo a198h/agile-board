@@ -1,0 +1,49 @@
+{
+  "name": "today",
+  "displayName": "Planning Journalier",
+  "description": "Organisation de la journée avec priorités, tâches et notes",
+  "boxes": [
+    {
+      "title": "Priorités du Jour",
+      "x": 0,
+      "y": 0,
+      "w": 8,
+      "h": 8
+    },
+    {
+      "title": "Tâches",
+      "x": 8,
+      "y": 0,
+      "w": 8,
+      "h": 16
+    },
+    {
+      "title": "Rendez-vous",
+      "x": 16,
+      "y": 0,
+      "w": 8,
+      "h": 8
+    },
+    {
+      "title": "Notes et Idées",
+      "x": 0,
+      "y": 8,
+      "w": 8,
+      "h": 8
+    },
+    {
+      "title": "Réflexions",
+      "x": 16,
+      "y": 8,
+      "w": 8,
+      "h": 8
+    },
+    {
+      "title": "Bilan de la Journée",
+      "x": 0,
+      "y": 16,
+      "w": 24,
+      "h": 8
+    }
+  ]
+}

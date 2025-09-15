@@ -1,0 +1,35 @@
+{
+  "name": "moscow",
+  "displayName": "MoSCoW",
+  "description": "Méthode de priorisation Must/Should/Could/Won't have",
+  "boxes": [
+    {
+      "title": "Must Have",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Should Have",
+      "x": 12,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Could Have",
+      "x": 0,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Won't Have",
+      "x": 12,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    }
+  ]
+}
