@@ -4,8 +4,7 @@ import {
   LayoutModel, 
   LayoutRegistry,
   LayoutLoader as ILayoutLoader,
-  PluginError,
-  Result
+  PluginError
 } from "./types";
 import { LayoutLoader } from "./core/layout/layoutLoader";
 import { LayoutFileRepo } from "./core/layout/layoutFileRepo";
