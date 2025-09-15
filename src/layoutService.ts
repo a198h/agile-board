@@ -18,11 +18,12 @@ import { createContextLogger } from "./core/logger";
  * Orchestrateur qui délègue le chargement et la validation aux services spécialisés.
  */
 export class LayoutService {
-  private models: LayoutRegistry = new Map();
+  private models: LayoutRegistry | null = null;
   private readonly loader: ILayoutLoader;
   private readonly fileRepo: LayoutFileRepo;
   private readonly logger = createContextLogger('LayoutService');
   private isWatching = false;
+  private hasActiveLayouts = false;
 
   constructor(private readonly plugin: Plugin) {
     this.loader = new LayoutLoader(plugin);
@@ -34,12 +35,13 @@ export class LayoutService {
    * @returns Promise résolue quand le chargement est terminé
    */
   public async load(): Promise<void> {
-    this.models = await this.loader.loadLayouts();
-
-    // Démarrer la surveillance des fichiers de layout personnalisés
-    if (!this.isWatching) {
-      await this.startFileWatching();
+    // Chargement lazy - seulement si nécessaire
+    if (this.models === null) {
+      this.models = await this.loader.loadLayouts();
     }
+
+    // Démarrer la surveillance seulement si des layouts sont actifs
+    await this.startFileWatchingIfNeeded();
   }
 
   /**
@@ -53,6 +55,15 @@ export class LayoutService {
       this.isWatching = true;
     } catch (error) {
       this.logger.error('Erreur lors du démarrage de la surveillance', error);
+    }
+  }
+
+  /**
+   * Démarre la surveillance conditionnelle des fichiers
+   */
+  private async startFileWatchingIfNeeded(): Promise<void> {
+    if (this.hasActiveLayouts && !this.isWatching) {
+      await this.startFileWatching();
     }
   }
 
@@ -70,7 +81,7 @@ export class LayoutService {
    * @param name Nom du modèle recherché
    * @returns Modèle trouvé ou undefined
    */
-  public getModel(name: string): LayoutModel | undefined {
+  public async getModel(name: string): Promise<LayoutModel | undefined> {
     const validation = ValidationUtils.validateLayoutModelName(name);
     if (!validation.isValid) {
       ErrorHandler.handleError(validation.error!, 'LayoutService.getModel', {
@@ -80,9 +91,16 @@ export class LayoutService {
       return undefined;
     }
 
-    const model = this.models.get(name);
+    // Chargement lazy des layouts
+    await this.ensureLayoutsLoaded();
+    
+    // Marquer qu'on a un layout actif
+    this.hasActiveLayouts = true;
+    await this.startFileWatchingIfNeeded();
+
+    const model = this.models!.get(name);
     if (!model) {
-      const availableLayouts = Array.from(this.models.keys());
+      const availableLayouts = Array.from(this.models!.keys());
       const notFoundError: PluginError = {
         type: 'LAYOUT_NOT_FOUND',
         layoutName: name,
@@ -100,8 +118,9 @@ export class LayoutService {
    * Récupère tous les noms de modèles disponibles.
    * @returns Liste des noms de modèles
    */
-  public getAllModelNames(): readonly string[] {
-    return Array.from(this.models.keys());
+  public async getAllModelNames(): Promise<readonly string[]> {
+    await this.ensureLayoutsLoaded();
+    return Array.from(this.models!.keys());
   }
 
   /**
@@ -109,20 +128,31 @@ export class LayoutService {
    * @param name Nom du modèle à vérifier
    * @returns true si le modèle existe
    */
-  public hasModel(name: string): boolean {
+  public async hasModel(name: string): Promise<boolean> {
     const validation = ValidationUtils.validateLayoutModelName(name);
     if (!validation.isValid) {
       return false;
     }
-    return this.models.has(name);
+    await this.ensureLayoutsLoaded();
+    return this.models!.has(name);
   }
 
   /**
    * Récupère le nombre total de modèles chargés.
    * @returns Nombre de modèles disponibles
    */
-  public getModelCount(): number {
-    return this.models.size;
+  public async getModelCount(): Promise<number> {
+    await this.ensureLayoutsLoaded();
+    return this.models!.size;
+  }
+
+  /**
+   * S'assure que les layouts sont chargés
+   */
+  private async ensureLayoutsLoaded(): Promise<void> {
+    if (this.models === null) {
+      this.models = await this.loader.loadLayouts();
+    }
   }
 
   /**

@@ -54,7 +54,7 @@ export class AgileBoardView extends FileView {
     }
 
     // Récupérer le modèle depuis le plugin
-    const model = this.plugin.layoutService.getModel(modelName);
+    const model = await this.plugin.layoutService.getModel(modelName);
     if (!model) {
       this.showLayoutNotFoundMessage(modelName);
       return;

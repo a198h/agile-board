@@ -71,9 +71,8 @@ export default class AgileBoardPlugin extends Plugin {
    * Initialise les services principaux du plugin.
    */
   private async initializeServices(): Promise<void> {
-    // Initialisation du service de layout
+    // Initialisation du service de layout (sans chargement immédiat)
     this.layoutService = new LayoutService(this);
-    await this.layoutService.load();
 
     // Enregistrement de la vue personnalisée
     this.registerView(

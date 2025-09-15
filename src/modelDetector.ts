@@ -193,7 +193,7 @@ export class ModelDetector implements IModelDetector {
    * Handler fonctionnel pour l'ouverture de fichiers.
    * Sépare la logique de détection des effets de bord.
    */
-  private readonly handleFileOpen = (file: TFile | null): void => {
+  private readonly handleFileOpen = async (file: TFile | null): Promise<void> => {
     if (!file || !this.isActive) {
       return;
     }
@@ -202,7 +202,7 @@ export class ModelDetector implements IModelDetector {
       const processingResult = this.processFileOpen(file);
       
       if (processingResult.success) {
-        this.processFileForAutoSwitch(file, processingResult.data);
+        await this.processFileForAutoSwitch(file, processingResult.data);
       } else {
       }
     } catch (error) {
@@ -246,7 +246,7 @@ export class ModelDetector implements IModelDetector {
    * Handler fonctionnel pour la résolution des métadonnées.
    * Évite le traitement redondant et les boucles infinies.
    */
-  private readonly handleMetadataResolved = (file: TFile): void => {
+  private readonly handleMetadataResolved = async (file: TFile): Promise<void> => {
     // Vérifier que le fichier existe
     if (!file) return;
     
@@ -262,7 +262,7 @@ export class ModelDetector implements IModelDetector {
       const processingResult = this.processMetadataResolved(file);
       
       if (processingResult.success && processingResult.data) {
-        this.processFileForAutoSwitch(file, processingResult.data);
+        await this.processFileForAutoSwitch(file, processingResult.data);
       }
     } catch (error) {
       this.logger.error(`Exception lors du traitement des métadonnées pour ${file.path}:`, error);
@@ -346,8 +346,8 @@ export class ModelDetector implements IModelDetector {
    * @param file Fichier à traiter
    * @param state État actuel du fichier
    */
-  private processFileForAutoSwitch(file: TFile, state: FileDetectionState): void {
-    const switchDecision = this.evaluateAutoSwitchDecision(file, state);
+  private async processFileForAutoSwitch(file: TFile, state: FileDetectionState): Promise<void> {
+    const switchDecision = await this.evaluateAutoSwitchDecision(file, state);
     
     if (!switchDecision.shouldSwitch) {
       if (switchDecision.reason) {
@@ -367,10 +367,10 @@ export class ModelDetector implements IModelDetector {
    * @param state État actuel
    * @returns Décision structurée avec raison
    */
-  private evaluateAutoSwitchDecision(file: TFile, state: FileDetectionState): {
+  private async evaluateAutoSwitchDecision(file: TFile, state: FileDetectionState): Promise<{
     shouldSwitch: boolean;
     reason?: string;
-  } {
+  }> {
     // Vérifications de base
     if (!file.path.endsWith('.md')) {
       return { shouldSwitch: false, reason: 'fichier non-markdown' };
@@ -385,7 +385,7 @@ export class ModelDetector implements IModelDetector {
     }
 
     // Vérifier que le modèle existe
-    if (!this.layoutService.hasModel(state.modelName)) {
+    if (!(await this.layoutService.hasModel(state.modelName))) {
       return { shouldSwitch: false, reason: `modèle "${state.modelName}" introuvable` };
     }
 
