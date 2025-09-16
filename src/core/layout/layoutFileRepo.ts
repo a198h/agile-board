@@ -80,7 +80,7 @@ export class LayoutFileRepo {
       // Chercher le fichier correspondant (avec ou sans espaces)
       const filePath = await this.findLayoutFile(name);
       if (!filePath) {
-        this.logger.warn(`Fichier layout introuvable: ${name}`);
+        // Fichier introuvable - normal si layout n'existe pas
         return null;
       }
       
@@ -89,7 +89,7 @@ export class LayoutFileRepo {
       
       // Validation basique de structure
       if (!this.isValidLayoutFile(layout)) {
-        this.logger.warn(`Layout invalide: ${name}`);
+        // Layout invalide - skip silencieusement
         return null;
       }
 
@@ -261,10 +261,10 @@ export class LayoutFileRepo {
         // Écrire le fichier
         const content = JSON.stringify(layoutFile, null, 2);
         await fs.writeFile(filePath, content, 'utf-8');
-        this.logger.info(`Layout ${layout.name} créé`);
+        // Layout créé silencieusement
 
       } catch (error) {
-        this.logger.warn(`Impossible de créer le layout ${layout.name}`, error);
+        // Erreur silencieuse - layout existe peut-être déjà
       }
     }
   }
@@ -330,7 +330,7 @@ export class LayoutFileRepo {
     } catch {
       // Le dossier n'existe pas, le créer
       await fs.mkdir(this.layoutsDir, { recursive: true });
-      this.logger.info('Dossier layouts créé');
+      // Dossier créé silencieusement
     }
   }
 
