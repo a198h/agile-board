@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.7.3-blue)
+![version](https://img.shields.io/badge/version-0.7.5-blue)
 
 **[🇫🇷 Version française](#version-fran%C3%A7aise)**
 
@@ -21,13 +21,16 @@ Transform your notes into visual dashboards with editable frames. Each frame rep
 - **Plugin compatibility**: Dataview, Tasks, etc.
 - **Live Preview**: rendering close to Obsidian with some limitations
 
-**Note**: Images (`![[image.png]]`) are not yet supported in frames in Board mode.
+## ⚠️ Current Limitations
 
-## ✨ New in v0.7.3
+The Board mode uses a simplified editor that doesn't include all of Obsidian's advanced editing features:
 
-- **🗑️ Clear All Boxes**: New button to delete all boxes from a layout (with confirmation)
-- **📐 Minimum Box Size**: Boxes now have a minimum size of 2x2 cells (prevents 1x1 boxes)
-- **🐛 Bug Fixes**: Fixed undefined file error in metadata resolution
+- **Images**: Pictures inserted with `![[image.png]]` won't display in Board mode frames
+- **Link suggestions**: When typing `[[`, the editor won't suggest your notes (you can still type the full link manually)
+- **Inline plugin calls**: Inline Dataview queries (`= this.file.name`) or Templater commands (`<% tp.date.now() %>`) don't execute in frames
+
+**Future plans**: We aim to integrate CodeMirror 6 (Obsidian's native editor) to resolve these limitations. If you have experience with CM6 integration, your contribution would be very welcome!
+
 
 ## 🔄 Two display modes
 
@@ -44,7 +47,7 @@ Switch between modes via the toolbar icons.
 
 ### Option 1 - Complete Vault (recommended)
 
-1. Download `Agile-Board-v0.7.3.zip` (Obsidian vault with plugin and examples)
+1. Download `Agile-Board-v0.7.5.zip` (Obsidian vault with plugin and examples)
 2. Unzip and open the folder directly in Obsidian
 
 ### Option 2 - Plugin only
@@ -52,6 +55,7 @@ Switch between modes via the toolbar icons.
 1. Download from [GitHub releases](https://github.com/a198h/agile-board/releases)
 2. Copy the `agile-board` folder to `.obsidian/plugins/`
 3. Restart Obsidian and enable the plugin
+4. **5 default layouts are included** directly in the plugin
 
 ### Option 3 - BRAT (Beta Testing)
 
@@ -133,16 +137,27 @@ Each box corresponds to a **note section**: a **level 1** heading (line starting
 
 ---
 
+## 💡 Inspiration
+
+This plugin is inspired by [Obsidian-Templify](https://github.com/Quorafind/Obsidian-Templify) and builds upon the concept of transforming markdown notes into visual layouts.
+
+---
+
 ## 📂 Your contribution matters!
 
 - **Bugs/Issues**: [https://github.com/a198h/agile-board/issues](https://github.com/a198h/agile-board/issues)
 - **Discussions**: [https://github.com/a198h/agile-board/discussions/8](https://github.com/a198h/agile-board/discussions/8)
 
+
+## Support me
+If you find my work useful, you can support me here: 
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/a198h)
+
 ---
 
 # Version française
 
-![version](https://img.shields.io/badge/version-0.7.3-blue)
+![version](https://img.shields.io/badge/version-0.7.5-blue)
 
 ---
 
@@ -163,13 +178,16 @@ Transforme vos notes en tableaux de bord visuels avec des cadres éditables. Cha
 - **Plugins compatibles** : Dataview, Tasks, etc.
 - **Live Preview** : rendu proche d'Obsidian avec quelques limitations
 
-**Note** : Les images (`![[image.png]]`) ne sont pas encore prises en charge dans les cadres en mode Board.
+## ⚠️ Limites actuelles
 
-## ✨ Nouveautés v0.7.3
+Le mode Board utilise un éditeur simplifié qui n'inclut pas toutes les fonctionnalités d'édition avancées d'Obsidian :
 
-- **🗑️ Effacer toutes les boxes** : Nouveau bouton pour supprimer toutes les boxes d'un layout (avec confirmation)
-- **📐 Taille minimale des boxes** : Les boxes ont maintenant une taille minimale de 2x2 cellules (empêche les boxes 1x1)
-- **🐛 Corrections de bugs** : Correction de l'erreur "fichier undefined" dans la résolution des métadonnées
+- **Images** : Les images insérées avec `![[image.png]]` ne s'affichent pas dans les cadres en mode Board
+- **Suggestions de liens** : En tapant `[[`, l'éditeur ne propose pas vos notes (vous pouvez toujours taper le lien complet manuellement)
+- **Appels inline de plugins** : Les requêtes Dataview inline (`= this.file.name`) ou les commandes Templater (`<% tp.date.now() %>`) ne s'exécutent pas dans les cadres
+
+**Plans futurs** : Nous visons à intégrer CodeMirror 6 (l'éditeur natif d'Obsidian) pour résoudre ces limitations. Si vous avez de l'expérience avec l'intégration CM6, votre contribution serait très bienvenue !
+
 
 ## 🔄 Deux modes d'affichage
 
@@ -186,7 +204,7 @@ Basculez entre les modes via les icônes dans la toolbar.
 
 ### Option 1 - Coffre complet (recommandé)
 
-1. Téléchargez `Agile-Board-v0.7.3.zip` (coffre Obsidian avec plugin et exemples)
+1. Téléchargez `Agile-Board-v0.7.5.zip` (coffre Obsidian avec plugin et exemples)
 2. Dézippez et ouvrez directement le dossier dans Obsidian
 
 ### Option 2 - Plugin seul
@@ -194,9 +212,9 @@ Basculez entre les modes via les icônes dans la toolbar.
 1. Téléchargez depuis les [releases GitHub](https://github.com/a198h/agile-board/releases)
 2. Copiez le dossier `agile-board` dans `.obsidian/plugins/`
 3. Redémarrez Obsidian et activez le plugin
-4. **Les layouts par défaut se téléchargent automatiquement** au premier démarrage
+4. **Les 5 layouts par défaut sont inclus** directement dans le plugin
 
-> **✨ Nouveau v0.7.2**: Plus besoin de télécharger `layouts.zip` manuellement ! Le plugin télécharge automatiquement tous les layouts par défaut (eisenhower, swot, moscow, etc.) depuis GitHub au premier lancement.
+> **✨ Nouveau v0.7.5**: Tous les layouts par défaut (eisenhower, swot, moscow, effort_impact, cornell) sont maintenant intégrés au plugin !
 
 ### Option 3 - BRAT (Test Beta)
 
@@ -279,12 +297,12 @@ Chaque box correspond à une **section de la note** : un titre de **niveau 1** (
 
 ## 🔮 Roadmap & Améliorations prévues
 
-### Version actuelle (v0.7.3)
+### Version actuelle (v0.7.5)
 - ✅ **Architecture refactorisée** : Code enterprise-grade avec TypeScript strict
 - ✅ **Gestion d'erreurs fonctionnelle** : Patterns Result<T> 
 - ✅ **Documentation complète** : JSDoc pour toutes les APIs
 - ✅ **Lifecycle management** : Nettoyage approprié des ressources
-- ✅ **Téléchargement automatique** : Layouts par défaut récupérés depuis GitHub au premier lancement
+- ✅ **Layouts intégrés** : 5 layouts par défaut inclus dans le plugin
 
 ### Prochaines améliorations
 - 🚧 **CodeMirror 6 Integration** : Remplacement des textarea par l'éditeur CM6 natif d'Obsidian
@@ -302,7 +320,17 @@ Chaque box correspond à une **section de la note** : un titre de **niveau 1** (
 
 ***
 
+## 💡 Inspiration
+
+Ce plugin est inspiré de [Obsidian-Templify](https://github.com/Quorafind/Obsidian-Templify) et s'appuie sur le concept de transformation des notes markdown en mises en page visuelles.
+
+---
+
 ## 📂 Votre contribution compte !
 
 - **Bugs/Issues** : [https://github.com/a198h/agile-board/issues](https://github.com/a198h/agile-board/issues)
 - **Discussions** : [https://github.com/a198h/agile-board/discussions/8](https://github.com/a198h/agile-board/discussions/8)
+
+## Me soutenir
+Si mon travail vous est utile vous pouvez me soutenir ici :  
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/a198h)

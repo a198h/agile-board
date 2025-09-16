@@ -27,12 +27,56 @@ export class LayoutLoader implements ILayoutLoader {
   public async loadLayouts(): Promise<LayoutRegistry> {
     const registry = new Map<string, LayoutModel>();
 
-    // Charger les layouts depuis les fichiers individuels
+    // Charger d'abord les layouts intégrés (par défaut)
+    await this.loadBundledLayouts(registry);
+    
+    // Puis charger les layouts personnalisés depuis /layouts/
     await this.loadIndividualLayouts(registry);
 
     return registry as LayoutRegistry;
   }
 
+
+  /**
+   * Charge les layouts intégrés depuis src/layouts/
+   */
+  private async loadBundledLayouts(registry: LayoutRegistry): Promise<void> {
+    const bundledLayouts = [
+      { name: 'eisenhower', data: await this.getBundledLayout('eisenhower') },
+      { name: 'swot', data: await this.getBundledLayout('swot') },
+      { name: 'moscow', data: await this.getBundledLayout('moscow') },
+      { name: 'effort_impact', data: await this.getBundledLayout('effort_impact') },
+      { name: 'cornell', data: await this.getBundledLayout('cornell') }
+    ];
+
+    for (const layout of bundledLayouts) {
+      if (layout.data) {
+        const legacyModel: LayoutModel = layout.data.boxes.map((box: any) => ({
+          title: box.title,
+          x: box.x,
+          y: box.y,
+          w: box.w,
+          h: box.h
+        })) as LayoutModel;
+        
+        (registry as Map<string, LayoutModel>).set(layout.name, legacyModel);
+      }
+    }
+  }
+
+  /**
+   * Récupère un layout intégré depuis src/layouts/
+   */
+  private async getBundledLayout(name: string): Promise<any> {
+    try {
+      // Import dynamique du layout intégré
+      const layoutModule = await import(`../../layouts/${name}.json`);
+      return layoutModule.default || layoutModule;
+    } catch (error) {
+      this.logger.warn(`Layout intégré '${name}' non trouvé`, error);
+      return null;
+    }
+  }
 
   /**
    * Charge les layouts depuis les fichiers individuels dans /layouts/

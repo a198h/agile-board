@@ -1,0 +1,35 @@
+{
+  "name": "eisenhower",
+  "displayName": "Matrice d'Eisenhower",
+  "description": "Matrice de priorisation urgent/important pour la gestion des tâches",
+  "boxes": [
+    {
+      "title": "Urgent et Important",
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Important mais pas Urgent",
+      "x": 12,
+      "y": 0,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Urgent mais pas Important",
+      "x": 0,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    },
+    {
+      "title": "Ni Urgent ni Important",
+      "x": 12,
+      "y": 12,
+      "w": 12,
+      "h": 12
+    }
+  ]
+}
