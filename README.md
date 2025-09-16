@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.7.5-blue)
+![version](https://img.shields.io/badge/version-0.7.6-blue)
 
 **[🇫🇷 Version française](#version-fran%C3%A7aise)**
 
@@ -47,7 +47,7 @@ Switch between modes via the toolbar icons.
 
 ### Option 1 - Complete Vault (recommended)
 
-1. Download `Agile-Board-v0.7.5.zip` (Obsidian vault with plugin and examples)
+1. Download `Agile-Board-v0.7.6.zip` (Obsidian vault with plugin and examples)
 2. Unzip and open the folder directly in Obsidian
 
 ### Option 2 - Plugin only
@@ -157,7 +157,7 @@ If you find my work useful, you can support me here:
 
 # Version française
 
-![version](https://img.shields.io/badge/version-0.7.5-blue)
+![version](https://img.shields.io/badge/version-0.7.6-blue)
 
 ---
 
@@ -204,7 +204,7 @@ Basculez entre les modes via les icônes dans la toolbar.
 
 ### Option 1 - Coffre complet (recommandé)
 
-1. Téléchargez `Agile-Board-v0.7.5.zip` (coffre Obsidian avec plugin et exemples)
+1. Téléchargez `Agile-Board-v0.7.6.zip` (coffre Obsidian avec plugin et exemples)
 2. Dézippez et ouvrez directement le dossier dans Obsidian
 
 ### Option 2 - Plugin seul
@@ -214,7 +214,7 @@ Basculez entre les modes via les icônes dans la toolbar.
 3. Redémarrez Obsidian et activez le plugin
 4. **Les 5 layouts par défaut sont inclus** directement dans le plugin
 
-> **✨ Nouveau v0.7.5**: Tous les layouts par défaut (eisenhower, swot, moscow, effort_impact, cornell) sont maintenant intégrés au plugin !
+> **✨ Nouveau v0.7.6**: Tous les layouts par défaut (eisenhower, swot, moscow, effort_impact, cornell) sont maintenant vraiment intégrés au plugin ! Fix du problème BRAT v0.7.5.
 
 ### Option 3 - BRAT (Test Beta)
 
@@ -297,7 +297,7 @@ Chaque box correspond à une **section de la note** : un titre de **niveau 1** (
 
 ## 🔮 Roadmap & Améliorations prévues
 
-### Version actuelle (v0.7.5)
+### Version actuelle (v0.7.6)
 - ✅ **Architecture refactorisée** : Code enterprise-grade avec TypeScript strict
 - ✅ **Gestion d'erreurs fonctionnelle** : Patterns Result<T> 
 - ✅ **Documentation complète** : JSDoc pour toutes les APIs

@@ -11,7 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement onClearAll event for better architecture
 - CodeMirror 6 integration with full image support (`![[image.png]]`) in frames
 
-## [0.7.5] - 2025-01-15
+## [0.7.6] - 2025-09-16
+
+### Fixed
+- **🔧 Bundled Layouts**: Fixed layouts loading issue in v0.7.5 where layouts were not properly bundled
+- **📦 BRAT Compatibility**: Replaced dynamic imports with static imports for JSON layouts
+- **⚙️ TypeScript Config**: Added `resolveJsonModule` and `allowSyntheticDefaultImports` for proper JSON handling
+- **🐛 Layout Loading Error**: Resolved "Layout 'swot' introuvable (disponibles: )" error in BRAT installations
+
+### Technical
+- Static imports replace dynamic imports: `import eisenhowerData from "../../layouts/eisenhower.json"`
+- Layouts now truly embedded in main.js bundle
+- No more external layouts.zip dependency needed
+
+## [0.7.5] - 2025-09-16
 
 ### Added
 - **🗑️ Clear All Boxes**: New button to delete all boxes from a layout with confirmation dialog
@@ -36,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced error handling with Result<T, Error> patterns
 - Professional logging system with contextual information
 
-## [0.7.2] - 2025-01-10
+## [0.7.2] - 2025-09-03
 
 ### Added
 - **📥 Automatic Layout Download**: Layouts now download automatically on first startup
@@ -52,13 +65,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced layout file repository management
 - Improved error handling for missing layouts
 
-## [0.7.1] - 2025-01-05
+## [0.7.1] - 2025-09-03
 
 ### Fixed
 - **🐛 Critical Fixes**: Various stability improvements
 - **🔧 Bug Fixes**: Resolution of editor and rendering issues
 
-## [0.7.0] - 2025-01-01
+## [0.7.0] - 2025-08-31
 
 ### Added
 - **🎨 Visual Layout Editor**: Complete redesign with modular architecture
@@ -78,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SOLID principles implementation throughout the codebase
 - Event-driven architecture for component communication
 
-## [0.6.0] - 2024-12-15
+## [0.6.0] - 2025-07-26
 
 ### Added
 - **📝 Live Preview Integration**: Enhanced markdown rendering within frames
@@ -89,20 +102,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **🎯 Rendering Issues**: Improved frame content display and editing experience
 - **📱 UI/UX Improvements**: Better visual feedback and user interaction
 
-## [0.5.6] - 2024-12-10
+## [0.5.6] - 2025-07-26
 
 ### Fixed
 - **🐛 Stability Improvements**: Various bug fixes and performance enhancements
 - **🔧 Editor Reliability**: Enhanced inline editing experience
 
-## [0.5.1] - 2024-12-05
+## [0.5.1] - 2025-07-19
 
 ### Added
 - **🎪 Frame Editing**: Click-to-edit functionality for layout frames
 - **📝 Markdown Support**: Rich markdown rendering within frames
 - **🔄 Real-time Sync**: Automatic synchronization between visual frames and markdown source
 
-## [0.5.0] - 2024-12-01
+## [0.5.0] - 2025-07-19
 
 ### Added
 - **🎨 Layout System**: Introduction of customizable layout templates
@@ -114,12 +127,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **🔄 Dual Mode System**: Switch between Board mode and Normal markdown editing
 - **📦 Frontmatter Activation**: Layouts activated via `agile-board: layout_name` property
 
-## [0.3.2] - 2024-11-20
+## [0.3.2] - 2025-06-24
 
 ### Fixed
 - **🐛 Initial Bug Fixes**: Various stability and compatibility improvements
 
-## [0.3.0] - 2024-11-15
+## [0.3.0] - 2025-06-23
 
 ### Added
 - **🎯 Core Concept**: Initial implementation of visual board transformation
