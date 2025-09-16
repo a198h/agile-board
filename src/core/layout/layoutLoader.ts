@@ -10,6 +10,13 @@ import {
 import { LayoutFileRepo } from "./layoutFileRepo";
 import { createContextLogger } from "../logger";
 
+// Import statique des layouts intégrés
+import eisenhowerData from "../../layouts/eisenhower.json";
+import swotData from "../../layouts/swot.json";
+import moscowData from "../../layouts/moscow.json";
+import effortImpactData from "../../layouts/effort_impact.json";
+import cornellData from "../../layouts/cornell.json";
+
 /**
  * Service de chargement des modèles de layout depuis le système de fichiers.
  * Charge uniquement les layouts depuis les fichiers individuels dans /layouts/.
@@ -42,11 +49,11 @@ export class LayoutLoader implements ILayoutLoader {
    */
   private async loadBundledLayouts(registry: LayoutRegistry): Promise<void> {
     const bundledLayouts = [
-      { name: 'eisenhower', data: await this.getBundledLayout('eisenhower') },
-      { name: 'swot', data: await this.getBundledLayout('swot') },
-      { name: 'moscow', data: await this.getBundledLayout('moscow') },
-      { name: 'effort_impact', data: await this.getBundledLayout('effort_impact') },
-      { name: 'cornell', data: await this.getBundledLayout('cornell') }
+      { name: 'eisenhower', data: eisenhowerData },
+      { name: 'swot', data: swotData },
+      { name: 'moscow', data: moscowData },
+      { name: 'effort_impact', data: effortImpactData },
+      { name: 'cornell', data: cornellData }
     ];
 
     for (const layout of bundledLayouts) {
@@ -64,19 +71,6 @@ export class LayoutLoader implements ILayoutLoader {
     }
   }
 
-  /**
-   * Récupère un layout intégré depuis src/layouts/
-   */
-  private async getBundledLayout(name: string): Promise<any> {
-    try {
-      // Import dynamique du layout intégré
-      const layoutModule = await import(`../../layouts/${name}.json`);
-      return layoutModule.default || layoutModule;
-    } catch (error) {
-      this.logger.warn(`Layout intégré '${name}' non trouvé`, error);
-      return null;
-    }
-  }
 
   /**
    * Charge les layouts depuis les fichiers individuels dans /layouts/
