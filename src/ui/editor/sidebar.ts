@@ -162,14 +162,7 @@ export class Sidebar implements EditorComponent {
         this.events.onBoxDelete(''); // ID sera récupéré par le manager
       });
 
-    // Bouton dupliquer
-    new ButtonComponent(buttonContainer)
-      .setButtonText('📑 Dupliquer')
-      .setTooltip('Dupliquer la box sélectionnée')
-      .onClick(() => {
-        // TODO: Implémenter la duplication
-        this.showHelpMessage('Fonctionnalité de duplication à venir');
-      });
+    // Note: Bouton dupliquer supprimé - fonctionnalité jugée inutile
 
     section.appendChild(buttonContainer);
     this.container!.appendChild(section);
@@ -346,7 +339,8 @@ export class Sidebar implements EditorComponent {
 
     if (confirmed) {
       // Notifier l'événement - sera géré par le BoxManager
-      // TODO: Ajouter un événement onClearAll dans EditorEvents
+      // FUTURE: Événement onClearAll - v0.8.0+
+      // Actuellement, le clearing se fait via UI seulement
     }
   }
 

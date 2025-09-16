@@ -2,6 +2,7 @@
 import { App, TFile, Component, MarkdownRenderer } from "obsidian";
 import { SectionInfo } from "./sectionParser";
 import { debounce } from "ts-debounce";
+import { createContextLogger } from "./core/logger";
 
 export class NativeMarkdownView {
   private component: Component;
@@ -11,6 +12,7 @@ export class NativeMarkdownView {
   private isEditing = false;
   private textArea: HTMLTextAreaElement;
   private markdownContent: string;
+  private readonly logger = createContextLogger('NativeMarkdownView');
 
   constructor(
     private app: App,
@@ -102,10 +104,10 @@ export class NativeMarkdownView {
       );
       
       // Le MarkdownRenderer devrait maintenant gérer les liens et images automatiquement
-      console.log('✅ Rendu natif pour:', this.sectionTitle);
+      this.logger.debug('Rendu natif réussi pour:', this.sectionTitle);
       
     } catch (error) {
-      console.error('Erreur rendu markdown:', error);
+      this.logger.error(`Erreur rendu markdown pour ${this.sectionTitle}:`, error);
       this.renderFallback();
     }
   }
@@ -227,6 +229,6 @@ export class NativeMarkdownView {
   destroy(): void {
     this.component.unload();
     this.container.empty();
-    console.log('🗑️ NativeMarkdownView détruite pour:', this.sectionTitle);
+    this.logger.debug('NativeMarkdownView détruite pour:', this.sectionTitle);
   }
 }

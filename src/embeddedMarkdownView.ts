@@ -2,6 +2,7 @@
 import { App, TFile, Component, MarkdownRenderer, WorkspaceLeaf } from "obsidian";
 import { SectionInfo } from "./sectionParser";
 import { debounce } from "ts-debounce";
+import { createContextLogger } from "./core/logger";
 
 export class EmbeddedMarkdownView {
   private component: Component;
@@ -9,6 +10,7 @@ export class EmbeddedMarkdownView {
   private isUpdating = false;
   private tempFile: TFile | null = null;
   private tempLeaf: WorkspaceLeaf | null = null;
+  private readonly logger = createContextLogger('EmbeddedMarkdownView');
 
   constructor(
     private app: App,
@@ -36,7 +38,7 @@ export class EmbeddedMarkdownView {
       this.setupSynchronization();
       
     } catch (error) {
-      console.error('Erreur EmbeddedMarkdownView:', error);
+      this.logger.error(`Erreur initialisation EmbeddedMarkdownView pour ${this.sectionTitle}:`, error);
       this.renderFallback();
     }
   }
@@ -49,7 +51,7 @@ export class EmbeddedMarkdownView {
     try {
       this.tempFile = await this.app.vault.create(tempFileName, sectionContent);
     } catch (error) {
-      console.error('Erreur création fichier temporaire:', error);
+      this.logger.error(`Erreur création fichier temporaire pour ${this.sectionTitle}:`, error);
       throw error;
     }
   }
@@ -102,7 +104,7 @@ export class EmbeddedMarkdownView {
         
       }
     } catch (error) {
-      console.error('Erreur création leaf:', error);
+      this.logger.error(`Erreur création leaf pour ${this.sectionTitle}:`, error);
       throw error;
     }
   }
@@ -132,7 +134,7 @@ export class EmbeddedMarkdownView {
       const tempContent = await this.app.vault.read(this.tempFile);
       this.debouncedOnChange(tempContent);
     } catch (error) {
-      console.error('Erreur synchronisation:', error);
+      this.logger.error(`Erreur synchronisation pour ${this.sectionTitle}:`, error);
     }
   }
 
@@ -187,7 +189,7 @@ export class EmbeddedMarkdownView {
       try {
         return await this.app.vault.read(this.tempFile);
       } catch (error) {
-        console.error('Erreur lecture fichier temporaire:', error);
+        this.logger.error(`Erreur lecture fichier temporaire pour ${this.sectionTitle}:`, error);
       }
     }
     return this.section.lines.join('\n');
@@ -206,7 +208,7 @@ export class EmbeddedMarkdownView {
       try {
         await this.app.vault.delete(this.tempFile);
       } catch (error) {
-        console.error('Erreur suppression fichier temporaire:', error);
+        this.logger.error(`Erreur suppression fichier temporaire pour ${this.sectionTitle}:`, error);
       }
       this.tempFile = null;
     }
@@ -217,6 +219,6 @@ export class EmbeddedMarkdownView {
     // Nettoyer le container
     this.container.empty();
     
-    console.log('🗑️ EmbeddedMarkdownView détruite pour:', this.sectionTitle);
+    this.logger.debug('EmbeddedMarkdownView détruite pour:', this.sectionTitle);
   }
 }

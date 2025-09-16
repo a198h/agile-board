@@ -46,8 +46,7 @@ export class LayoutLoader implements ILayoutLoader {
       { name: 'swot', data: await this.getBundledLayout('swot') },
       { name: 'moscow', data: await this.getBundledLayout('moscow') },
       { name: 'effort_impact', data: await this.getBundledLayout('effort_impact') },
-      { name: 'cornell', data: await this.getBundledLayout('cornell') },
-      { name: 'today', data: await this.getBundledLayout('today') }
+      { name: 'cornell', data: await this.getBundledLayout('cornell') }
     ];
 
     for (const layout of bundledLayouts) {
