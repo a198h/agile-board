@@ -34,9 +34,6 @@ export class LayoutService {
    * @returns Promise résolue quand le chargement est terminé
    */
   public async load(): Promise<void> {
-    // Initialiser le repository de fichiers (crée le dossier et les layouts de base)
-    await this.fileRepo.initialize();
-
     // Chargement lazy - seulement si nécessaire
     if (this.models === null) {
       this.models = await this.loader.loadLayouts();
