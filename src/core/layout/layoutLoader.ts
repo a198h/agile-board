@@ -34,6 +34,9 @@ export class LayoutLoader implements ILayoutLoader {
   public async loadLayouts(): Promise<LayoutRegistry> {
     const registry = new Map<string, LayoutModel>();
 
+    // Initialiser le repository de fichiers (créer dossier et layouts de base)
+    await this.fileRepo.initialize();
+
     // Charger d'abord les layouts intégrés (par défaut)
     await this.loadBundledLayouts(registry);
     
