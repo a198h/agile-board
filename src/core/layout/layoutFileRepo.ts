@@ -48,6 +48,7 @@ export class LayoutFileRepo {
   public async initialize(): Promise<void> {
     try {
       await this.ensureLayoutsDirectoryExists();
+      await this.createBundledLayoutFiles();
     } catch (error) {
       ErrorHandler.handleError(error as Error, 'LayoutFileRepo.initialize', {
         severity: ErrorSeverity.CRITICAL
@@ -211,6 +212,62 @@ export class LayoutFileRepo {
   }
 
   // Méthodes privées
+
+  /**
+   * Crée les fichiers de layouts intégrés s'ils n'existent pas déjà
+   */
+  private async createBundledLayoutFiles(): Promise<void> {
+    // Import des layouts intégrés (importés statiquement dans layoutLoader.ts)
+    const eisenhowerData = await import("../../layouts/eisenhower.json");
+    const swotData = await import("../../layouts/swot.json");
+    const moscowData = await import("../../layouts/moscow.json");
+    const effortImpactData = await import("../../layouts/effort_impact.json");
+    const cornellData = await import("../../layouts/cornell.json");
+
+    const bundledLayouts = [
+      { name: 'eisenhower', data: eisenhowerData.default },
+      { name: 'swot', data: swotData.default },
+      { name: 'moscow', data: moscowData.default },
+      { name: 'effort_impact', data: effortImpactData.default },
+      { name: 'cornell', data: cornellData.default }
+    ];
+
+    for (const layout of bundledLayouts) {
+      const filePath = this.getLayoutFilePath(layout.name);
+      
+      try {
+        // Vérifier si le fichier existe déjà
+        await fs.access(filePath);
+        // Le fichier existe, ne pas l'écraser
+        continue;
+      } catch {
+        // Le fichier n'existe pas, le créer
+      }
+
+      try {
+        // Convertir vers le nouveau format LayoutFile
+        const layoutFile: LayoutFile = {
+          name: layout.name,
+          boxes: layout.data.boxes.map((box: any, index: number) => ({
+            id: `box-${index}`,
+            title: box.title,
+            x: box.x,
+            y: box.y,
+            w: box.w,
+            h: box.h
+          }))
+        };
+
+        // Écrire le fichier
+        const content = JSON.stringify(layoutFile, null, 2);
+        await fs.writeFile(filePath, content, 'utf-8');
+        this.logger.info(`Layout ${layout.name} créé`);
+
+      } catch (error) {
+        this.logger.warn(`Impossible de créer le layout ${layout.name}`, error);
+      }
+    }
+  }
 
   private getLayoutsDirectoryPath(): string {
     const adapter = this.plugin.app.vault.adapter;
