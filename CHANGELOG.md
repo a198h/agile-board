@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement onClearAll event for better architecture
 - CodeMirror 6 integration with full image support (`![[image.png]]`) in frames
 
+## [0.7.7] - 2025-09-17
+- **Full internationalization** : English, French, German, Spanish, Portuguese, Chinese
+
 ## [0.7.6] - 2025-09-16
 
 ### Fixed
