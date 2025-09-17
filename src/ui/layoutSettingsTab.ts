@@ -32,7 +32,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
     
-    containerEl.createEl('h2', { text: 'Agile Board - Tableaux' });
+    containerEl.createEl('h2', { text: 'Agile Board - Bibliothèque' });
 
     // Boutons principaux
     this.createMainButtons(containerEl);
@@ -123,7 +123,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
     header.style.fontSize = '14px';
     header.style.color = 'var(--text-muted)';
 
-    header.createSpan({ text: 'Nom du Tableau' });
+    header.createSpan({ text: 'Tableau' });
     header.createSpan({ text: 'Cadres' });
     header.createSpan({ text: 'Actions' });
 

@@ -93,7 +93,7 @@ export class PositionCalculator {
     }
 
     /**
-     * Vérifie si une box est dans les limites de la grille
+     * Vérifie si un cadre est dans les limites de la grille
      */
     static isWithinGrid(box: LayoutBox): boolean {
         return box.x >= 0 
@@ -103,7 +103,7 @@ export class PositionCalculator {
     }
 
     /**
-     * Calcule la position CSS pour une box avec espacement moderne (comme l'ancien système)
+     * Calcule la position CSS pour un cadre avec espacement moderne (comme l'ancien système)
      */
     static getBoxCSSPosition(box: LayoutBox): { left: string; top: string; width: string; height: string } {
         const pixel = this.gridToPixels(box.x, box.y);
@@ -119,8 +119,8 @@ export class PositionCalculator {
     }
 
     /**
-     * Calcule l'index de couleur séquentiel pour une box
-     * IMPORTANT: Utilise l'ordre original des boxes (comme l'ancien système)
+     * Calcule l'index de couleur séquentiel pour un cadre
+     * IMPORTANT: Utilise l'ordre original des cadres (comme l'ancien système)
      */
     static calculateColorIndex(boxes: LayoutBox[], currentBox: LayoutBox): number {
         // Ne PAS trier - utiliser l'ordre original du fichier JSON pour compatibilité

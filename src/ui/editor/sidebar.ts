@@ -157,7 +157,7 @@ export class Sidebar implements EditorComponent {
     // Bouton supprimer
     new ButtonComponent(buttonContainer)
       .setButtonText('🗑️ Supprimer')
-      .setTooltip('Supprimer la box sélectionnée')
+      .setTooltip('Supprimer le cadre sélectionné')
       .onClick(() => {
         this.events.onBoxDelete(''); // ID sera récupéré par le manager
       });
@@ -200,7 +200,7 @@ export class Sidebar implements EditorComponent {
   }
 
   /**
-   * Bouton pour effacer toutes les boxes
+   * Bouton pour effacer tous les cadres
    */
   private createClearAllButton(): void {
     const container = document.createElement('div');
@@ -330,7 +330,7 @@ export class Sidebar implements EditorComponent {
   }
 
   /**
-   * Demande confirmation pour effacer toutes les boxes
+   * Demande confirmation pour effacer tous les cadres
    */
   private confirmClearAll(): void {
     const confirmed = confirm(

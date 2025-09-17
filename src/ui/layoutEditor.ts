@@ -16,7 +16,7 @@ export interface LayoutEditorCallbacks {
 }
 
 /**
- * État d'une box pendant l'édition
+ * État d'un cadre pendant l'édition
  */
 interface BoxState {
   box: LayoutBox;
@@ -362,7 +362,7 @@ export class LayoutEditor extends Modal {
     sectionTitle.style.color = 'var(--text-normal)';
     
     const infoContent = selectionSection.createDiv('info-content');
-    infoContent.innerHTML = '<p style="color: var(--text-muted); margin: 0;">Aucune box sélectionnée</p>';
+    infoContent.innerHTML = '<p style="color: var(--text-muted); margin: 0;">Aucun cadre sélectionné</p>';
   }
 
   private createActionsSection(): void {
@@ -858,7 +858,7 @@ export class LayoutEditor extends Modal {
     const infoContent = this.sidebar.querySelector('.info-content') as HTMLElement;
     
     if (!this.selectedBox) {
-      infoContent.innerHTML = '<p style="color: var(--text-muted);">Aucune box sélectionnée</p>';
+      infoContent.innerHTML = '<p style="color: var(--text-muted);">Aucun cadre sélectionné</p>';
       return;
     }
 
