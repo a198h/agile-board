@@ -23,7 +23,16 @@ class I18n {
    * @param lang Code de langue (ex: 'en', 'fr')
    */
   setLanguage(lang: string): void {
-    // Normaliser la langue (en-US → en)
+    // Normaliser la langue avec gestion spéciale du chinois
+    const lowerLang = lang.toLowerCase();
+    
+    // Mapping des codes de langue chinois vers zh-CN
+    if (lowerLang === 'zh' || lowerLang === 'zh-cn' || lowerLang === 'zh-hans' || lowerLang === 'zh_cn') {
+      this.currentLanguage = 'zh-CN';
+      return;
+    }
+    
+    // Normalisation standard (en-US → en)
     const normalizedLang = lang.split('-')[0].toLowerCase();
     this.currentLanguage = normalizedLang;
   }
@@ -167,6 +176,10 @@ export async function initializeI18n(): Promise<void> {
     // Charger les traductions portugaises
     const ptTranslations = await import('../locales/pt.json');
     loadTranslations('pt', ptTranslations.default);
+
+    // Charger les traductions chinoises (simplifiées)
+    const zhCNTranslations = await import('../locales/zh-CN.json');
+    loadTranslations('zh-CN', zhCNTranslations.default);
   } catch (error) {
     console.error('[i18n] Failed to load translations:', error);
   }
