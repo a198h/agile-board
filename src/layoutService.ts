@@ -11,6 +11,7 @@ import { LayoutFileRepo } from "./core/layout/layoutFileRepo";
 import { ErrorHandler, ErrorSeverity } from "./core/errorHandler";
 import { ValidationUtils } from "./core/validation";
 import { createContextLogger } from "./core/logger";
+import { t } from "./i18n";
 
 /**
  * Service principal de gestion des modèles de layout.
@@ -85,7 +86,7 @@ export class LayoutService {
     if (!validation.isValid) {
       ErrorHandler.handleError(validation.error!, 'LayoutService.getModel', {
         severity: ErrorSeverity.WARNING,
-        userMessage: `Nom de modèle invalide: ${name}`
+        userMessage: t('error.invalidLayoutName', { name })
       });
       return undefined;
     }
@@ -173,7 +174,7 @@ export class LayoutService {
         details: error instanceof Error ? error.message : String(error)
       }, 'LayoutService.reload', {
         severity: ErrorSeverity.WARNING,
-        userMessage: 'Erreur lors du rechargement des tableaux'
+        userMessage: t('error.reloadingLayouts')
       });
     }
   }

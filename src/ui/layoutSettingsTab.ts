@@ -9,6 +9,7 @@ import { TIMING_CONSTANTS, VALIDATION_CONSTANTS, generateBoxId } from "../core/c
 import { UIErrorHandler } from "./utils/ErrorHandler";
 import { NameGenerator } from "../core/utils/NameGenerator";
 import AgileBoardPlugin from "../main";
+import { t } from "../i18n";
 
 /**
  * Onglet de paramètres pour la gestion des layouts
@@ -32,7 +33,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
     
-    containerEl.createEl('h2', { text: 'Agile Board - Bibliothèque' });
+    containerEl.createEl('h2', { text: t('settings.header') });
 
     // Boutons principaux
     this.createMainButtons(containerEl);
@@ -52,23 +53,23 @@ export class LayoutSettingsTab extends PluginSettingTab {
 
     // Bouton "Nouveau Tableau"
     new ButtonComponent(buttonsContainer)
-      .setButtonText('Nouveau Tableau')
+      .setButtonText(t('settings.button.newLayout'))
       .setIcon('plus')
-      .setTooltip('Créer un nouveau tableau vide')
+      .setTooltip(t('settings.tooltip.newLayout'))
       .onClick(() => this.createNewLayout());
 
     // Bouton "Importer JSON"
     new ButtonComponent(buttonsContainer)
-      .setButtonText('Importer JSON')
+      .setButtonText(t('settings.button.import'))
       .setIcon('download')
-      .setTooltip('Importer un tableau depuis un fichier JSON')
+      .setTooltip(t('settings.tooltip.import'))
       .onClick(() => this.importLayout());
 
     // Bouton "Actualiser"
     new ButtonComponent(buttonsContainer)
-      .setButtonText('Actualiser')
+      .setButtonText(t('settings.button.refresh'))
       .setIcon('refresh-cw')
-      .setTooltip('Actualiser la liste des tableaux')
+      .setTooltip(t('settings.tooltip.refresh'))
       .onClick(() => this.refreshLayoutList());
   }
 
@@ -90,8 +91,8 @@ export class LayoutSettingsTab extends PluginSettingTab {
       this.layouts = loadedLayouts.filter((layout): layout is LayoutFile => layout !== null);
       this.renderLayoutList();
     } catch (error) {
-      this.logger.error('Erreur lors du chargement des tableaux', error);
-      new Notice('Erreur lors du chargement des tableaux');
+      this.logger.error(t('error.loadingLayouts'), error);
+      new Notice(t('settings.message.loadError'));
     }
   }
 
@@ -106,8 +107,8 @@ export class LayoutSettingsTab extends PluginSettingTab {
       emptyMessage.style.color = 'var(--text-muted)';
       emptyMessage.style.padding = '40px 20px';
       emptyMessage.innerHTML = `
-        <div style="font-size: 16px; margin-bottom: 10px;">Aucun tableau personnalisé</div>
-        <div style="font-size: 14px;">Créez votre premier tableau avec le bouton "Nouveau Tableau" ci-dessus</div>
+        <div style="font-size: 16px; margin-bottom: 10px;">${t('settings.list.empty.title')}</div>
+        <div style="font-size: 14px;">${t('settings.list.empty.subtitle')}</div>
       `;
       return;
     }
@@ -123,9 +124,9 @@ export class LayoutSettingsTab extends PluginSettingTab {
     header.style.fontSize = '14px';
     header.style.color = 'var(--text-muted)';
 
-    header.createSpan({ text: 'Tableau' });
-    header.createSpan({ text: 'Cadres' });
-    header.createSpan({ text: 'Actions' });
+    header.createSpan({ text: t('settings.list.header.name') });
+    header.createSpan({ text: t('settings.list.header.frames') });
+    header.createSpan({ text: t('settings.list.header.actions') });
 
     // Liste des tableaux
     this.layouts.forEach(layout => this.renderLayoutItem(layout));
@@ -157,7 +158,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
 
     // Nombre de boxes
     const boxCount = item.createSpan({ 
-      text: `${layout.boxes.length} cadre${layout.boxes.length > 1 ? 's' : ''}` 
+      text: t('settings.list.frameCount', { count: layout.boxes.length })
     });
     boxCount.style.color = 'var(--text-muted)';
     boxCount.style.fontSize = '14px';
@@ -169,13 +170,13 @@ export class LayoutSettingsTab extends PluginSettingTab {
     actionsContainer.style.gap = '5px';
 
     // Boutons d'action
-    this.createActionButton(actionsContainer, 'Éditer', 'edit', 'Ouvrir l\'éditeur visuel', 
+    this.createActionButton(actionsContainer, t('settings.list.action.edit'), 'edit', t('settings.list.action.editTooltip'), 
       () => this.editLayout(layout));
-    this.createActionButton(actionsContainer, 'Dupliquer', 'copy', 'Créer une copie de ce tableau', 
+    this.createActionButton(actionsContainer, t('settings.list.action.duplicate'), 'copy', t('settings.list.action.duplicateTooltip'), 
       () => this.duplicateLayout(layout));
-    this.createActionButton(actionsContainer, 'Exporter', 'upload', 'Exporter vers un fichier JSON', 
+    this.createActionButton(actionsContainer, t('settings.list.action.export'), 'upload', t('settings.list.action.exportTooltip'), 
       () => this.exportLayout(layout));
-    this.createActionButton(actionsContainer, 'Supprimer', 'trash', 'Supprimer définitivement ce tableau', 
+    this.createActionButton(actionsContainer, t('settings.list.action.delete'), 'trash', t('settings.list.action.deleteTooltip'), 
       () => this.deleteLayout(layout));
   }
 
@@ -194,9 +195,9 @@ export class LayoutSettingsTab extends PluginSettingTab {
   }
 
   private async createNewLayout(): Promise<void> {
-    const modal = new LayoutNameModal(this.app, 'Nouveau Tableau', '', async (name) => {
+    const modal = new LayoutNameModal(this.app, t('settings.modal.newLayout.title'), '', async (name) => {
       if (!name.trim()) {
-        new Notice('Le nom du tableau ne peut pas être vide');
+        new Notice(t('settings.message.nameEmpty'));
         return;
       }
 
@@ -210,13 +211,13 @@ export class LayoutSettingsTab extends PluginSettingTab {
         newLayout = { ...newLayout, name: uniqueName };
 
         await this.layoutRepo.saveLayout(newLayout);
-        UIErrorHandler.showSuccess(`Tableau "${uniqueName}" créé avec succès`);
+        UIErrorHandler.showSuccess(t('settings.message.created', { name: uniqueName }));
         
         this.refreshLayoutList();
         this.editLayout(newLayout);
       } catch (error) {
-        this.logger.error('Erreur lors de la création du tableau', error);
-        new Notice('Erreur lors de la création du tableau');
+        this.logger.error(t('settings.message.createError'), error);
+        new Notice(t('settings.message.createError'));
       }
     });
 
@@ -225,7 +226,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
 
   private async duplicateLayout(layout: LayoutFile): Promise<void> {
     const defaultName = `${layout.name} - Copie`;
-    const modal = new LayoutNameModal(this.app, 'Dupliquer Tableau', defaultName, async (name) => {
+    const modal = new LayoutNameModal(this.app, t('settings.modal.duplicate.title'), defaultName, async (name) => {
       await this.performLayoutDuplication(layout, name);
     });
 
@@ -234,7 +235,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
 
   private async performLayoutDuplication(sourceLayout: LayoutFile, newName: string): Promise<void> {
     if (!newName.trim()) {
-      new Notice('Le nom du tableau ne peut pas être vide');
+      new Notice(t('settings.message.nameEmpty'));
       return;
     }
 
@@ -242,7 +243,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
       const duplicatedLayout = await this.createDuplicatedLayout(sourceLayout, newName.trim());
       await this.layoutRepo.saveLayout(duplicatedLayout);
       
-      UIErrorHandler.showSuccess(`Tableau "${duplicatedLayout.name}" dupliqué avec succès`);
+      UIErrorHandler.showSuccess(t('settings.message.duplicated', { name: duplicatedLayout.name }));
       this.refreshLayoutList();
     } catch (error) {
       UIErrorHandler.handleLayoutError('la duplication', sourceLayout.name, error);
@@ -267,7 +268,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
       onSave: async (updatedLayout: LayoutFile) => {
         try {
           await this.layoutRepo.saveLayout(updatedLayout);
-          UIErrorHandler.showSuccess(`Layout "${updatedLayout.name}" sauvegardé avec succès`);
+          UIErrorHandler.showSuccess(t('settings.message.saved', { name: updatedLayout.name }));
           this.refreshLayoutList();
           
           // Recharger le service de layout si nécessaire
@@ -302,22 +303,22 @@ export class LayoutSettingsTab extends PluginSettingTab {
       
       URL.revokeObjectURL(url);
       
-      new Notice(`Tableau "${layout.name}" exporté`);
+      new Notice(t('settings.message.exported', { name: layout.name }));
     } catch (error) {
-      this.logger.error('Erreur lors de l\'export du tableau', error);
-      new Notice('Erreur lors de l\'export du tableau');
+      this.logger.error(t('settings.message.exportError'), error);
+      new Notice(t('settings.message.exportError'));
     }
   }
 
   private async deleteLayout(layout: LayoutFile): Promise<void> {
     const modal = new ConfirmationModal(
       this.app,
-      'Supprimer le tableau',
-      `Êtes-vous sûr de vouloir supprimer le tableau "${layout.name}" ?\n\nCette action est irréversible.`,
+      t('settings.modal.delete.title'),
+      t('settings.modal.delete.confirm', { name: layout.name }),
       async () => {
         try {
           await this.layoutRepo.deleteLayout(layout.name);
-          new Notice(`Tableau "${layout.name}" supprimé`);
+          new Notice(t('settings.message.deleted', { name: layout.name }));
           this.refreshLayoutList();
           
           // Recharger le service de layout si nécessaire
@@ -325,8 +326,8 @@ export class LayoutSettingsTab extends PluginSettingTab {
             await this.plugin.layoutService.load();
           }
         } catch (error) {
-          this.logger.error('Erreur lors de la suppression du tableau', error);
-          new Notice('Erreur lors de la suppression du tableau');
+          this.logger.error(t('settings.message.deleteError'), error);
+          new Notice(t('settings.message.deleteError'));
         }
       }
     );
@@ -380,7 +381,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
     const finalLayout = await this.prepareFinalLayout(importedLayout);
     await this.layoutRepo.saveLayout(finalLayout);
     
-    UIErrorHandler.showSuccess(`Tableau "${finalLayout.name}" importé avec succès`);
+    UIErrorHandler.showSuccess(t('settings.message.imported', { name: finalLayout.name }));
     this.refreshLayoutList();
   }
 
@@ -416,12 +417,12 @@ class LayoutNameModal extends Modal {
     const { contentEl } = this;
     contentEl.empty();
 
-    contentEl.createEl('p', { text: 'Entrez le nom du tableau:' });
+    contentEl.createEl('p', { text: t('settings.modal.newLayout.prompt') });
 
     const inputContainer = contentEl.createDiv();
     const input = inputContainer.createEl('input', {
       type: 'text',
-      placeholder: 'Nom du tableau',
+      placeholder: t('settings.modal.newLayout.placeholder'),
       value: this.result
     });
     input.style.width = '100%';
@@ -441,12 +442,12 @@ class LayoutNameModal extends Modal {
 
     // Bouton Annuler
     new ButtonComponent(buttonContainer)
-      .setButtonText('Annuler')
+      .setButtonText(t('common.cancel'))
       .onClick(() => this.close());
 
     // Bouton Confirmer
     new ButtonComponent(buttonContainer)
-      .setButtonText('Confirmer')
+      .setButtonText(t('common.create'))
       .setCta()
       .onClick(() => {
         this.onSubmit(this.result);
@@ -505,12 +506,12 @@ class ConfirmationModal extends Modal {
 
     // Bouton Annuler
     new ButtonComponent(buttonContainer)
-      .setButtonText('Annuler')
+      .setButtonText(t('common.cancel'))
       .onClick(() => this.close());
 
     // Bouton Confirmer (dangereux)
     new ButtonComponent(buttonContainer)
-      .setButtonText('Supprimer')
+      .setButtonText(t('common.delete'))
       .setWarning()
       .onClick(() => {
         this.onConfirm();

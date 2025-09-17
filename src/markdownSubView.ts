@@ -2,6 +2,7 @@
 import { App, TFile, Component, MarkdownRenderer, Editor, MarkdownView } from "obsidian";
 import { SectionInfo } from "./sectionParser";
 import { debounce } from "ts-debounce";
+import { t } from "./i18n";
 
 export class MarkdownSubView {
   private contentEl: HTMLElement;
@@ -307,7 +308,7 @@ export class MarkdownSubView {
       font-style: italic;
       cursor: text;
     `;
-    placeholder.textContent = "Cliquez pour commencer à écrire...";
+    placeholder.textContent = t('editor.empty.placeholder');
   }
 
 

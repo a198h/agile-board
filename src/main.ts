@@ -8,6 +8,7 @@ import { FileSynchronizer } from "./fileSynchronizer";
 import { ErrorHandler, ErrorSeverity, LifecycleManager, LifecycleAware, createContextLogger, LoggingConfig } from "./core";
 import { PluginError } from "./types";
 import { LayoutSettingsTab } from "./ui/layoutSettingsTab";
+import { initializeI18n, setLanguage } from "./i18n";
 
 
 /**
@@ -28,6 +29,10 @@ export default class AgileBoardPlugin extends Plugin {
   async onload(): Promise<void> {
     // Configurer le système de logging automatiquement
     LoggingConfig.setupAutomatic();
+    
+    // Initialiser le système d'internationalisation
+    await initializeI18n();
+    setLanguage(window.localStorage.getItem('language') || 'en');
     
     this.lifecycleManager = new LifecycleManager(this.app);
     

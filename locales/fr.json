@@ -1,0 +1,144 @@
+{
+  "settings": {
+    "header": "Agile Board - Bibliothèque",
+    "button": {
+      "newLayout": "Nouveau Tableau",
+      "import": "Importer tableau",
+      "refresh": "Actualiser"
+    },
+    "tooltip": {
+      "newLayout": "Créer un nouveau tableau vide",
+      "import": "Importer un tableau depuis un fichier JSON",
+      "refresh": "Actualiser la liste des tableaux"
+    },
+    "list": {
+      "header": {
+        "name": "Tableau",
+        "frames": "Cadres",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "Aucun tableau personnalisé",
+        "subtitle": "Créez votre premier tableau avec le bouton \"Nouveau Tableau\" ci-dessus"
+      },
+      "action": {
+        "edit": "Éditer",
+        "duplicate": "Dupliquer",
+        "export": "Exporter",
+        "delete": "Supprimer",
+        "editTooltip": "Ouvrir l'éditeur visuel",
+        "duplicateTooltip": "Créer une copie de ce tableau",
+        "exportTooltip": "Exporter vers un fichier JSON",
+        "deleteTooltip": "Supprimer définitivement ce tableau"
+      },
+      "frameCount": "{count} cadre{plural}"
+    },
+    "modal": {
+      "newLayout": {
+        "title": "Nouveau Tableau",
+        "prompt": "Entrez le nom du tableau:",
+        "placeholder": "Nom du tableau"
+      },
+      "duplicate": {
+        "title": "Dupliquer Tableau"
+      },
+      "delete": {
+        "title": "Supprimer le tableau",
+        "confirm": "Êtes-vous sûr de vouloir supprimer le tableau \"{name}\" ?\\n\\nCette action est irréversible."
+      }
+    },
+    "message": {
+      "nameEmpty": "Le nom du tableau ne peut pas être vide",
+      "nameExists": "Un tableau avec ce nom existe déjà",
+      "created": "Tableau \"{name}\" créé avec succès",
+      "duplicated": "Tableau \"{name}\" dupliqué avec succès",
+      "saved": "Tableau \"{name}\" sauvegardé avec succès",
+      "exported": "Tableau \"{name}\" exporté",
+      "deleted": "Tableau \"{name}\" supprimé",
+      "imported": "Tableau \"{name}\" importé avec succès",
+      "loadError": "Erreur lors du chargement des tableaux",
+      "createError": "Erreur lors de la création du tableau",
+      "exportError": "Erreur lors de l'export du tableau",
+      "deleteError": "Erreur lors de la suppression du tableau"
+    }
+  },
+  "editor": {
+    "title": "Éditeur de Tableau",
+    "subtitle": "Édition du tableau : {name}",
+    "toolbar": {
+      "info": "{count} cadre{plural} • Grille 24×24"
+    },
+    "empty": {
+      "placeholder": "Cliquez pour commencer à écrire..."
+    },
+    "sidebar": {
+      "selection": {
+        "title": "Cadre sélectionné",
+        "empty": "Aucun cadre sélectionné",
+        "placeholder": "Titre du cadre",
+        "frameTitle": "Titre",
+        "position": "Position",
+        "size": "Taille"
+      },
+      "actions": {
+        "title": "Actions",
+        "add": "+ Ajouter un cadre",
+        "delete": "🗑️ Supprimer le cadre",
+        "deleteTooltip": "Supprimer le cadre sélectionné",
+        "clear": "🗑️ Effacer tous les cadres",
+        "clearConfirm": "Êtes-vous sûr de vouloir effacer tous les {count} cadre{plural} ?\\n\\nCette action ne peut pas être annulée."
+      },
+      "help": {
+        "title": "Aide",
+        "create": "Créer : Cliquez et glissez sur la grille",
+        "move": "Déplacer : Glissez un cadre",
+        "resize": "Redimensionner : Utilisez les poignées circulaires",
+        "select": "Sélectionner : Cliquez sur un cadre"
+      }
+    }
+  },
+  "view": {
+    "noLayout": "Cette note n'a pas de tableau agile-board configuré",
+    "layoutNotFound": "Tableau \"{name}\" introuvable"
+  },
+  "validation": {
+    "layoutName": "Le nom du tableau est requis",
+    "frameTitle": "Cadre {index} : Le titre est requis",
+    "framePosition": "Cadre {index} : Position invalide",
+    "frameSize": "Cadre {index} : Taille invalide",
+    "frameBounds": "Cadre {index} : En dehors des limites de la grille",
+    "collision": "Collision détectée entre \"{title1}\" et \"{title2}\"",
+    "duplicateTitle": "Titre dupliqué : \"{title}\"",
+    "duplicateId": "ID dupliqué : \"{id}\"",
+    "emptyModel": "Modèle de tableau vide"
+  },
+  "error": {
+    "layoutNotFound": "Tableau \"{name}\" introuvable{available}",
+    "invalidLayoutName": "Nom de tableau invalide : {name}",
+    "invalidFormat": "Format de tableau invalide{path} : {details}",
+    "modelError": "Le modèle de tableau contient des erreurs de configuration. Consultez la console pour plus de détails.",
+    "fileError": "Impossible d'accéder au fichier. Vérifiez les permissions et l'emplacement.",
+    "validationError": "Validation échouée : {errors}",
+    "loadingLayouts": "Erreur lors du chargement des tableaux",
+    "loadingLayout": "Erreur lors du chargement du tableau {name}",
+    "savingLayout": "Erreur lors de la sauvegarde du tableau {name}",
+    "deletingLayout": "Erreur lors de la suppression du tableau {name}",
+    "searchingLayout": "Erreur lors de la recherche du tableau {name}",
+    "renderingLayout": "Erreur lors du rendu du tableau",
+    "reloadingLayouts": "Erreur lors du rechargement des tableaux"
+  },
+  "common": {
+    "frame": "cadre",
+    "frames": "cadres",
+    "layout": "tableau",
+    "layouts": "tableaux",
+    "yes": "Oui",
+    "no": "Non",
+    "cancel": "Annuler",
+    "save": "Sauvegarder",
+    "delete": "Supprimer",
+    "create": "Créer",
+    "edit": "Éditer",
+    "close": "Fermer"
+  }
+}

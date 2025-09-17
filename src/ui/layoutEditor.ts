@@ -6,6 +6,7 @@ import { LayoutValidator24 } from "../core/layout/layoutValidator24";
 import { GRID_CONSTANTS, UI_CONSTANTS, COLOR_CONSTANTS } from "../core/constants";
 import { DOMHelper } from "./utils/DOMHelper";
 import { PositionCalculator } from "./utils/PositionCalculator";
+import { t } from "../i18n";
 
 /**
  * Interface pour les interactions avec l'éditeur
@@ -92,7 +93,7 @@ export class LayoutEditor extends Modal {
   // Configuration de l'interface
 
   private setupUI(): void {
-    this.titleEl.setText(`Édition du tableau: ${this.layout.name}`);
+    this.titleEl.setText(t('editor.subtitle', { name: this.layout.name }));
     
     // Container principal avec taille optimisée
     const mainContainer = this.contentEl.createDiv('layout-editor-container');
@@ -323,13 +324,13 @@ export class LayoutEditor extends Modal {
     header.style.marginBottom = '16px';
     
     const title = header.createEl('h2');
-    title.textContent = 'Éditeur de Tableau';
+    title.textContent = t('editor.title');
     title.style.margin = '0';
     title.style.fontSize = '16px';
     title.style.color = 'var(--text-normal)';
     
     const subtitle = header.createDiv();
-    subtitle.textContent = `Grille ${this.GRID_SIZE}×${this.GRID_SIZE}`;
+    subtitle.textContent = t('editor.toolbar.info', { count: this.layout.boxes.length });
     subtitle.style.color = 'var(--text-muted)';
     subtitle.style.fontSize = '12px';
     subtitle.style.marginTop = '4px';
@@ -356,13 +357,13 @@ export class LayoutEditor extends Modal {
     selectionSection.style.border = '1px solid var(--background-modifier-border)';
     
     const sectionTitle = selectionSection.createEl('h3');
-    sectionTitle.textContent = '📦 Cadre sélectionné';
+    sectionTitle.textContent = t('editor.sidebar.selection.title');
     sectionTitle.style.margin = '0 0 12px 0';
     sectionTitle.style.fontSize = '14px';
     sectionTitle.style.color = 'var(--text-normal)';
     
     const infoContent = selectionSection.createDiv('info-content');
-    infoContent.innerHTML = '<p style="color: var(--text-muted); margin: 0;">Aucun cadre sélectionné</p>';
+    infoContent.innerHTML = `<p style="color: var(--text-muted); margin: 0;">${t('editor.sidebar.selection.empty')}</p>`;
   }
 
   private createActionsSection(): void {
@@ -370,14 +371,14 @@ export class LayoutEditor extends Modal {
     actionsSection.style.marginBottom = '20px';
     
     const sectionTitle = actionsSection.createEl('h3');
-    sectionTitle.textContent = '⚡ Actions';
+    sectionTitle.textContent = t('editor.sidebar.actions.title');
     sectionTitle.style.margin = '0 0 12px 0';
     sectionTitle.style.fontSize = '14px';
     sectionTitle.style.color = 'var(--text-normal)';
     
     // Bouton Ajouter
     const addButton = actionsSection.createEl('button');
-    addButton.textContent = '+ Ajouter un cadre';
+    addButton.textContent = t('editor.sidebar.actions.add');
     addButton.style.width = '100%';
     addButton.style.padding = '8px 12px';
     addButton.style.marginBottom = '8px';
@@ -392,7 +393,7 @@ export class LayoutEditor extends Modal {
     
     // Bouton Supprimer
     const deleteButton = actionsSection.createEl('button');
-    deleteButton.textContent = '🗑️ Supprimer le cadre';
+    deleteButton.textContent = t('editor.sidebar.actions.delete');
     deleteButton.style.width = '100%';
     deleteButton.style.padding = '8px 12px';
     deleteButton.style.backgroundColor = '#fee2e2';
@@ -413,7 +414,7 @@ export class LayoutEditor extends Modal {
     helpSection.style.border = '1px solid var(--background-modifier-border)';
     
     const sectionTitle = helpSection.createEl('h3');
-    sectionTitle.textContent = '💡 Aide';
+    sectionTitle.textContent = t('editor.sidebar.help.title');
     sectionTitle.style.margin = '0 0 8px 0';
     sectionTitle.style.fontSize = '14px';
     sectionTitle.style.color = 'var(--text-normal)';
@@ -421,10 +422,10 @@ export class LayoutEditor extends Modal {
     const helpText = helpSection.createDiv();
     helpText.innerHTML = `
       <div style="font-size: 12px; line-height: 1.4; color: var(--text-muted);">
-        <p style="margin: 0 0 6px 0;"><strong>Créer:</strong> Cliquez et glissez sur la grille</p>
-        <p style="margin: 0 0 6px 0;"><strong>Déplacer:</strong> Glissez un cadre</p>
-        <p style="margin: 0 0 6px 0;"><strong>Redimensionner:</strong> Utilisez les poignées circulaires</p>
-        <p style="margin: 0;"><strong>Sélectionner:</strong> Cliquez sur un cadre</p>
+        <p style="margin: 0 0 6px 0;"><strong>${t('editor.sidebar.help.create').split(':')[0]}:</strong> ${t('editor.sidebar.help.create').split(':')[1]}</p>
+        <p style="margin: 0 0 6px 0;"><strong>${t('editor.sidebar.help.move').split(':')[0]}:</strong> ${t('editor.sidebar.help.move').split(':')[1]}</p>
+        <p style="margin: 0 0 6px 0;"><strong>${t('editor.sidebar.help.resize').split(':')[0]}:</strong> ${t('editor.sidebar.help.resize').split(':')[1]}</p>
+        <p style="margin: 0;"><strong>${t('editor.sidebar.help.select').split(':')[0]}:</strong> ${t('editor.sidebar.help.select').split(':')[1]}</p>
       </div>
     `;
   }
@@ -432,7 +433,7 @@ export class LayoutEditor extends Modal {
   private createClearAllButton(): void {
     // Bouton pour effacer toutes les boxes
     const clearAllButton = this.sidebar.createEl('button');
-    clearAllButton.textContent = '🗑️ Effacer tous les cadres';
+    clearAllButton.textContent = t('editor.sidebar.actions.clear');
     clearAllButton.style.width = '100%';
     clearAllButton.style.padding = '10px 12px';
     clearAllButton.style.marginTop = '16px';
@@ -470,7 +471,7 @@ export class LayoutEditor extends Modal {
     // Informations sur le layout
     const info = toolbar.createDiv('layout-info');
     info.innerHTML = `<span style="color: var(--text-muted);">
-      ${this.layout.boxes.length} cadre${this.layout.boxes.length > 1 ? 's' : ''} • Grille 24×24
+      ${t('editor.toolbar.info', { count: this.layout.boxes.length })}
     </span>`;
 
     // Boutons d'action
@@ -479,14 +480,14 @@ export class LayoutEditor extends Modal {
     actions.style.gap = '10px';
 
     new ButtonComponent(actions)
-      .setButtonText('Annuler')
+      .setButtonText(t('common.cancel'))
       .onClick(() => {
         this.callbacks.onCancel();
         this.close();
       });
 
     new ButtonComponent(actions)
-      .setButtonText('Sauvegarder')
+      .setButtonText(t('common.save'))
       .setCta()
       .onClick(() => this.saveLayout());
   }
@@ -858,7 +859,7 @@ export class LayoutEditor extends Modal {
     const infoContent = this.sidebar.querySelector('.info-content') as HTMLElement;
     
     if (!this.selectedBox) {
-      infoContent.innerHTML = '<p style="color: var(--text-muted);">Aucun cadre sélectionné</p>';
+      infoContent.innerHTML = `<p style="color: var(--text-muted);">${t('editor.sidebar.selection.empty')}</p>`;
       return;
     }
 
@@ -866,13 +867,13 @@ export class LayoutEditor extends Modal {
     infoContent.innerHTML = `
       <div style="font-size: 14px; line-height: 1.4;">
         <div style="margin-bottom: 8px;">
-          <strong>Titre:</strong> ${box.title}
+          <strong>${t('editor.sidebar.selection.frameTitle')}:</strong> ${box.title}
         </div>
         <div style="margin-bottom: 8px;">
-          <strong>Position:</strong> (${box.x + 1}, ${box.y + 1})
+          <strong>${t('editor.sidebar.selection.position')}:</strong> (${box.x + 1}, ${box.y + 1})
         </div>
         <div style="margin-bottom: 8px;">
-          <strong>Taille:</strong> ${box.w} × ${box.h}
+          <strong>${t('editor.sidebar.selection.size')}:</strong> ${box.w} × ${box.h}
         </div>
         <div style="margin-bottom: 8px;">
           <strong>ID:</strong> <code style="font-size: 11px;">${box.id}</code>
@@ -881,7 +882,7 @@ export class LayoutEditor extends Modal {
       <div style="margin-top: 15px;">
         <input 
           type="text" 
-          placeholder="Titre du cadre" 
+          placeholder="${t('editor.sidebar.selection.placeholder')}" 
           value="${box.title}"
           style="width: 100%; padding: 8px; border: 1px solid var(--background-modifier-border); border-radius: 4px;"
           class="box-title-input"
@@ -920,7 +921,7 @@ export class LayoutEditor extends Modal {
 
     const newBox: LayoutBox = {
       id: this.generateBoxId(),
-      title: `Cadre ${this.layout.boxes.length + 1}`,
+      title: `${t('common.frame')} ${this.layout.boxes.length + 1}`,
       x: freePosition.x,
       y: freePosition.y,
       w: 4, // Taille par défaut (respecte le minimum de 2x2)
@@ -956,7 +957,7 @@ export class LayoutEditor extends Modal {
   }
 
   private updateBoxTitle(boxId: string, newTitle: string): void {
-    const cleanTitle = newTitle.trim() || 'Sans titre';
+    const cleanTitle = newTitle.trim() || t('editor.sidebar.selection.placeholder');
     
     this.layout = {
       ...this.layout,
@@ -982,7 +983,7 @@ export class LayoutEditor extends Modal {
 
     // Demander confirmation
     const confirmed = confirm(
-      `Êtes-vous sûr de vouloir effacer tous les ${this.layout.boxes.length} cadre${this.layout.boxes.length > 1 ? 's' : ''} ?\n\nCette action ne peut pas être annulée.`
+      t('editor.sidebar.actions.clearConfirm', { count: this.layout.boxes.length })
     );
     
     if (!confirmed) {
@@ -1167,7 +1168,7 @@ export class LayoutEditor extends Modal {
     if (gridW >= 2 && gridH >= 2) {
       const newBox: LayoutBox = {
         id: this.generateBoxId(),
-        title: `Cadre ${this.layout.boxes.length + 1}`,
+        title: `${t('common.frame')} ${this.layout.boxes.length + 1}`,
         x: gridX,
         y: gridY,
         w: gridW,
@@ -1273,7 +1274,7 @@ export class LayoutEditor extends Modal {
     if (!validation.isValid) {
       // Afficher les erreurs
       const errorMessage = validation.errors.join('\n');
-      new Notice(`Erreurs de validation:\n${errorMessage}`, 5000);
+      new Notice(t('error.validationError', { errors: errorMessage }), 5000);
       return;
     }
 

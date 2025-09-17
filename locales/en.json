@@ -1,0 +1,144 @@
+{
+  "settings": {
+    "header": "Agile Board - Library",
+    "button": {
+      "newLayout": "New Layout",
+      "import": "Import Layout",
+      "refresh": "Refresh"
+    },
+    "tooltip": {
+      "newLayout": "Create a new empty layout",
+      "import": "Import a layout from JSON file",
+      "refresh": "Refresh the layout list"
+    },
+    "list": {
+      "header": {
+        "name": "Layout",
+        "frames": "Frames",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No custom layout",
+        "subtitle": "Create your first layout with the \"New Layout\" button above"
+      },
+      "action": {
+        "edit": "Edit",
+        "duplicate": "Duplicate",
+        "export": "Export",
+        "delete": "Delete",
+        "editTooltip": "Open visual editor",
+        "duplicateTooltip": "Create a copy of this layout",
+        "exportTooltip": "Export to JSON file",
+        "deleteTooltip": "Permanently delete this layout"
+      },
+      "frameCount": "{count} frame{plural}"
+    },
+    "modal": {
+      "newLayout": {
+        "title": "New Layout",
+        "prompt": "Enter the layout name:",
+        "placeholder": "Layout name"
+      },
+      "duplicate": {
+        "title": "Duplicate Layout"
+      },
+      "delete": {
+        "title": "Delete layout",
+        "confirm": "Are you sure you want to delete the layout \"{name}\"?\\n\\nThis action is irreversible."
+      }
+    },
+    "message": {
+      "nameEmpty": "Layout name cannot be empty",
+      "nameExists": "A layout with this name already exists",
+      "created": "Layout \"{name}\" created successfully",
+      "duplicated": "Layout \"{name}\" duplicated successfully",
+      "saved": "Layout \"{name}\" saved successfully",
+      "exported": "Layout \"{name}\" exported",
+      "deleted": "Layout \"{name}\" deleted",
+      "imported": "Layout \"{name}\" imported successfully",
+      "loadError": "Error loading layouts",
+      "createError": "Error creating layout",
+      "exportError": "Error exporting layout",
+      "deleteError": "Error deleting layout"
+    }
+  },
+  "editor": {
+    "title": "Layout Editor",
+    "subtitle": "Editing layout: {name}",
+    "toolbar": {
+      "info": "{count} frame{plural} • 24×24 Grid"
+    },
+    "empty": {
+      "placeholder": "Click to start writing..."
+    },
+    "sidebar": {
+      "selection": {
+        "title": "Selected Frame",
+        "empty": "No frame selected",
+        "placeholder": "Frame title",
+        "frameTitle": "Title",
+        "position": "Position",
+        "size": "Size"
+      },
+      "actions": {
+        "title": "Actions",
+        "add": "+ Add frame",
+        "delete": "🗑️ Delete frame",
+        "deleteTooltip": "Delete selected frame",
+        "clear": "🗑️ Clear all frames",
+        "clearConfirm": "Are you sure you want to clear all {count} frame{plural}?\\n\\nThis action cannot be undone."
+      },
+      "help": {
+        "title": "Help",
+        "create": "Create: Click and drag on the grid",
+        "move": "Move: Drag a frame",
+        "resize": "Resize: Use circular handles",
+        "select": "Select: Click on a frame"
+      }
+    }
+  },
+  "view": {
+    "noLayout": "This note has no agile-board layout configured",
+    "layoutNotFound": "Layout \"{name}\" not found"
+  },
+  "validation": {
+    "layoutName": "Layout name is required",
+    "frameTitle": "Frame {index}: Title is required",
+    "framePosition": "Frame {index}: Invalid position",
+    "frameSize": "Frame {index}: Invalid size",
+    "frameBounds": "Frame {index}: Outside grid bounds",
+    "collision": "Collision detected between \"{title1}\" and \"{title2}\"",
+    "duplicateTitle": "Duplicate title: \"{title}\"",
+    "duplicateId": "Duplicate ID: \"{id}\"",
+    "emptyModel": "Empty layout model"
+  },
+  "error": {
+    "layoutNotFound": "Layout \"{name}\" not found{available}",
+    "invalidLayoutName": "Invalid layout name: {name}",
+    "invalidFormat": "Invalid layout format{path}: {details}",
+    "modelError": "Layout model contains configuration errors. Check console for details.",
+    "fileError": "Unable to access file. Check permissions and location.",
+    "validationError": "Validation failed: {errors}",
+    "loadingLayouts": "Error loading layouts",
+    "loadingLayout": "Error loading layout {name}",
+    "savingLayout": "Error saving layout {name}",
+    "deletingLayout": "Error deleting layout {name}",
+    "searchingLayout": "Error searching layout {name}",
+    "renderingLayout": "Error rendering layout",
+    "reloadingLayouts": "Error reloading layouts"
+  },
+  "common": {
+    "frame": "frame",
+    "frames": "frames",
+    "layout": "layout",
+    "layouts": "layouts",
+    "yes": "Yes",
+    "no": "No",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "create": "Create",
+    "edit": "Edit",
+    "close": "Close"
+  }
+}
