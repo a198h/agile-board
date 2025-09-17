@@ -1,0 +1,144 @@
+{
+  "settings": {
+    "header": "Agile Board - Biblioteca",
+    "button": {
+      "newLayout": "Novo Quadro",
+      "import": "Importar Quadro",
+      "refresh": "Atualizar"
+    },
+    "tooltip": {
+      "newLayout": "Criar um novo quadro vazio",
+      "import": "Importar um quadro de arquivo JSON",
+      "refresh": "Atualizar a lista de quadros"
+    },
+    "list": {
+      "header": {
+        "name": "Quadro",
+        "frames": "Molduras",
+        "actions": "Ações"
+      },
+      "empty": {
+        "title": "Nenhum quadro personalizado",
+        "subtitle": "Crie seu primeiro quadro com o botão \"Novo Quadro\" acima"
+      },
+      "action": {
+        "edit": "Editar",
+        "duplicate": "Duplicar",
+        "export": "Exportar",
+        "delete": "Excluir",
+        "editTooltip": "Abrir editor visual",
+        "duplicateTooltip": "Criar uma cópia deste quadro",
+        "exportTooltip": "Exportar para arquivo JSON",
+        "deleteTooltip": "Excluir permanentemente este quadro"
+      },
+      "frameCount": "{count} moldura{plural}"
+    },
+    "modal": {
+      "newLayout": {
+        "title": "Novo Quadro",
+        "prompt": "Digite o nome do quadro:",
+        "placeholder": "Nome do quadro"
+      },
+      "duplicate": {
+        "title": "Duplicar Quadro"
+      },
+      "delete": {
+        "title": "Excluir quadro",
+        "confirm": "Tem certeza de que deseja excluir o quadro \"{name}\"?\\n\\nEsta ação é irreversível."
+      }
+    },
+    "message": {
+      "nameEmpty": "O nome do quadro não pode estar vazio",
+      "nameExists": "Já existe um quadro com este nome",
+      "created": "Quadro \"{name}\" criado com sucesso",
+      "duplicated": "Quadro \"{name}\" duplicado com sucesso",
+      "saved": "Quadro \"{name}\" salvo com sucesso",
+      "exported": "Quadro \"{name}\" exportado",
+      "deleted": "Quadro \"{name}\" excluído",
+      "imported": "Quadro \"{name}\" importado com sucesso",
+      "loadError": "Erro ao carregar os quadros",
+      "createError": "Erro ao criar o quadro",
+      "exportError": "Erro ao exportar o quadro",
+      "deleteError": "Erro ao excluir o quadro"
+    }
+  },
+  "editor": {
+    "title": "Editor de Quadro",
+    "subtitle": "Editando quadro: {name}",
+    "toolbar": {
+      "info": "{count} moldura{plural} • Grade 24×24"
+    },
+    "empty": {
+      "placeholder": "Clique para começar a escrever..."
+    },
+    "sidebar": {
+      "selection": {
+        "title": "Moldura Selecionada",
+        "empty": "Nenhuma moldura selecionada",
+        "placeholder": "Título da moldura",
+        "frameTitle": "Título",
+        "position": "Posição",
+        "size": "Tamanho"
+      },
+      "actions": {
+        "title": "Ações",
+        "add": "+ Adicionar moldura",
+        "delete": "🗑️ Excluir moldura",
+        "deleteTooltip": "Excluir moldura selecionada",
+        "clear": "🗑️ Limpar todas as molduras",
+        "clearConfirm": "Tem certeza de que deseja limpar todas as {count} moldura{plural}?\\n\\nEsta ação não pode ser desfeita."
+      },
+      "help": {
+        "title": "Ajuda",
+        "create": "Criar: Clique e arraste na grade",
+        "move": "Mover: Arraste uma moldura",
+        "resize": "Redimensionar: Use as alças circulares",
+        "select": "Selecionar: Clique em uma moldura"
+      }
+    }
+  },
+  "view": {
+    "noLayout": "Esta nota não tem um layout agile-board configurado",
+    "layoutNotFound": "Quadro \"{name}\" não encontrado"
+  },
+  "validation": {
+    "layoutName": "O nome do quadro é obrigatório",
+    "frameTitle": "Moldura {index}: Título é obrigatório",
+    "framePosition": "Moldura {index}: Posição inválida",
+    "frameSize": "Moldura {index}: Tamanho inválido",
+    "frameBounds": "Moldura {index}: Fora dos limites da grade",
+    "collision": "Colisão detectada entre \"{title1}\" e \"{title2}\"",
+    "duplicateTitle": "Título duplicado: \"{title}\"",
+    "duplicateId": "ID duplicado: \"{id}\"",
+    "emptyModel": "Modelo de quadro vazio"
+  },
+  "error": {
+    "layoutNotFound": "Quadro \"{name}\" não encontrado{available}",
+    "invalidLayoutName": "Nome de quadro inválido: {name}",
+    "invalidFormat": "Formato de quadro inválido{path}: {details}",
+    "modelError": "O modelo do quadro contém erros de configuração. Verifique o console para detalhes.",
+    "fileError": "Não é possível acessar o arquivo. Verifique as permissões e a localização.",
+    "validationError": "Validação falhou: {errors}",
+    "loadingLayouts": "Erro ao carregar os quadros",
+    "loadingLayout": "Erro ao carregar o quadro {name}",
+    "savingLayout": "Erro ao salvar o quadro {name}",
+    "deletingLayout": "Erro ao excluir o quadro {name}",
+    "searchingLayout": "Erro ao procurar o quadro {name}",
+    "renderingLayout": "Erro ao renderizar o quadro",
+    "reloadingLayouts": "Erro ao recarregar os quadros"
+  },
+  "common": {
+    "frame": "moldura",
+    "frames": "molduras",
+    "layout": "quadro",
+    "layouts": "quadros",
+    "yes": "Sim",
+    "no": "Não",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "create": "Criar",
+    "edit": "Editar",
+    "close": "Fechar"
+  }
+}
