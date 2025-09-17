@@ -14,7 +14,7 @@ export type { SectionInfo } from "./types";
 function formatPluginError(error: PluginError): string {
   switch (error.type) {
     case 'LAYOUT_NOT_FOUND':
-      return `Layout '${error.layoutName}' introuvable`;
+      return `Tableau '${error.layoutName}' introuvable`;
     case 'INVALID_LAYOUT_FORMAT':
       return error.details;
     case 'FILE_SYSTEM_ERROR':

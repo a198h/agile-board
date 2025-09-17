@@ -57,7 +57,7 @@ export class BoxManager {
 
     const newBox: LayoutBox = {
       id: this.generateBoxId(),
-      title: `Box ${this.boxes.size + 1}`,
+      title: `Cadre ${this.boxes.size + 1}`,
       x,
       y,
       w: finalWidth,

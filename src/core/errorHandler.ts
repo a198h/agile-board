@@ -174,11 +174,11 @@ export class ErrorHandler {
     switch (error.type) {
       case 'LAYOUT_NOT_FOUND':
         const available = error.availableLayouts ? ` (disponibles: ${error.availableLayouts.join(', ')})` : '';
-        return `Layout "${error.layoutName}" introuvable${available}`;
+        return `Tableau "${error.layoutName}" introuvable${available}`;
       
       case 'INVALID_LAYOUT_FORMAT':
         const filePath = error.filePath ? ` dans ${error.filePath}` : '';
-        return `Format de layout invalide${filePath}: ${error.details}`;
+        return `Format de tableau invalide${filePath}: ${error.details}`;
       
       case 'FILE_SYSTEM_ERROR':
         const fileInfo = error.filePath ? ` (${error.filePath})` : '';
@@ -228,13 +228,13 @@ export class ErrorHandler {
         return `Le modèle "${error.layoutName}" n'existe pas. Vérifiez le nom dans le frontmatter.${suggestions}`;
       
       case 'INVALID_LAYOUT_FORMAT':
-        return 'Les fichiers de layout contiennent des erreurs de format. Vérifiez la syntaxe JSON.';
+        return 'Les fichiers de tableau contiennent des erreurs de format. Vérifiez la syntaxe JSON.';
       
       case 'FILE_SYSTEM_ERROR':
         return 'Impossible d\'accéder au fichier. Vérifiez les permissions et l\'emplacement.';
       
       case 'VALIDATION_ERROR':
-        return 'Le modèle de layout contient des erreurs de configuration. Consultez la console pour plus de détails.';
+        return 'Le modèle de tableau contient des erreurs de configuration. Consultez la console pour plus de détails.';
       
       case 'SECTION_MISSING':
         return `La section "${error.sectionTitle}" est requise mais introuvable. Ajoutez-la au document ou utilisez l'outil de réinitialisation.`;

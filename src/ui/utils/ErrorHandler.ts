@@ -51,7 +51,7 @@ export class UIErrorHandler {
      * Gère une erreur lors d'une opération sur les layouts
      */
     static handleLayoutError(operation: string, layoutName: string, error: Error | unknown): void {
-        const message = `Erreur lors de ${operation} du layout "${layoutName}"`;
+        const message = `Erreur lors de ${operation} du tableau "${layoutName}"`;
         this.showError(message, error);
     }
 

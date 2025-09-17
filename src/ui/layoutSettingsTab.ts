@@ -32,7 +32,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
     
-    containerEl.createEl('h2', { text: 'Agile Board - Layouts' });
+    containerEl.createEl('h2', { text: 'Agile Board - Tableaux' });
 
     // Boutons principaux
     this.createMainButtons(containerEl);
@@ -50,25 +50,25 @@ export class LayoutSettingsTab extends PluginSettingTab {
     buttonsContainer.style.gap = '10px';
     buttonsContainer.style.marginBottom = '20px';
 
-    // Bouton "Nouveau Layout"
+    // Bouton "Nouveau Tableau"
     new ButtonComponent(buttonsContainer)
-      .setButtonText('Nouveau Layout')
+      .setButtonText('Nouveau Tableau')
       .setIcon('plus')
-      .setTooltip('Créer un nouveau layout vide')
+      .setTooltip('Créer un nouveau tableau vide')
       .onClick(() => this.createNewLayout());
 
     // Bouton "Importer JSON"
     new ButtonComponent(buttonsContainer)
       .setButtonText('Importer JSON')
       .setIcon('download')
-      .setTooltip('Importer un layout depuis un fichier JSON')
+      .setTooltip('Importer un tableau depuis un fichier JSON')
       .onClick(() => this.importLayout());
 
     // Bouton "Actualiser"
     new ButtonComponent(buttonsContainer)
       .setButtonText('Actualiser')
       .setIcon('refresh-cw')
-      .setTooltip('Actualiser la liste des layouts')
+      .setTooltip('Actualiser la liste des tableaux')
       .onClick(() => this.refreshLayoutList());
   }
 
@@ -90,8 +90,8 @@ export class LayoutSettingsTab extends PluginSettingTab {
       this.layouts = loadedLayouts.filter((layout): layout is LayoutFile => layout !== null);
       this.renderLayoutList();
     } catch (error) {
-      this.logger.error('Erreur lors du chargement des layouts', error);
-      new Notice('Erreur lors du chargement des layouts');
+      this.logger.error('Erreur lors du chargement des tableaux', error);
+      new Notice('Erreur lors du chargement des tableaux');
     }
   }
 
@@ -106,8 +106,8 @@ export class LayoutSettingsTab extends PluginSettingTab {
       emptyMessage.style.color = 'var(--text-muted)';
       emptyMessage.style.padding = '40px 20px';
       emptyMessage.innerHTML = `
-        <div style="font-size: 16px; margin-bottom: 10px;">Aucun layout personnalisé</div>
-        <div style="font-size: 14px;">Créez votre premier layout avec le bouton "Nouveau Layout" ci-dessus</div>
+        <div style="font-size: 16px; margin-bottom: 10px;">Aucun tableau personnalisé</div>
+        <div style="font-size: 14px;">Créez votre premier tableau avec le bouton "Nouveau Tableau" ci-dessus</div>
       `;
       return;
     }
@@ -123,11 +123,11 @@ export class LayoutSettingsTab extends PluginSettingTab {
     header.style.fontSize = '14px';
     header.style.color = 'var(--text-muted)';
 
-    header.createSpan({ text: 'Nom du Layout' });
-    header.createSpan({ text: 'Boxes' });
+    header.createSpan({ text: 'Nom du Tableau' });
+    header.createSpan({ text: 'Cadres' });
     header.createSpan({ text: 'Actions' });
 
-    // Liste des layouts
+    // Liste des tableaux
     this.layouts.forEach(layout => this.renderLayoutItem(layout));
   }
 
@@ -157,7 +157,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
 
     // Nombre de boxes
     const boxCount = item.createSpan({ 
-      text: `${layout.boxes.length} box${layout.boxes.length > 1 ? 'es' : ''}` 
+      text: `${layout.boxes.length} cadre${layout.boxes.length > 1 ? 's' : ''}` 
     });
     boxCount.style.color = 'var(--text-muted)';
     boxCount.style.fontSize = '14px';
@@ -171,11 +171,11 @@ export class LayoutSettingsTab extends PluginSettingTab {
     // Boutons d'action
     this.createActionButton(actionsContainer, 'Éditer', 'edit', 'Ouvrir l\'éditeur visuel', 
       () => this.editLayout(layout));
-    this.createActionButton(actionsContainer, 'Dupliquer', 'copy', 'Créer une copie de ce layout', 
+    this.createActionButton(actionsContainer, 'Dupliquer', 'copy', 'Créer une copie de ce tableau', 
       () => this.duplicateLayout(layout));
     this.createActionButton(actionsContainer, 'Exporter', 'upload', 'Exporter vers un fichier JSON', 
       () => this.exportLayout(layout));
-    this.createActionButton(actionsContainer, 'Supprimer', 'trash', 'Supprimer définitivement ce layout', 
+    this.createActionButton(actionsContainer, 'Supprimer', 'trash', 'Supprimer définitivement ce tableau', 
       () => this.deleteLayout(layout));
   }
 
@@ -194,9 +194,9 @@ export class LayoutSettingsTab extends PluginSettingTab {
   }
 
   private async createNewLayout(): Promise<void> {
-    const modal = new LayoutNameModal(this.app, 'Nouveau Layout', '', async (name) => {
+    const modal = new LayoutNameModal(this.app, 'Nouveau Tableau', '', async (name) => {
       if (!name.trim()) {
-        new Notice('Le nom du layout ne peut pas être vide');
+        new Notice('Le nom du tableau ne peut pas être vide');
         return;
       }
 
@@ -210,13 +210,13 @@ export class LayoutSettingsTab extends PluginSettingTab {
         newLayout = { ...newLayout, name: uniqueName };
 
         await this.layoutRepo.saveLayout(newLayout);
-        UIErrorHandler.showSuccess(`Layout "${uniqueName}" créé avec succès`);
+        UIErrorHandler.showSuccess(`Tableau "${uniqueName}" créé avec succès`);
         
         this.refreshLayoutList();
         this.editLayout(newLayout);
       } catch (error) {
-        this.logger.error('Erreur lors de la création du layout', error);
-        new Notice('Erreur lors de la création du layout');
+        this.logger.error('Erreur lors de la création du tableau', error);
+        new Notice('Erreur lors de la création du tableau');
       }
     });
 
@@ -225,7 +225,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
 
   private async duplicateLayout(layout: LayoutFile): Promise<void> {
     const defaultName = `${layout.name} - Copie`;
-    const modal = new LayoutNameModal(this.app, 'Dupliquer Layout', defaultName, async (name) => {
+    const modal = new LayoutNameModal(this.app, 'Dupliquer Tableau', defaultName, async (name) => {
       await this.performLayoutDuplication(layout, name);
     });
 
@@ -234,7 +234,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
 
   private async performLayoutDuplication(sourceLayout: LayoutFile, newName: string): Promise<void> {
     if (!newName.trim()) {
-      new Notice('Le nom du layout ne peut pas être vide');
+      new Notice('Le nom du tableau ne peut pas être vide');
       return;
     }
 
@@ -242,7 +242,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
       const duplicatedLayout = await this.createDuplicatedLayout(sourceLayout, newName.trim());
       await this.layoutRepo.saveLayout(duplicatedLayout);
       
-      UIErrorHandler.showSuccess(`Layout "${duplicatedLayout.name}" dupliqué avec succès`);
+      UIErrorHandler.showSuccess(`Tableau "${duplicatedLayout.name}" dupliqué avec succès`);
       this.refreshLayoutList();
     } catch (error) {
       UIErrorHandler.handleLayoutError('la duplication', sourceLayout.name, error);
@@ -302,22 +302,22 @@ export class LayoutSettingsTab extends PluginSettingTab {
       
       URL.revokeObjectURL(url);
       
-      new Notice(`Layout "${layout.name}" exporté`);
+      new Notice(`Tableau "${layout.name}" exporté`);
     } catch (error) {
-      this.logger.error('Erreur lors de l\'export du layout', error);
-      new Notice('Erreur lors de l\'export du layout');
+      this.logger.error('Erreur lors de l\'export du tableau', error);
+      new Notice('Erreur lors de l\'export du tableau');
     }
   }
 
   private async deleteLayout(layout: LayoutFile): Promise<void> {
     const modal = new ConfirmationModal(
       this.app,
-      'Supprimer le layout',
-      `Êtes-vous sûr de vouloir supprimer le layout "${layout.name}" ?\n\nCette action est irréversible.`,
+      'Supprimer le tableau',
+      `Êtes-vous sûr de vouloir supprimer le tableau "${layout.name}" ?\n\nCette action est irréversible.`,
       async () => {
         try {
           await this.layoutRepo.deleteLayout(layout.name);
-          new Notice(`Layout "${layout.name}" supprimé`);
+          new Notice(`Tableau "${layout.name}" supprimé`);
           this.refreshLayoutList();
           
           // Recharger le service de layout si nécessaire
@@ -325,8 +325,8 @@ export class LayoutSettingsTab extends PluginSettingTab {
             await this.plugin.layoutService.load();
           }
         } catch (error) {
-          this.logger.error('Erreur lors de la suppression du layout', error);
-          new Notice('Erreur lors de la suppression du layout');
+          this.logger.error('Erreur lors de la suppression du tableau', error);
+          new Notice('Erreur lors de la suppression du tableau');
         }
       }
     );
@@ -380,7 +380,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
     const finalLayout = await this.prepareFinalLayout(importedLayout);
     await this.layoutRepo.saveLayout(finalLayout);
     
-    UIErrorHandler.showSuccess(`Layout "${finalLayout.name}" importé avec succès`);
+    UIErrorHandler.showSuccess(`Tableau "${finalLayout.name}" importé avec succès`);
     this.refreshLayoutList();
   }
 
@@ -416,12 +416,12 @@ class LayoutNameModal extends Modal {
     const { contentEl } = this;
     contentEl.empty();
 
-    contentEl.createEl('p', { text: 'Entrez le nom du layout:' });
+    contentEl.createEl('p', { text: 'Entrez le nom du tableau:' });
 
     const inputContainer = contentEl.createDiv();
     const input = inputContainer.createEl('input', {
       type: 'text',
-      placeholder: 'Nom du layout',
+      placeholder: 'Nom du tableau',
       value: this.result
     });
     input.style.width = '100%';

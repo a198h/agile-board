@@ -95,7 +95,7 @@ export class LayoutFileRepo {
 
       return layout;
     } catch (error) {
-      this.logger.error(`Erreur lors du chargement du layout ${name}`, error);
+      this.logger.error(`Erreur lors du chargement du tableau ${name}`, error);
       return null;
     }
   }
@@ -106,7 +106,7 @@ export class LayoutFileRepo {
   public async saveLayout(layout: LayoutFile): Promise<boolean> {
     try {
       if (!this.isValidLayoutFile(layout)) {
-        throw new Error('Layout invalide');
+        throw new Error('Tableau invalide');
       }
 
       const filePath = this.getLayoutFilePath(layout.name);
@@ -119,10 +119,10 @@ export class LayoutFileRepo {
       
       return true;
     } catch (error) {
-      this.logger.error(`Erreur lors de la sauvegarde du layout ${layout.name}`, error);
+      this.logger.error(`Erreur lors de la sauvegarde du tableau ${layout.name}`, error);
       ErrorHandler.handleError(error as Error, 'LayoutFileRepo.saveLayout', {
         severity: ErrorSeverity.ERROR,
-        userMessage: `Impossible de sauvegarder le layout ${layout.name}`
+        userMessage: `Impossible de sauvegarder le tableau ${layout.name}`
       });
       return false;
     }
@@ -137,7 +137,7 @@ export class LayoutFileRepo {
       await fs.unlink(filePath);
       return true;
     } catch (error) {
-      this.logger.error(`Erreur lors de la suppression du layout ${name}`, error);
+      this.logger.error(`Erreur lors de la suppression du tableau ${name}`, error);
       return false;
     }
   }
@@ -315,7 +315,7 @@ export class LayoutFileRepo {
       
       return null;
     } catch (error) {
-      this.logger.error(`Erreur lors de la recherche du layout ${name}`, error);
+      this.logger.error(`Erreur lors de la recherche du tableau ${name}`, error);
       return null;
     }
   }

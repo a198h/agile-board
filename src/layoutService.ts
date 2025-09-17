@@ -166,14 +166,14 @@ export class LayoutService {
       // Notifier les autres services du changement si nécessaire
       this.notifyLayoutsChanged();
     } catch (error) {
-      this.logger.error('Erreur lors du rechargement des layouts', error);
+      this.logger.error('Erreur lors du rechargement des tableaux', error);
       ErrorHandler.handleError({
         type: 'INITIALIZATION_ERROR', // Utiliser le type existant
         component: 'LayoutService',
         details: error instanceof Error ? error.message : String(error)
       }, 'LayoutService.reload', {
         severity: ErrorSeverity.WARNING,
-        userMessage: 'Erreur lors du rechargement des layouts'
+        userMessage: 'Erreur lors du rechargement des tableaux'
       });
     }
   }

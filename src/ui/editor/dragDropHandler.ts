@@ -400,7 +400,7 @@ export class DragDropHandler implements EventHandler {
     // Création via l'événement
     this.events.onBoxCreate({
       id: '', // Sera généré par le BoxManager
-      title: `Box ${Date.now()}`,
+      title: `Cadre ${Date.now()}`,
       x: startX,
       y: startY,
       w: width,

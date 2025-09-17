@@ -69,7 +69,7 @@ export class LayoutRenderer implements ILayoutRenderer {
     const renderResult = await this.renderLayoutSafe(blocks, view, sections);
     
     if (!renderResult.success) {
-      this.logger.error('Erreur lors du rendu du layout:', renderResult.error);
+      this.logger.error('Erreur lors du rendu du tableau:', renderResult.error);
       ErrorHandler.handleError(
         renderResult.error,
         'LayoutRenderer.renderLayout',
@@ -176,7 +176,7 @@ export class LayoutRenderer implements ILayoutRenderer {
         success: false,
         error: {
           type: 'VALIDATION_ERROR',
-          errors: ['Modèle de layout vide']
+          errors: ['Modèle de tableau vide']
         }
       };
     }

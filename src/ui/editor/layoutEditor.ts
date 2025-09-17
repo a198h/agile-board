@@ -120,7 +120,7 @@ export class LayoutEditor extends Modal {
     `;
 
     // Titre
-    this.titleEl.textContent = `Édition du layout : ${this.layout.name}`;
+    this.titleEl.textContent = `Édition du tableau : ${this.layout.name}`;
 
     // Container principal horizontal
     const mainContainer = this.contentEl.createDiv();

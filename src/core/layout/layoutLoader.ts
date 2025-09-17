@@ -99,12 +99,12 @@ export class LayoutLoader implements ILayoutLoader {
 
           (registry as Map<string, LayoutModel>).set(layoutFile.name, legacyModel);
         } catch (error) {
-          this.logger.warn(`Impossible de charger le layout "${name}"`, error);
+          this.logger.warn(`Impossible de charger le tableau "${name}"`, error);
         }
       }
       
     } catch (error) {
-      this.logger.warn('Erreur lors du chargement des layouts individuels', error);
+      this.logger.warn('Erreur lors du chargement des tableaux individuels', error);
     }
   }
 

@@ -43,7 +43,7 @@ export class LayoutValidator24 {
 
     // Validation de la structure de base
     if (!layout.name || typeof layout.name !== 'string') {
-      errors.push('Le nom du layout est requis');
+      errors.push('Le nom du tableau est requis');
     }
 
     // Version supprimée - plus de validation de version nécessaire
@@ -86,7 +86,7 @@ export class LayoutValidator24 {
    */
   public validateBox(box: LayoutBox, index?: number): ValidationResult {
     const errors: string[] = [];
-    const prefix = index !== undefined ? `Box ${index + 1}` : 'Box';
+    const prefix = index !== undefined ? `Cadre ${index + 1}` : 'Cadre';
 
     // Validation des types
     if (typeof box.id !== 'string' || box.id.length === 0) {

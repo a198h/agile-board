@@ -186,7 +186,7 @@ export class AgileBoardView extends FileView {
       font-size: 1.2em;
       color: var(--text-muted);
     `;
-    message.textContent = "Cette note n'a pas de layout agile-board configuré";
+    message.textContent = "Cette note n'a pas de tableau agile-board configuré";
   }
 
   private showLayoutNotFoundMessage(modelName: string): void {
@@ -200,7 +200,7 @@ export class AgileBoardView extends FileView {
       font-size: 1.2em;
       color: var(--text-error);
     `;
-    message.textContent = `Layout "${modelName}" introuvable`;
+    message.textContent = `Tableau "${modelName}" introuvable`;
   }
 
   private showMissingSectionsError(missingTitles: string[]): void {

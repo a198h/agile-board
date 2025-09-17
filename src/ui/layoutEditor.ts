@@ -92,7 +92,7 @@ export class LayoutEditor extends Modal {
   // Configuration de l'interface
 
   private setupUI(): void {
-    this.titleEl.setText(`Édition du layout: ${this.layout.name}`);
+    this.titleEl.setText(`Édition du tableau: ${this.layout.name}`);
     
     // Container principal avec taille optimisée
     const mainContainer = this.contentEl.createDiv('layout-editor-container');
@@ -323,7 +323,7 @@ export class LayoutEditor extends Modal {
     header.style.marginBottom = '16px';
     
     const title = header.createEl('h2');
-    title.textContent = 'Éditeur de Layout';
+    title.textContent = 'Éditeur de Tableau';
     title.style.margin = '0';
     title.style.fontSize = '16px';
     title.style.color = 'var(--text-normal)';
@@ -470,7 +470,7 @@ export class LayoutEditor extends Modal {
     // Informations sur le layout
     const info = toolbar.createDiv('layout-info');
     info.innerHTML = `<span style="color: var(--text-muted);">
-      ${this.layout.boxes.length} box(es) • Grille 24×24
+      ${this.layout.boxes.length} cadre${this.layout.boxes.length > 1 ? 's' : ''} • Grille 24×24
     </span>`;
 
     // Boutons d'action
@@ -881,7 +881,7 @@ export class LayoutEditor extends Modal {
       <div style="margin-top: 15px;">
         <input 
           type="text" 
-          placeholder="Titre de la box" 
+          placeholder="Titre du cadre" 
           value="${box.title}"
           style="width: 100%; padding: 8px; border: 1px solid var(--background-modifier-border); border-radius: 4px;"
           class="box-title-input"
@@ -920,7 +920,7 @@ export class LayoutEditor extends Modal {
 
     const newBox: LayoutBox = {
       id: this.generateBoxId(),
-      title: `Box ${this.layout.boxes.length + 1}`,
+      title: `Cadre ${this.layout.boxes.length + 1}`,
       x: freePosition.x,
       y: freePosition.y,
       w: 4, // Taille par défaut (respecte le minimum de 2x2)
@@ -982,7 +982,7 @@ export class LayoutEditor extends Modal {
 
     // Demander confirmation
     const confirmed = confirm(
-      `Êtes-vous sûr de vouloir effacer toutes les ${this.layout.boxes.length} box(es) ?\n\nCette action ne peut pas être annulée.`
+      `Êtes-vous sûr de vouloir effacer tous les ${this.layout.boxes.length} cadre${this.layout.boxes.length > 1 ? 's' : ''} ?\n\nCette action ne peut pas être annulée.`
     );
     
     if (!confirmed) {
@@ -1167,7 +1167,7 @@ export class LayoutEditor extends Modal {
     if (gridW >= 2 && gridH >= 2) {
       const newBox: LayoutBox = {
         id: this.generateBoxId(),
-        title: `Box ${this.layout.boxes.length + 1}`,
+        title: `Cadre ${this.layout.boxes.length + 1}`,
         x: gridX,
         y: gridY,
         w: gridW,
