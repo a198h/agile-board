@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.7.6-blue)
+![version](https://img.shields.io/badge/version-0.7.7-blue)
 
 **[🇫🇷 Version française](#version-fran%C3%A7aise)**
 
@@ -20,6 +20,19 @@ Transform your notes into visual dashboards with editable frames. Each frame rep
 - **Smart editing**: auto-continued lists, clickable checkboxes
 - **Plugin compatibility**: Dataview, Tasks, etc.
 - **Live Preview**: rendering close to Obsidian with some limitations
+
+## 🌍 Multilingual Support
+
+**NEW in v0.7.7**: Complete internationalization with **automatic language detection**!
+
+- 🇺🇸 **English** - reference language
+- 🇫🇷 **Français** - traduction complète
+- 🇪🇸 **Español** - traducción completa  
+- 🇩🇪 **Deutsch** - vollständige Übersetzung
+- 🇵🇹 **Português** - tradução completa
+- 🇨🇳 **中文 (简体)** - 完整翻译
+
+The interface automatically adapts to your Obsidian language setting. All UI elements, settings, messages, and tooltips are professionally translated with **96 translation keys** across all languages.
 
 ## ⚠️ Current Limitations
 
@@ -47,7 +60,7 @@ Switch between modes via the toolbar icons.
 
 ### Option 1 - Complete Vault (recommended)
 
-1. Download `Agile-Board-v0.7.6.zip` (Obsidian vault with plugin and examples)
+1. Download `Agile-Board-v0.7.7.zip` (Obsidian vault with plugin and examples)
 2. Unzip and open the folder directly in Obsidian
 
 ### Option 2 - Plugin only
@@ -157,7 +170,7 @@ If you find my work useful, you can support me here:
 
 # Version française
 
-![version](https://img.shields.io/badge/version-0.7.6-blue)
+![version](https://img.shields.io/badge/version-0.7.7-blue)
 
 ---
 
@@ -177,6 +190,19 @@ Transforme vos notes en tableaux de bord visuels avec des cadres éditables. Cha
 - **Édition intelligente** : listes auto-continuées, cases à cocher cliquables
 - **Plugins compatibles** : Dataview, Tasks, etc.
 - **Live Preview** : rendu proche d'Obsidian avec quelques limitations
+
+## 🌍 Support multilingue
+
+**NOUVEAU dans v0.7.7** : Internationalisation complète avec **détection automatique de la langue** !
+
+- 🇺🇸 **English** - langue de référence
+- 🇫🇷 **Français** - traduction complète
+- 🇪🇸 **Español** - traducción completa  
+- 🇩🇪 **Deutsch** - vollständige Übersetzung
+- 🇵🇹 **Português** - tradução completa
+- 🇨🇳 **中文 (简体)** - 完整翻译
+
+L'interface s'adapte automatiquement au paramètre de langue de votre Obsidian. Tous les éléments UI, paramètres, messages et infobulles sont traduits professionnellement avec **96 clés de traduction** dans toutes les langues.
 
 ## ⚠️ Limites actuelles
 
@@ -204,7 +230,7 @@ Basculez entre les modes via les icônes dans la toolbar.
 
 ### Option 1 - Coffre complet (recommandé)
 
-1. Téléchargez `Agile-Board-v0.7.6.zip` (coffre Obsidian avec plugin et exemples)
+1. Téléchargez `Agile-Board-v0.7.7.zip` (coffre Obsidian avec plugin et exemples)
 2. Dézippez et ouvrez directement le dossier dans Obsidian
 
 ### Option 2 - Plugin seul
