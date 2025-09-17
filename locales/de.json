@@ -1,0 +1,144 @@
+{
+  "settings": {
+    "header": "Agile Board - Bibliothek",
+    "button": {
+      "newLayout": "Neues Board",
+      "import": "Board importieren",
+      "refresh": "Aktualisieren"
+    },
+    "tooltip": {
+      "newLayout": "Ein neues leeres Board erstellen",
+      "import": "Board aus JSON-Datei importieren",
+      "refresh": "Board-Liste aktualisieren"
+    },
+    "list": {
+      "header": {
+        "name": "Board",
+        "frames": "Rahmen",
+        "actions": "Aktionen"
+      },
+      "empty": {
+        "title": "Keine benutzerdefinierten Boards",
+        "subtitle": "Erstellen Sie Ihr erstes Board mit dem Button \"Neues Board\" oben"
+      },
+      "action": {
+        "edit": "Bearbeiten",
+        "duplicate": "Duplizieren",
+        "export": "Exportieren",
+        "delete": "Löschen",
+        "editTooltip": "Visuellen Editor öffnen",
+        "duplicateTooltip": "Eine Kopie dieses Boards erstellen",
+        "exportTooltip": "Als JSON-Datei exportieren",
+        "deleteTooltip": "Board dauerhaft löschen"
+      },
+      "frameCount": "{count} Rahmen{plural}"
+    },
+    "modal": {
+      "newLayout": {
+        "title": "Neues Board",
+        "prompt": "Board-Name eingeben:",
+        "placeholder": "Board-Name"
+      },
+      "duplicate": {
+        "title": "Board duplizieren"
+      },
+      "delete": {
+        "title": "Board löschen",
+        "confirm": "Sind Sie sicher, dass Sie das Board \"{name}\" löschen möchten?\\n\\nDiese Aktion ist unwiderruflich."
+      }
+    },
+    "message": {
+      "nameEmpty": "Board-Name darf nicht leer sein",
+      "nameExists": "Ein Board mit diesem Namen existiert bereits",
+      "created": "Board \"{name}\" erfolgreich erstellt",
+      "duplicated": "Board \"{name}\" erfolgreich dupliziert",
+      "saved": "Board \"{name}\" erfolgreich gespeichert",
+      "exported": "Board \"{name}\" exportiert",
+      "deleted": "Board \"{name}\" gelöscht",
+      "imported": "Board \"{name}\" erfolgreich importiert",
+      "loadError": "Fehler beim Laden der Boards",
+      "createError": "Fehler beim Erstellen des Boards",
+      "exportError": "Fehler beim Exportieren des Boards",
+      "deleteError": "Fehler beim Löschen des Boards"
+    }
+  },
+  "editor": {
+    "title": "Board-Editor",
+    "subtitle": "Board bearbeiten: {name}",
+    "toolbar": {
+      "info": "{count} Rahmen{plural} • 24×24 Raster"
+    },
+    "empty": {
+      "placeholder": "Klicken Sie hier, um zu schreiben..."
+    },
+    "sidebar": {
+      "selection": {
+        "title": "Ausgewählter Rahmen",
+        "empty": "Kein Rahmen ausgewählt",
+        "placeholder": "Rahmen-Titel",
+        "frameTitle": "Titel",
+        "position": "Position",
+        "size": "Größe"
+      },
+      "actions": {
+        "title": "Aktionen",
+        "add": "+ Rahmen hinzufügen",
+        "delete": "🗑️ Rahmen löschen",
+        "deleteTooltip": "Ausgewählten Rahmen löschen",
+        "clear": "🗑️ Alle Rahmen löschen",
+        "clearConfirm": "Sind Sie sicher, dass Sie alle {count} Rahmen{plural} löschen möchten?\\n\\nDiese Aktion kann nicht rückgängig gemacht werden."
+      },
+      "help": {
+        "title": "Hilfe",
+        "create": "Erstellen: Klicken und ziehen Sie im Raster",
+        "move": "Verschieben: Rahmen ziehen",
+        "resize": "Größe ändern: Runde Griffe verwenden",
+        "select": "Auswählen: Auf einen Rahmen klicken"
+      }
+    }
+  },
+  "view": {
+    "noLayout": "Diese Notiz hat kein agile-board Layout konfiguriert",
+    "layoutNotFound": "Board \"{name}\" nicht gefunden"
+  },
+  "validation": {
+    "layoutName": "Board-Name ist erforderlich",
+    "frameTitle": "Rahmen {index}: Titel ist erforderlich",
+    "framePosition": "Rahmen {index}: Ungültige Position",
+    "frameSize": "Rahmen {index}: Ungültige Größe",
+    "frameBounds": "Rahmen {index}: Außerhalb der Raster-Grenzen",
+    "collision": "Kollision erkannt zwischen \"{title1}\" und \"{title2}\"",
+    "duplicateTitle": "Doppelter Titel: \"{title}\"",
+    "duplicateId": "Doppelte ID: \"{id}\"",
+    "emptyModel": "Leeres Board-Modell"
+  },
+  "error": {
+    "layoutNotFound": "Board \"{name}\" nicht gefunden{available}",
+    "invalidLayoutName": "Ungültiger Board-Name: {name}",
+    "invalidFormat": "Ungültiges Board-Format{path}: {details}",
+    "modelError": "Board-Modell enthält Konfigurationsfehler. Überprüfen Sie die Konsole für Details.",
+    "fileError": "Zugriff auf Datei nicht möglich. Überprüfen Sie Berechtigungen und Speicherort.",
+    "validationError": "Validierung fehlgeschlagen: {errors}",
+    "loadingLayouts": "Fehler beim Laden der Boards",
+    "loadingLayout": "Fehler beim Laden des Boards {name}",
+    "savingLayout": "Fehler beim Speichern des Boards {name}",
+    "deletingLayout": "Fehler beim Löschen des Boards {name}",
+    "searchingLayout": "Fehler bei der Suche nach Board {name}",
+    "renderingLayout": "Fehler beim Rendern des Boards",
+    "reloadingLayouts": "Fehler beim Neuladen der Boards"
+  },
+  "common": {
+    "frame": "Rahmen",
+    "frames": "Rahmen",
+    "layout": "Board",
+    "layouts": "Boards",
+    "yes": "Ja",
+    "no": "Nein",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "create": "Erstellen",
+    "edit": "Bearbeiten",
+    "close": "Schließen"
+  }
+}
