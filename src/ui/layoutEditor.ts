@@ -334,7 +334,7 @@ export class LayoutEditor extends Modal {
     subtitle.style.fontSize = '12px';
     subtitle.style.marginTop = '4px';
 
-    // Section Box sélectionnée
+    // Section Cadre sélectionné
     this.createSelectionSection();
     
     // Section Actions rapides
@@ -356,7 +356,7 @@ export class LayoutEditor extends Modal {
     selectionSection.style.border = '1px solid var(--background-modifier-border)';
     
     const sectionTitle = selectionSection.createEl('h3');
-    sectionTitle.textContent = '📦 Box sélectionnée';
+    sectionTitle.textContent = '📦 Cadre sélectionné';
     sectionTitle.style.margin = '0 0 12px 0';
     sectionTitle.style.fontSize = '14px';
     sectionTitle.style.color = 'var(--text-normal)';
@@ -377,7 +377,7 @@ export class LayoutEditor extends Modal {
     
     // Bouton Ajouter
     const addButton = actionsSection.createEl('button');
-    addButton.textContent = '+ Ajouter une box';
+    addButton.textContent = '+ Ajouter un cadre';
     addButton.style.width = '100%';
     addButton.style.padding = '8px 12px';
     addButton.style.marginBottom = '8px';
@@ -392,7 +392,7 @@ export class LayoutEditor extends Modal {
     
     // Bouton Supprimer
     const deleteButton = actionsSection.createEl('button');
-    deleteButton.textContent = '🗑️ Supprimer la box';
+    deleteButton.textContent = '🗑️ Supprimer le cadre';
     deleteButton.style.width = '100%';
     deleteButton.style.padding = '8px 12px';
     deleteButton.style.backgroundColor = '#fee2e2';
@@ -422,9 +422,9 @@ export class LayoutEditor extends Modal {
     helpText.innerHTML = `
       <div style="font-size: 12px; line-height: 1.4; color: var(--text-muted);">
         <p style="margin: 0 0 6px 0;"><strong>Créer:</strong> Cliquez et glissez sur la grille</p>
-        <p style="margin: 0 0 6px 0;"><strong>Déplacer:</strong> Glissez une box</p>
+        <p style="margin: 0 0 6px 0;"><strong>Déplacer:</strong> Glissez un cadre</p>
         <p style="margin: 0 0 6px 0;"><strong>Redimensionner:</strong> Utilisez les poignées circulaires</p>
-        <p style="margin: 0;"><strong>Sélectionner:</strong> Cliquez sur une box</p>
+        <p style="margin: 0;"><strong>Sélectionner:</strong> Cliquez sur un cadre</p>
       </div>
     `;
   }
@@ -432,7 +432,7 @@ export class LayoutEditor extends Modal {
   private createClearAllButton(): void {
     // Bouton pour effacer toutes les boxes
     const clearAllButton = this.sidebar.createEl('button');
-    clearAllButton.textContent = '🗑️ Effacer toutes les boxes';
+    clearAllButton.textContent = '🗑️ Effacer tous les cadres';
     clearAllButton.style.width = '100%';
     clearAllButton.style.padding = '10px 12px';
     clearAllButton.style.marginTop = '16px';

@@ -96,7 +96,7 @@ export class Sidebar implements EditorComponent {
     section.style.display = 'none'; // Caché par défaut
     
     const title = document.createElement('h3');
-    title.textContent = 'Box sélectionnée';
+    title.textContent = 'Cadre sélectionné';
     title.style.cssText = `
       margin: 0 0 12px 0;
       font-size: 14px;
@@ -188,9 +188,9 @@ export class Sidebar implements EditorComponent {
     helpText.innerHTML = `
       <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
         <p><strong>Créer:</strong> Cliquez et glissez sur la grille</p>
-        <p><strong>Déplacer:</strong> Glissez une box existante</p>
+        <p><strong>Déplacer:</strong> Glissez un cadre existant</p>
         <p><strong>Redimensionner:</strong> Utilisez les poignées aux coins</p>
-        <p><strong>Sélectionner:</strong> Cliquez sur une box</p>
+        <p><strong>Sélectionner:</strong> Cliquez sur un cadre</p>
         <p><strong>Annuler:</strong> Appuyez sur Échap pendant une action</p>
       </div>
     `;
