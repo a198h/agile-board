@@ -155,6 +155,10 @@ export async function initializeI18n(): Promise<void> {
     // Charger les traductions françaises
     const frTranslations = await import('../locales/fr.json');
     loadTranslations('fr', frTranslations.default);
+
+    // Charger les traductions espagnoles
+    const esTranslations = await import('../locales/es.json');
+    loadTranslations('es', esTranslations.default);
   } catch (error) {
     console.error('[i18n] Failed to load translations:', error);
   }

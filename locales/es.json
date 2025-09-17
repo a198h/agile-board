@@ -1,0 +1,144 @@
+{
+  "settings": {
+    "header": "Agile Board - Biblioteca",
+    "button": {
+      "newLayout": "Nuevo Tablero",
+      "import": "Importar Tablero",
+      "refresh": "Actualizar"
+    },
+    "tooltip": {
+      "newLayout": "Crear un nuevo tablero vacío",
+      "import": "Importar un tablero desde un archivo JSON",
+      "refresh": "Actualizar la lista de tableros"
+    },
+    "list": {
+      "header": {
+        "name": "Tablero",
+        "frames": "Marcos",
+        "actions": "Acciones"
+      },
+      "empty": {
+        "title": "No hay tableros personalizados",
+        "subtitle": "Crea tu primer tablero con el botón \"Nuevo Tablero\" de arriba"
+      },
+      "action": {
+        "edit": "Editar",
+        "duplicate": "Duplicar",
+        "export": "Exportar",
+        "delete": "Eliminar",
+        "editTooltip": "Abrir el editor visual",
+        "duplicateTooltip": "Crear una copia de este tablero",
+        "exportTooltip": "Exportar a archivo JSON",
+        "deleteTooltip": "Eliminar permanentemente este tablero"
+      },
+      "frameCount": "{count} marco{plural}"
+    },
+    "modal": {
+      "newLayout": {
+        "title": "Nuevo Tablero",
+        "prompt": "Ingresa el nombre del tablero:",
+        "placeholder": "Nombre del tablero"
+      },
+      "duplicate": {
+        "title": "Duplicar Tablero"
+      },
+      "delete": {
+        "title": "Eliminar tablero",
+        "confirm": "¿Estás seguro de que quieres eliminar el tablero \"{name}\"?\\n\\nEsta acción es irreversible."
+      }
+    },
+    "message": {
+      "nameEmpty": "El nombre del tablero no puede estar vacío",
+      "nameExists": "Ya existe un tablero con este nombre",
+      "created": "Tablero \"{name}\" creado exitosamente",
+      "duplicated": "Tablero \"{name}\" duplicado exitosamente",
+      "saved": "Tablero \"{name}\" guardado exitosamente",
+      "exported": "Tablero \"{name}\" exportado",
+      "deleted": "Tablero \"{name}\" eliminado",
+      "imported": "Tablero \"{name}\" importado exitosamente",
+      "loadError": "Error al cargar los tableros",
+      "createError": "Error al crear el tablero",
+      "exportError": "Error al exportar el tablero",
+      "deleteError": "Error al eliminar el tablero"
+    }
+  },
+  "editor": {
+    "title": "Editor de Tablero",
+    "subtitle": "Editando tablero: {name}",
+    "toolbar": {
+      "info": "{count} marco{plural} • Cuadrícula 24×24"
+    },
+    "empty": {
+      "placeholder": "Haz clic para empezar a escribir..."
+    },
+    "sidebar": {
+      "selection": {
+        "title": "Marco Seleccionado",
+        "empty": "Ningún marco seleccionado",
+        "placeholder": "Título del marco",
+        "frameTitle": "Título",
+        "position": "Posición",
+        "size": "Tamaño"
+      },
+      "actions": {
+        "title": "Acciones",
+        "add": "+ Agregar marco",
+        "delete": "🗑️ Eliminar marco",
+        "deleteTooltip": "Eliminar el marco seleccionado",
+        "clear": "🗑️ Limpiar todos los marcos",
+        "clearConfirm": "¿Estás seguro de que quieres limpiar todos los {count} marco{plural}?\\n\\nEsta acción no se puede deshacer."
+      },
+      "help": {
+        "title": "Ayuda",
+        "create": "Crear: Haz clic y arrastra en la cuadrícula",
+        "move": "Mover: Arrastra un marco",
+        "resize": "Redimensionar: Usa las manijas circulares",
+        "select": "Seleccionar: Haz clic en un marco"
+      }
+    }
+  },
+  "view": {
+    "noLayout": "Esta nota no tiene un tablero agile-board configurado",
+    "layoutNotFound": "Tablero \"{name}\" no encontrado"
+  },
+  "validation": {
+    "layoutName": "El nombre del tablero es requerido",
+    "frameTitle": "Marco {index}: El título es requerido",
+    "framePosition": "Marco {index}: Posición inválida",
+    "frameSize": "Marco {index}: Tamaño inválido",
+    "frameBounds": "Marco {index}: Fuera de los límites de la cuadrícula",
+    "collision": "Colisión detectada entre \"{title1}\" y \"{title2}\"",
+    "duplicateTitle": "Título duplicado: \"{title}\"",
+    "duplicateId": "ID duplicado: \"{id}\"",
+    "emptyModel": "Modelo de tablero vacío"
+  },
+  "error": {
+    "layoutNotFound": "Tablero \"{name}\" no encontrado{available}",
+    "invalidLayoutName": "Nombre de tablero inválido: {name}",
+    "invalidFormat": "Formato de tablero inválido{path}: {details}",
+    "modelError": "El modelo de tablero contiene errores de configuración. Consulta la consola para más detalles.",
+    "fileError": "No se puede acceder al archivo. Verifica los permisos y la ubicación.",
+    "validationError": "Validación fallida: {errors}",
+    "loadingLayouts": "Error al cargar los tableros",
+    "loadingLayout": "Error al cargar el tablero {name}",
+    "savingLayout": "Error al guardar el tablero {name}",
+    "deletingLayout": "Error al eliminar el tablero {name}",
+    "searchingLayout": "Error al buscar el tablero {name}",
+    "renderingLayout": "Error al renderizar el tablero",
+    "reloadingLayouts": "Error al recargar los tableros"
+  },
+  "common": {
+    "frame": "marco",
+    "frames": "marcos",
+    "layout": "tablero",
+    "layouts": "tableros",
+    "yes": "Sí",
+    "no": "No",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "create": "Crear",
+    "edit": "Editar",
+    "close": "Cerrar"
+  }
+}
