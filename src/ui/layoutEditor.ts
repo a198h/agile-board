@@ -122,6 +122,9 @@ export class LayoutEditor extends Modal {
       this.handleLayoutChange.bind(this)
     );
     
+    // Initialiser le layout dans le BoxManager
+    this.boxManager.updateCurrentLayout(this.layout);
+    
     this.selectionManager = new SelectionManager(
       this.handleSelectionChange.bind(this)
     );
@@ -307,7 +310,7 @@ export class LayoutEditor extends Modal {
     const originalBox = this.dragDropHandler.getOriginalBoxState();
     if (!originalBox) return;
 
-    const handle = this.dragDropHandler.getCurrentDragType();
+    const handle = this.dragDropHandler.getCurrentResizeHandle();
     if (!handle) return;
 
     const newDimensions = this.dragDropHandler.calculateResizeDimensions(originalBox, deltaX, deltaY, handle);
@@ -332,8 +335,37 @@ export class LayoutEditor extends Modal {
    * Finalise les actions de drag.
    */
   private finishCreateDrag(): void {
-    // Logique de création finale simplifiée
-    // À implémenter selon les besoins
+    const dimensions = this.dragDropHandler.getCurrentPreviewDimensions();
+    
+    if (!dimensions || dimensions.w < 2 || dimensions.h < 2) {
+      return; // Taille minimale non respectée
+    }
+
+    const newBox: LayoutBox = {
+      id: this.boxManager.generateBoxId(this.layout.name, this.layout.boxes),
+      title: `${t('common.frame')} ${this.layout.boxes.length + 1}`,
+      x: dimensions.x,
+      y: dimensions.y,
+      w: dimensions.w,
+      h: dimensions.h
+    };
+
+    const collisionResult = this.validator.wouldCollide(newBox, this.layout.boxes);
+    
+    if (!collisionResult.hasCollisions) {
+      this.layout = {
+        ...this.layout,
+        boxes: [...this.layout.boxes, newBox]
+      };
+      
+      this.boxManager.updateCurrentLayout(this.layout);
+
+      const boxState = this.boxManager.createBoxElement(newBox, this.layout);
+      this.setupBoxEventListeners(boxState);
+      this.selectionManager.updateBoxes(this.boxManager.getAllBoxes());
+      this.selectionManager.selectBox(boxState);
+      this.sidebar.updateBoxCount(this.layout.boxes.length);
+    }
   }
 
   private finishMoveDrag(): void {
@@ -390,9 +422,12 @@ export class LayoutEditor extends Modal {
       ...this.layout,
       boxes: [...this.layout.boxes, newBox]
     };
+    
+    this.boxManager.updateCurrentLayout(this.layout);
 
     const boxState = this.boxManager.createBoxElement(newBox, this.layout);
     this.setupBoxEventListeners(boxState);
+    this.selectionManager.updateBoxes(this.boxManager.getAllBoxes());
     this.selectionManager.selectBox(boxState);
     this.sidebar.updateBoxCount(this.layout.boxes.length);
   }
@@ -405,8 +440,11 @@ export class LayoutEditor extends Modal {
       ...this.layout,
       boxes: this.layout.boxes.filter(box => box.id !== selectedBox.box.id)
     };
+    
+    this.boxManager.updateCurrentLayout(this.layout);
 
     this.boxManager.removeBox(selectedBox.box.id);
+    this.selectionManager.updateBoxes(this.boxManager.getAllBoxes());
     this.selectionManager.deselectAll();
     this.sidebar.updateBoxCount(this.layout.boxes.length);
   }
@@ -428,6 +466,8 @@ export class LayoutEditor extends Modal {
       boxes: []
     };
     
+    this.boxManager.updateCurrentLayout(this.layout);
+    this.selectionManager.updateBoxes(this.boxManager.getAllBoxes());
     this.sidebar.updateBoxCount(0);
   }
 
@@ -436,6 +476,7 @@ export class LayoutEditor extends Modal {
    */
   private handleLayoutChange(layout: LayoutFile): void {
     this.layout = layout;
+    this.boxManager.updateCurrentLayout(layout);
   }
 
   private handleSelectionChange(box: BoxState | null): void {
@@ -459,6 +500,8 @@ export class LayoutEditor extends Modal {
         box.id === boxId ? { ...box, title: cleanTitle } : box
       )
     };
+    
+    this.boxManager.updateCurrentLayout(this.layout);
 
     this.boxManager.updateBoxTitle(boxId, cleanTitle);
     
@@ -495,6 +538,8 @@ export class LayoutEditor extends Modal {
         b.id === boxState.box.id ? boxState.box : b
       )
     };
+    
+    this.boxManager.updateCurrentLayout(this.layout);
   }
 
   /**

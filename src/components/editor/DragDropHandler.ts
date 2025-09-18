@@ -235,6 +235,26 @@ export class DragDropHandler {
   }
 
   /**
+   * Obtient les dimensions actuelles de la preview box.
+   */
+  getCurrentPreviewDimensions(): { x: number; y: number; w: number; h: number } | null {
+    if (!this.previewBox) return null;
+
+    const cellSize = this.gridCanvas.getCellSize();
+    const left = parseInt(this.previewBox.style.left) || 0;
+    const top = parseInt(this.previewBox.style.top) || 0;
+    const width = parseInt(this.previewBox.style.width) || 0;
+    const height = parseInt(this.previewBox.style.height) || 0;
+
+    return {
+      x: Math.round((left - 2) / cellSize),
+      y: Math.round((top - 2) / cellSize),
+      w: Math.round((width + 4) / cellSize),
+      h: Math.round((height + 4) / cellSize)
+    };
+  }
+
+  /**
    * Calcule la nouvelle position pour le déplacement.
    */
   calculateMovePosition(originalBox: LayoutBox, deltaX: number, deltaY: number): {
@@ -364,6 +384,13 @@ export class DragDropHandler {
    */
   getCurrentDragType(): 'move' | 'resize' | 'create' | null {
     return this.dragState.isActive ? this.dragState.type : null;
+  }
+
+  /**
+   * Récupère le handle de resize actuel.
+   */
+  getCurrentResizeHandle(): string | null {
+    return this.dragState.handle || null;
   }
 
   /**

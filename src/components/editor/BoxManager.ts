@@ -335,10 +335,18 @@ export class BoxManager {
   }
 
   /**
-   * Obtient le layout actuel (à implémenter par la classe parent).
+   * Met à jour la référence du layout pour les opérations internes.
+   */
+  updateCurrentLayout(layout: LayoutFile): void {
+    this.currentLayout = layout;
+  }
+
+  /**
+   * Obtient le layout actuel.
    */
   private getCurrentLayout(): LayoutFile {
-    // Cette méthode sera surchargée par injection de dépendance
-    return { name: '', boxes: [] };
+    return this.currentLayout || { name: '', boxes: [] };
   }
+
+  private currentLayout: LayoutFile | null = null;
 }
