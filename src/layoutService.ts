@@ -31,6 +31,25 @@ export class LayoutService {
   }
 
   /**
+   * Initialise le service et crée les layouts de base
+   */
+  public async initialize(): Promise<void> {
+    try {
+      await this.fileRepo.initialize();
+    } catch (error) {
+      this.logger.error('Erreur lors de l\'initialisation du service de layout', error);
+      ErrorHandler.handleError({
+        type: 'INITIALIZATION_ERROR',
+        component: 'LayoutService',
+        details: error instanceof Error ? error.message : String(error)
+      }, 'LayoutService.initialize', {
+        severity: ErrorSeverity.WARNING,
+        userMessage: t('error.initializingLayouts')
+      });
+    }
+  }
+
+  /**
    * Charge tous les modèles de layout depuis le fichier de configuration.
    * @returns Promise résolue quand le chargement est terminé
    */
