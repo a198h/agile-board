@@ -117,15 +117,19 @@ export class MarkdownEditor {
     const checkboxPattern = /^(\s*)(- \[([ x])\] )(.*)$/;
     const listPattern = /^(\s*)(- )(.*)$/;
     const numberedListPattern = /^(\s*)(\d+\. )(.*)$/;
+    const calloutPattern = /^(\s*)(>(?:\[![^\]]+\])?\s*)(.*)$/;
     
     const checkboxMatch = currentLine.match(checkboxPattern);
     const listMatch = currentLine.match(listPattern);
     const numberedMatch = currentLine.match(numberedListPattern);
+    const calloutMatch = currentLine.match(calloutPattern);
     
     if (checkboxMatch) {
       this.handleCheckboxContinuation(e, checkboxMatch, cursorPos, value, lineStart, lineEnd);
     } else if (listMatch) {
       this.handleListContinuation(e, listMatch, cursorPos, value, lineStart, lineEnd);
+    } else if (calloutMatch) {
+      this.handleCalloutContinuation(e, calloutMatch, cursorPos, value, lineStart, lineEnd);
     } else if (numberedMatch) {
       // Ligne de liste numérotée - implémentation simplifiée
       const [, indent, marker, content] = numberedMatch;
@@ -206,6 +210,40 @@ export class MarkdownEditor {
     } else {
       e.preventDefault();
       const newLine = `\n${indent}${marker}`;
+      const before = value.substring(0, cursorPos);
+      const after = value.substring(cursorPos);
+      this.textArea.value = before + newLine + after;
+      const newPos = cursorPos + newLine.length;
+      this.textArea.setSelectionRange(newPos, newPos);
+    }
+    
+    this.content = this.textArea.value;
+    this.onContentChange(this.content);
+  }
+
+  private handleCalloutContinuation(
+    e: KeyboardEvent,
+    match: RegExpMatchArray,
+    cursorPos: number,
+    value: string,
+    lineStart: number,
+    lineEnd: number
+  ): void {
+    if (!this.textArea) return;
+
+    const [, indent, , content] = match; // Ignore le marqueur complet, on prend juste l'indentation
+    
+    if (!content.trim()) {
+      // Ligne vide - quitter le callout
+      e.preventDefault();
+      const before = value.substring(0, lineStart);
+      const after = value.substring(lineEnd === -1 ? value.length : lineEnd);
+      this.textArea.value = before + after;
+      this.textArea.setSelectionRange(before.length, before.length);
+    } else {
+      // Continuer avec > simple
+      e.preventDefault();
+      const newLine = `\n${indent}> `;
       const before = value.substring(0, cursorPos);
       const after = value.substring(cursorPos);
       this.textArea.value = before + newLine + after;
