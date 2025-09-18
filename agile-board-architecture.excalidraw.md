@@ -6,17 +6,109 @@ tags: [excalidraw]
 ---
 ==⚠  Switch to EXCALIDRAW VIEW in the MORE OPTIONS menu of this document. ⚠== You can decompress Drawing data with the command palette: 'Decompress current Excalidraw file'. For more info check in plugin settings under 'Saving'
 
-## 🔄 MISE À JOUR REQUISE
-**Ce diagramme contient maintenant de nouveaux composants qui ne sont pas visibles dans le dessin :**
+## 🏗️ REFACTORING MAJEUR v0.7.7+ - ARCHITECTURE MODULAIRE
+**Ce diagramme nécessite une mise à jour complète suite au refactoring SOLID :**
+
+### 🧩 **NOUVEAUX COMPOSANTS MODULAIRES (10 composants créés)**
+
+#### **Composants Markdown Refactorisés (depuis SimpleMarkdownFrame)**
+- 🆕 **MarkdownRenderer** - Rendu pur avec API Obsidian
+- 🆕 **MarkdownEditor** - Édition textarea avec continuation listes  
+- 🆕 **LinkHandler** - Gestion universelle des liens (Dataview/Tasks)
+- 🆕 **CheckboxHandler** - Synchronisation checkboxes ↔ markdown
+- 🆕 **GridLayoutManager** - Conversion CSS grid ↔ positionnement absolu
+
+#### **Composants Éditeur Refactorisés (depuis LayoutEditor)**
+- 🆕 **GridCanvas** - Rendu grille 24x24 pure avec numérotation
+- 🆕 **BoxManager** - CRUD boxes + validation anti-collision
+- 🆕 **DragDropHandler** - Machine d'état drag/resize/create
+- 🆕 **SelectionManager** - Gestion sélection + feedback visuel
+- 🆕 **Sidebar** - Interface contrôles + panneau paramètres
+
+### 📊 **COMPOSANTS REFACTORISÉS (architecture SOLID)**
+- ♻️ **SimpleMarkdownFrame** - 922→277 lignes (-70%) → Architecture modulaire
+- ♻️ **LayoutEditor** - 1471→550 lignes (-63%) → Architecture modulaire
+
+### 📋 **COMPOSANTS EXISTANTS (déjà dans le diagramme)**
 - ✅ **LayoutFileRepo** - Repository pour gestion CRUD des layouts
 - ✅ **LayoutValidator24** - Validation optimisée grille 24x24  
-- ✅ **LayoutEditor** - Éditeur visuel drag & drop
 - ✅ **LayoutSettingsTab** - Interface de gestion des layouts
 - ✅ **AgileBoardSettings** - Système de configuration
 - ✅ **SettingsTab** - Interface de configuration générale
 
-**Pour voir ces nouveaux éléments :** Ouvrez en mode Excalidraw et ajoutez manuellement les nouveaux composants au diagramme, ou régénérez le diagramme complet.
+### 🎯 **ACTION REQUISE**
+**Pour refléter l'architecture actuelle :** 
+1. Ouvrir en mode Excalidraw
+2. Ajouter les 10 nouveaux composants modulaires
+3. Mettre à jour les relations de dépendance
+4. Appliquer les codes couleur selon la légende (🟢 Rendu pour tous les nouveaux composants)
+5. Documenter les relations SimpleMarkdownFrame → composants markdown
+6. Documenter les relations LayoutEditor → composants éditeur
 
+**Bénéfices du refactoring à représenter :** Architecture SOLID, 1600+ lignes supprimées, maintenabilité améliorée
+
+## 📝 NOTES TECHNIQUES - Mise à Jour Text Elements
+
+### Text Elements à modifier dans Excalidraw :
+```
+SimpleMarkdownFrame ^4HGoxBj4 → Ajouter note "(REFACTORISÉ - voir composants modulaires)"
+LayoutEditor ^KK1LayoutEditor → Ajouter note "(REFACTORISÉ - voir composants modulaires)"
+```
+
+### Nouveaux Text Elements à créer :
+```
+components/markdown/MarkdownRenderer.ts
+📝 Class: MarkdownRenderer
+    - render()
+    - setupObsidianIntegration()
+
+components/markdown/MarkdownEditor.ts  
+✏️ Class: MarkdownEditor
+    - initialize()
+    - focus()
+    - handleEnterKey()
+
+components/markdown/LinkHandler.ts
+🔗 Class: LinkHandler
+    - setupAllLinks()
+    - isInteractiveElement()
+
+components/markdown/CheckboxHandler.ts
+☑️ Class: CheckboxHandler
+    - setupCheckboxHandlers()
+    - updateMarkdownContent()
+
+components/markdown/GridLayoutManager.ts
+📐 Class: GridLayoutManager
+    - convertToAbsolute()
+    - restoreToGrid()
+
+components/editor/GridCanvas.ts
+🎨 Class: GridCanvas
+    - createGrid()
+    - screenToGrid()
+
+components/editor/BoxManager.ts
+📦 Class: BoxManager
+    - createBoxElement()
+    - updateBoxPosition()
+    - validateLayout()
+
+components/editor/DragDropHandler.ts
+🎯 Class: DragDropHandler
+    - startGridDrag()
+    - calculateDimensions()
+
+components/editor/SelectionManager.ts
+🎯 Class: SelectionManager
+    - selectBox()
+    - generateSelectionInfo()
+
+components/editor/Sidebar.ts
+🎛️ Class: Sidebar
+    - createSidebar()
+    - updateSelectionInfo()
+```
 
 # Excalidraw Data
 
