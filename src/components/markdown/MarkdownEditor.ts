@@ -1,26 +1,24 @@
 // src/components/markdown/MarkdownEditor.ts
 import { App } from "obsidian";
-import { BaseUIComponent } from "../../core/baseComponent";
 
 /**
  * Composant responsable de l'édition markdown avec textarea simple.
  * Gère les raccourcis clavier et la continuation automatique des listes.
  */
-export class MarkdownEditor extends BaseUIComponent {
+export class MarkdownEditor {
   private textArea: HTMLTextAreaElement | null = null;
   private onContentChange: (content: string) => void;
   private onExitEdit: () => void;
 
   constructor(
-    container: HTMLElement,
-    app: App,
+    private container: HTMLElement,
+    private app: App,
     private content: string,
     callbacks: {
       onContentChange: (content: string) => void;
       onExitEdit: () => void;
     }
   ) {
-    super(container, app);
     this.onContentChange = callbacks.onContentChange;
     this.onExitEdit = callbacks.onExitEdit;
   }
@@ -29,11 +27,13 @@ export class MarkdownEditor extends BaseUIComponent {
    * Initialise et affiche l'éditeur.
    */
   initialize(): void {
-    if (!this.containerEl) return;
+    if (!this.container) return;
 
-    this.containerEl.empty();
+    this.container.empty();
     this.createTextArea();
     this.setupEventListeners();
+    
+    // Focus immédiat comme dans l'original
     this.focus();
   }
 
@@ -41,9 +41,9 @@ export class MarkdownEditor extends BaseUIComponent {
    * Crée le textarea avec les styles appropriés.
    */
   private createTextArea(): void {
-    if (!this.containerEl) return;
+    if (!this.container) return;
 
-    this.textArea = this.containerEl.createEl('textarea');
+    this.textArea = this.container.createEl('textarea');
     
     // Respecter la configuration de vérification orthographique d'Obsidian
     // @ts-ignore - accès aux paramètres internes d'Obsidian
@@ -220,18 +220,17 @@ export class MarkdownEditor extends BaseUIComponent {
   /**
    * Met le focus sur l'éditeur.
    */
-  private focus(): void {
+  focus(): void {
     if (!this.textArea) return;
 
     this.textArea.focus();
     this.textArea.setSelectionRange(this.textArea.value.length, this.textArea.value.length);
   }
 
-  protected doLoad(): void {
-    this.initialize();
-  }
-
-  protected doUnload(): void {
+  /**
+   * Nettoie les ressources.
+   */
+  unload(): void {
     this.textArea = null;
   }
 }

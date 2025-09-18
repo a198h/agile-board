@@ -161,8 +161,7 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
       }
     );
     
-    this.registerDisposable(this.editor);
-    this.editor.load();
+    this.editor.initialize();
     
     this.isEditing = true;
   }
@@ -259,11 +258,8 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
    * Met le focus sur l'éditeur si en mode édition.
    */
   focus(): void {
-    if (this.isEditing && this.containerEl) {
-      const textArea = this.containerEl.querySelector('textarea');
-      if (textArea) {
-        textArea.focus();
-      }
+    if (this.isEditing && this.editor) {
+      this.editor.focus();
     }
   }
 
