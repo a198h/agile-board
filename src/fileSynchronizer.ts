@@ -69,7 +69,9 @@ export class FileSynchronizer {
       for (const [title, frame] of (boardView as any).frames) {
         const newSection = newSections[title];
         if (newSection) {
-          await frame.updateContent(newSection);
+          // Convertir SectionInfo en string en joignant les lignes
+          const newContent = newSection.lines.join('\n');
+          await frame.updateContent(newContent);
         }
       }
     } finally {
