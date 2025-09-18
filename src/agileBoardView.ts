@@ -3,6 +3,7 @@ import { FileView, TFile, WorkspaceLeaf } from "obsidian";
 import { LayoutBlock, LayoutModel } from "./types";
 import { SectionInfo, parseHeadingsInFile } from "./sectionParser";
 import { SimpleMarkdownFrame } from "./simpleMarkdownFrame";
+import { t } from "./i18n";
 import AgileBoardPlugin from "./main";
 
 export const AGILE_BOARD_VIEW_TYPE = "agile-board-view";
@@ -222,10 +223,10 @@ export class AgileBoardView extends FileView {
     `;
 
     const title = overlay.createEl("h2");
-    title.textContent = "❌ Sections manquantes";
+    title.textContent = t("view.missingSectionsTitle");
 
     const description = overlay.createEl("p");
-    description.textContent = "Les sections suivantes sont requises :";
+    description.textContent = t("view.missingSectionsDescription");
 
     const list = overlay.createEl("ul");
     missingTitles.forEach(title => {
@@ -234,7 +235,7 @@ export class AgileBoardView extends FileView {
     });
 
     const button = overlay.createEl("button", { cls: "mod-cta" });
-    button.textContent = "➕ Créer les sections manquantes";
+    button.textContent = t("view.createMissingSections");
     button.addEventListener("click", () => this.createMissingSections(missingTitles));
   }
 

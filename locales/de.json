@@ -99,7 +99,10 @@
   },
   "view": {
     "noLayout": "Diese Notiz hat kein agile-board Layout konfiguriert",
-    "layoutNotFound": "Board \"{name}\" nicht gefunden"
+    "layoutNotFound": "Board \"{name}\" nicht gefunden",
+    "missingSectionsTitle": "❌ Fehlende Abschnitte",
+    "missingSectionsDescription": "Die folgenden Abschnitte sind erforderlich:",
+    "createMissingSections": "➕ Fehlende Abschnitte erstellen"
   },
   "validation": {
     "layoutName": "Board-Name ist erforderlich",

@@ -99,7 +99,10 @@
   },
   "view": {
     "noLayout": "Esta nota não tem um layout agile-board configurado",
-    "layoutNotFound": "Quadro \"{name}\" não encontrado"
+    "layoutNotFound": "Quadro \"{name}\" não encontrado",
+    "missingSectionsTitle": "❌ Seções ausentes",
+    "missingSectionsDescription": "As seguintes seções são obrigatórias:",
+    "createMissingSections": "➕ Criar seções ausentes"
   },
   "validation": {
     "layoutName": "O nome do quadro é obrigatório",

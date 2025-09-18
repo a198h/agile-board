@@ -99,7 +99,10 @@
   },
   "view": {
     "noLayout": "This note has no agile-board layout configured",
-    "layoutNotFound": "Layout \"{name}\" not found"
+    "layoutNotFound": "Layout \"{name}\" not found",
+    "missingSectionsTitle": "❌ Missing sections",
+    "missingSectionsDescription": "The following sections are required:",
+    "createMissingSections": "➕ Create missing sections"
   },
   "validation": {
     "layoutName": "Layout name is required",

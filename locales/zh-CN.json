@@ -99,7 +99,10 @@
   },
   "view": {
     "noLayout": "此笔记未配置敏捷看板布局",
-    "layoutNotFound": "未找到布局\"{name}\""
+    "layoutNotFound": "未找到布局\"{name}\"",
+    "missingSectionsTitle": "❌ 缺失的章节",
+    "missingSectionsDescription": "需要以下章节：",
+    "createMissingSections": "➕ 创建缺失的章节"
   },
   "validation": {
     "layoutName": "布局名称必填",

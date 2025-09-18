@@ -99,7 +99,10 @@
   },
   "view": {
     "noLayout": "Cette note n'a pas de tableau agile-board configuré",
-    "layoutNotFound": "Tableau \"{name}\" introuvable"
+    "layoutNotFound": "Tableau \"{name}\" introuvable",
+    "missingSectionsTitle": "❌ Sections manquantes",
+    "missingSectionsDescription": "Les sections suivantes sont requises :",
+    "createMissingSections": "➕ Créer les sections manquantes"
   },
   "validation": {
     "layoutName": "Le nom du tableau est requis",

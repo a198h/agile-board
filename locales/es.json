@@ -99,7 +99,10 @@
   },
   "view": {
     "noLayout": "Esta nota no tiene un tablero agile-board configurado",
-    "layoutNotFound": "Tablero \"{name}\" no encontrado"
+    "layoutNotFound": "Tablero \"{name}\" no encontrado",
+    "missingSectionsTitle": "❌ Secciones faltantes",
+    "missingSectionsDescription": "Las siguientes secciones son requeridas:",
+    "createMissingSections": "➕ Crear secciones faltantes"
   },
   "validation": {
     "layoutName": "El nombre del tablero es requerido",
