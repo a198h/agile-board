@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.7.7-blue)
+![version](https://img.shields.io/badge/version-0.7.8-blue)
 
 🌍 Read this in other languages: 
 [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md)
@@ -17,14 +17,14 @@
 
 Transform your notes into visual dashboards with editable frames. Each frame represents a section (level 1 heading) with support for:
 
-- **Rich Markdown**: `[[links]]`, `- [ ] tasks`, formatting
-- **Smart editing**: auto-continued lists, clickable checkboxes
-- **Plugin compatibility**: Dataview, Tasks, etc.
-- **Live Preview**: rendering close to Obsidian with some limitations
+- **Rich Markdown**: `[[links]]`, `- [ ] tasks`, formatting, horizontal lines, code blocks
+- **Smart editing**: auto-continued lists, callouts, clickable checkboxes
+- **Plugin compatibility**: Dataview, Tasks (with proper icon handling), etc.
+- **Live Preview**: rendering close to Obsidian with enhanced markdown support
 
 ## 🌍 Multilingual Support
 
-**NEW in v0.7.7**: Complete internationalization with **automatic language detection**!
+**NEW in v0.7.8**: Enhanced markdown formatting and Tasks plugin integration!
 
 - 🇺🇸 **English** - reference language
 - 🇫🇷 **Français** - traduction complète

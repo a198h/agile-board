@@ -11,6 +11,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement onClearAll event for better architecture
 - CodeMirror 6 integration with full image support (`![[image.png]]`) in frames
 
+## [0.7.8] - 2025-09-22
+
+### Added
+- **✨ Enhanced Markdown Formatting**: Comprehensive support for markdown elements in frames
+  - Horizontal lines support (---, ***, ___) with proper regex handling
+  - Code blocks rendering with triple backticks (```) and theme-compliant styling
+  - Automatic callout line continuation (>) in markdown editor
+  - Enhanced fallback HTML parser with full markdown support
+
+### Fixed
+- **🔗 Tasks Plugin Integration**: Resolved bug where clicking Tasks plugin link icon (🔗) created files instead of navigating to task sources
+- **🎨 Code Block Styling**: Added Obsidian theme-compliant styling for code blocks with proper background colors and borders
+- **📋 Copy Button Fix**: Fixed copy button positioning and event propagation in code blocks to prevent frame editor interference
+- **📝 Callout Continuation**: Fixed callout line continuation to use simple ">" instead of repeating full callout types
+
+### Technical
+- Improved LinkHandler to filter out Tasks plugin control elements
+- Enhanced MarkdownRenderer with comprehensive markdown parsing
+- Added event handling fixes for copy buttons in code blocks
+- Optimized markdown editor with smart line continuation for callouts
+
 ## [0.7.7] - 2025-09-17
 - **Full internationalization** : English, French, German, Spanish, Portuguese, Chinese
 

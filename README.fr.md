@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.7.7-blue)
+![version](https://img.shields.io/badge/version-0.7.8-blue)
 
 🌍 Read this in other languages: 
 [English](README.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md)
