@@ -138,10 +138,20 @@ export class LinkHandler {
    * Gestionnaire universel de liens - analyse chaque clic pour détecter les liens.
    */
   private handleUniversalLink(target: HTMLElement, event: MouseEvent): boolean {
+    // Vérifier si c'est l'icône de lien Tasks 🔗
+    if (this.isTasksLinkIcon(target)) {
+      return false; // Laisser Tasks gérer le clic
+    }
+    
     let currentElement: HTMLElement | null = target;
     let depth = 0;
     
     while (currentElement && depth < 5) {
+      // Vérifier si l'élément actuel est l'icône de lien Tasks
+      if (this.isTasksLinkIcon(currentElement)) {
+        return false; // Laisser Tasks gérer le clic
+      }
+      
       const linkInfo = this.extractLinkInfo(currentElement);
       if (linkInfo) {
         event.preventDefault();
@@ -190,7 +200,13 @@ export class LinkHandler {
     }
     
     // Dans un contexte Dataview/Tasks, vérifier le texte pour des noms de fichiers
+    // Mais exclure l'icône de lien Tasks
     if (element.closest('.dataview') || element.closest('.tasks-layout')) {
+      // Ignorer l'icône de lien Tasks 🔗
+      if (this.isTasksLinkIcon(element)) {
+        return null;
+      }
+      
       const text = element.textContent?.trim();
       if (text && this.looksLikeFileName(text)) {
         return { href: this.cleanHref(text) };
@@ -219,6 +235,25 @@ export class LinkHandler {
            (text.includes(' ') || 
             /^[A-Z]/.test(text) || 
             /\w+/.test(text));
+  }
+
+  /**
+   * Vérifie si un élément est l'icône de lien Tasks (🔗).
+   */
+  private isTasksLinkIcon(element: HTMLElement): boolean {
+    const text = element.textContent?.trim();
+    
+    // Vérifier si c'est exactement l'icône 🔗
+    if (text === '🔗') {
+      return true;
+    }
+    
+    // Vérifier si c'est dans un contexte Tasks
+    if (element.closest('.tasks-layout') || element.closest('.task-list-item')) {
+      return text === '🔗';
+    }
+    
+    return false;
   }
 
   /**
