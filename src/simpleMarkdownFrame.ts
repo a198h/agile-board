@@ -173,6 +173,7 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
       this.containerEl,
       {
         initialContent: this.markdownContent,
+        sourceFile: this.file,
         onChange: (newContent: string) => {
           this.handleContentChange(newContent);
         },

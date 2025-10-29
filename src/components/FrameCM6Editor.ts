@@ -6,7 +6,7 @@
  * de la note Markdown.
  */
 
-import { App, MarkdownView } from 'obsidian';
+import { App, MarkdownView, TFile } from 'obsidian';
 import { EditorState, Extension } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
@@ -43,6 +43,8 @@ function extractObsidianExtensions(app: App): Extension[] {
 export interface FrameCM6EditorOptions {
   /** Contenu initial du cadre */
   initialContent: string;
+  /** Fichier source (pour résoudre les embeds) */
+  sourceFile: TFile;
   /** Callback appelé quand le contenu change */
   onChange?: (content: string) => void;
   /** Callback appelé quand l'éditeur perd le focus */
@@ -82,6 +84,9 @@ export class FrameCM6Editor {
 
       // Fallback: Support Markdown basique si pas d'extensions Obsidian
       ...(obsidianExtensions.length === 0 ? [markdown()] : []),
+
+      // NOTE: embedPreviewPlugin désactivé - en mode édition on veut voir le texte source
+      // embedPreviewPlugin(this.app, this.options.sourceFile.path),
 
       // Historique (undo/redo)
       history(),
