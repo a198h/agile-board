@@ -9,6 +9,7 @@ import { BaseUIComponent } from "../../core/baseComponent";
  */
 export class MarkdownRenderer extends BaseUIComponent {
   private component: Component;
+  private renderComponent: Component;
 
   constructor(
     container: HTMLElement,
@@ -18,9 +19,13 @@ export class MarkdownRenderer extends BaseUIComponent {
   ) {
     super(container, app);
     this.component = new Component();
-    
+    this.renderComponent = new Component();
+
     this.registerDisposable({
-      dispose: () => this.component.unload()
+      dispose: () => {
+        this.component.unload();
+        this.renderComponent.unload();
+      }
     });
   }
 
@@ -39,13 +44,19 @@ export class MarkdownRenderer extends BaseUIComponent {
     }
 
     try {
+      // Décharger et recharger le component pour un rendu propre
+      this.renderComponent.unload();
+      this.renderComponent = new Component();
+      this.renderComponent.load();
+
+      // Utiliser renderMarkdown (API v1.0+) avec le bon sourcePath
       await ObsidianMarkdownRenderer.renderMarkdown(
         content,
         this.containerEl,
         this.file.path,
-        this.component
+        this.renderComponent
       );
-      
+
       // Après le rendu, configurer les gestionnaires d'événements pour les boutons de copie
       this.setupCopyButtonHandlers();
     } catch (error) {
