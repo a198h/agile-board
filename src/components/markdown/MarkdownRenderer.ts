@@ -218,9 +218,12 @@ export class MarkdownRenderer extends BaseUIComponent {
       width: 100%;
       height: 100%;
       overflow: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
       padding: 0.5rem;
       cursor: text;
       box-sizing: border-box;
+      display: block;
     `;
 
     // Améliorer les styles des blocs de code pour respecter le thème
@@ -270,8 +273,19 @@ export class MarkdownRenderer extends BaseUIComponent {
       .agile-board-frame pre:hover .copy-code-button {
         opacity: 1 !important;
       }
+
+      /* Styles pour les callouts dans les cadres */
+      .agile-board-frame .callout {
+        overflow: visible !important;
+        margin: 0.5em 0 !important;
+      }
+
+      .agile-board-frame .callout-content {
+        overflow: visible !important;
+        display: block !important;
+      }
     `;
-    
+
     if (!document.head.querySelector('#agile-board-code-styles')) {
       style.id = 'agile-board-code-styles';
       document.head.appendChild(style);

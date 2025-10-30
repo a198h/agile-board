@@ -40,16 +40,16 @@ class EmbedWidget extends WidgetType {
       return wrapper;
     }
 
-    // Image ?
+    // Image - en mode édition, afficher un lien pour pouvoir éditer le texte source
+    // Le rendu de l'image se fera en mode preview via MarkdownRenderer
     if (this.isImageExt(this.tfile.extension)) {
-      const img = document.createElement('img');
-      img.classList.add('agile-embed-image');
-      img.src = this.app.vault.getResourcePath(this.tfile);
-      img.alt = this.tfile.name;
-      img.style.maxWidth = '100%';
-      img.style.height = 'auto';
-      img.style.display = 'block';
-      wrapper.appendChild(img);
+      const link = document.createElement('a');
+      link.classList.add('internal-link', 'agile-embed-link');
+      link.textContent = `🖼️ ${this.tfile.basename}`;
+      link.href = this.tfile.path;
+      link.style.textDecoration = 'none';
+      link.style.color = 'var(--link-color)';
+      wrapper.appendChild(link);
       return wrapper;
     }
 
