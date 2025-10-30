@@ -85,10 +85,6 @@ export class FrameCM6Editor {
       // Fallback: Support Markdown basique si pas d'extensions Obsidian
       ...(obsidianExtensions.length === 0 ? [markdown()] : []),
 
-      // NOTE: embedPreviewPlugin désactivé - en mode édition on veut voir le texte source brut
-      // Les embeds seront rendus visuellement uniquement en mode preview
-      // embedPreviewPlugin(this.app, this.options.sourceFile.path),
-
       // Historique (undo/redo)
       history(),
 
