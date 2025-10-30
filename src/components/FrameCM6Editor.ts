@@ -11,6 +11,7 @@ import { EditorState, Extension } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { markdown } from '@codemirror/lang-markdown';
+import { embedPreviewPlugin } from './EmbedPreviewPlugin';
 
 /**
  * Extrait les extensions CM6 de l'éditeur actif d'Obsidian.
@@ -85,8 +86,8 @@ export class FrameCM6Editor {
       // Fallback: Support Markdown basique si pas d'extensions Obsidian
       ...(obsidianExtensions.length === 0 ? [markdown()] : []),
 
-      // NOTE: embedPreviewPlugin désactivé - en mode édition on veut voir le texte source
-      // embedPreviewPlugin(this.app, this.options.sourceFile.path),
+      // Plugin d'embeds pour afficher les .base en mode édition
+      embedPreviewPlugin(this.app, this.options.sourceFile.path),
 
       // Historique (undo/redo)
       history(),

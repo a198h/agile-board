@@ -53,6 +53,19 @@ class EmbedWidget extends WidgetType {
       return wrapper;
     }
 
+    // Fichier .base - en mode édition, on veut voir le texte source pour l'éditer
+    // Le rendu de la base se fera en mode preview via MarkdownRenderer
+    if (this.tfile.extension === 'base') {
+      const link = document.createElement('a');
+      link.classList.add('internal-link', 'agile-embed-link');
+      link.textContent = `🗂️ ${this.tfile.basename}`;
+      link.href = this.tfile.path;
+      link.style.textDecoration = 'none';
+      link.style.color = 'var(--link-color)';
+      wrapper.appendChild(link);
+      return wrapper;
+    }
+
     // Note Markdown - afficher juste un lien en mode édition
     if (this.tfile.extension === 'md') {
       const link = document.createElement('a');

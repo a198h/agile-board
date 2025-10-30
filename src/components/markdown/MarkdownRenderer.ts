@@ -1,5 +1,5 @@
 // src/components/markdown/MarkdownRenderer.ts
-import { App, TFile, Component, MarkdownRenderer as ObsidianMarkdownRenderer } from "obsidian";
+import { App, TFile, Component, MarkdownRenderer as ObsidianMarkdownRenderer, MarkdownRenderChild } from "obsidian";
 import { SectionInfo } from "../../types";
 import { BaseUIComponent } from "../../core/baseComponent";
 
@@ -160,6 +160,31 @@ export class MarkdownRenderer extends BaseUIComponent {
       }
 
       embedContainer.appendChild(noteDiv);
+    } else if (tfile.extension === 'base') {
+      // Rendu base - utiliser l'API render() synchrone pour que le plugin Bases puisse traiter
+      const baseDiv = document.createElement('div');
+      baseDiv.classList.add('agile-embed-base', 'markdown-preview-view', 'markdown-rendered');
+      baseDiv.style.minHeight = '100px';
+
+      // Utiliser l'API render() synchrone recommandée dans la doc
+      const embedMarkdown = `![[${linkPath}]]`;
+
+      try {
+        // API synchrone qui devrait permettre au plugin Bases de s'exécuter
+        ObsidianMarkdownRenderer.render(
+          this.app,
+          embedMarkdown,
+          baseDiv,
+          this.file.path,
+          this.renderComponent
+        );
+      } catch (error) {
+        baseDiv.textContent = `⚠ Erreur: ${tfile.name}`;
+        baseDiv.style.color = 'var(--text-error)';
+        console.error('Erreur rendu base embed:', error);
+      }
+
+      embedContainer.appendChild(baseDiv);
     } else {
       // Fichier générique
       embedContainer.textContent = `📎 ${tfile.name}`;
