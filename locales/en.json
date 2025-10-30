@@ -143,5 +143,56 @@
     "create": "Create",
     "edit": "Edit",
     "close": "Close"
+  },
+  "layouts": {
+    "eisenhower": {
+      "displayName": "Eisenhower Matrix",
+      "description": "Urgent/Important prioritization matrix for task management",
+      "boxes": {
+        "urgentImportant": "Urgent and Important",
+        "importantNotUrgent": "Important but not Urgent",
+        "urgentNotImportant": "Urgent but not Important",
+        "notUrgentNotImportant": "Neither Urgent nor Important"
+      }
+    },
+    "swot": {
+      "displayName": "SWOT Analysis",
+      "description": "Strategic analysis matrix: Strengths/Weaknesses/Opportunities/Threats",
+      "boxes": {
+        "strengths": "Strengths",
+        "weaknesses": "Weaknesses",
+        "opportunities": "Opportunities",
+        "threats": "Threats"
+      }
+    },
+    "moscow": {
+      "displayName": "MoSCoW",
+      "description": "Must/Should/Could/Won't have prioritization method",
+      "boxes": {
+        "mustHave": "Must Have",
+        "shouldHave": "Should Have",
+        "couldHave": "Could Have",
+        "wontHave": "Won't Have"
+      }
+    },
+    "effort_impact": {
+      "displayName": "Effort vs Impact",
+      "description": "Effort/Impact analysis matrix to prioritize actions",
+      "boxes": {
+        "lowEffortHighImpact": "Low Effort - High Impact",
+        "highEffortHighImpact": "High Effort - High Impact",
+        "lowEffortLowImpact": "Low Effort - Low Impact",
+        "highEffortLowImpact": "High Effort - Low Impact"
+      }
+    },
+    "cornell": {
+      "displayName": "Cornell Notes",
+      "description": "Structured note-taking system with cues, notes, and summary",
+      "boxes": {
+        "cues": "Cues and Questions",
+        "notes": "Detailed Notes",
+        "summary": "Summary"
+      }
+    }
   }
 }

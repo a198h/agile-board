@@ -143,5 +143,56 @@
     "create": "Criar",
     "edit": "Editar",
     "close": "Fechar"
+  },
+  "layouts": {
+    "eisenhower": {
+      "displayName": "Matriz de Eisenhower",
+      "description": "Matriz de priorização urgente/importante para gestão de tarefas",
+      "boxes": {
+        "urgentImportant": "Urgente e Importante",
+        "importantNotUrgent": "Importante mas não Urgente",
+        "urgentNotImportant": "Urgente mas não Importante",
+        "notUrgentNotImportant": "Nem Urgente nem Importante"
+      }
+    },
+    "swot": {
+      "displayName": "Análise SWOT",
+      "description": "Matriz de análise estratégica: Forças/Fraquezas/Oportunidades/Ameaças",
+      "boxes": {
+        "strengths": "Forças",
+        "weaknesses": "Fraquezas",
+        "opportunities": "Oportunidades",
+        "threats": "Ameaças"
+      }
+    },
+    "moscow": {
+      "displayName": "MoSCoW",
+      "description": "Método de priorização Must/Should/Could/Won't have",
+      "boxes": {
+        "mustHave": "Deve Ter",
+        "shouldHave": "Deveria Ter",
+        "couldHave": "Poderia Ter",
+        "wontHave": "Não Terá"
+      }
+    },
+    "effort_impact": {
+      "displayName": "Esforço vs Impacto",
+      "description": "Matriz de análise esforço/impacto para priorizar ações",
+      "boxes": {
+        "lowEffortHighImpact": "Baixo Esforço - Alto Impacto",
+        "highEffortHighImpact": "Alto Esforço - Alto Impacto",
+        "lowEffortLowImpact": "Baixo Esforço - Baixo Impacto",
+        "highEffortLowImpact": "Alto Esforço - Baixo Impacto"
+      }
+    },
+    "cornell": {
+      "displayName": "Notas Cornell",
+      "description": "Sistema estruturado de anotações com dicas, notas e resumo",
+      "boxes": {
+        "cues": "Dicas e Perguntas",
+        "notes": "Notas Detalhadas",
+        "summary": "Resumo"
+      }
+    }
   }
 }

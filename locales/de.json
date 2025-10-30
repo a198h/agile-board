@@ -143,5 +143,56 @@
     "create": "Erstellen",
     "edit": "Bearbeiten",
     "close": "Schließen"
+  },
+  "layouts": {
+    "eisenhower": {
+      "displayName": "Eisenhower-Matrix",
+      "description": "Dringend/Wichtig-Priorisierungsmatrix für Aufgabenverwaltung",
+      "boxes": {
+        "urgentImportant": "Dringend und Wichtig",
+        "importantNotUrgent": "Wichtig aber nicht Dringend",
+        "urgentNotImportant": "Dringend aber nicht Wichtig",
+        "notUrgentNotImportant": "Weder Dringend noch Wichtig"
+      }
+    },
+    "swot": {
+      "displayName": "SWOT-Analyse",
+      "description": "Strategische Analysematrix: Stärken/Schwächen/Chancen/Risiken",
+      "boxes": {
+        "strengths": "Stärken",
+        "weaknesses": "Schwächen",
+        "opportunities": "Chancen",
+        "threats": "Risiken"
+      }
+    },
+    "moscow": {
+      "displayName": "MoSCoW",
+      "description": "Must/Should/Could/Won't have Priorisierungsmethode",
+      "boxes": {
+        "mustHave": "Muss haben",
+        "shouldHave": "Sollte haben",
+        "couldHave": "Könnte haben",
+        "wontHave": "Wird nicht haben"
+      }
+    },
+    "effort_impact": {
+      "displayName": "Aufwand vs Nutzen",
+      "description": "Aufwand/Nutzen-Analysematrix zur Priorisierung von Aktionen",
+      "boxes": {
+        "lowEffortHighImpact": "Geringer Aufwand - Hoher Nutzen",
+        "highEffortHighImpact": "Hoher Aufwand - Hoher Nutzen",
+        "lowEffortLowImpact": "Geringer Aufwand - Geringer Nutzen",
+        "highEffortLowImpact": "Hoher Aufwand - Geringer Nutzen"
+      }
+    },
+    "cornell": {
+      "displayName": "Cornell-Notizen",
+      "description": "Strukturiertes Notizensystem mit Hinweisen, Notizen und Zusammenfassung",
+      "boxes": {
+        "cues": "Hinweise und Fragen",
+        "notes": "Detaillierte Notizen",
+        "summary": "Zusammenfassung"
+      }
+    }
   }
 }

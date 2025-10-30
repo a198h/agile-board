@@ -143,5 +143,56 @@
     "create": "Créer",
     "edit": "Éditer",
     "close": "Fermer"
+  },
+  "layouts": {
+    "eisenhower": {
+      "displayName": "Matrice d'Eisenhower",
+      "description": "Matrice de priorisation urgent/important pour la gestion des tâches",
+      "boxes": {
+        "urgentImportant": "Urgent et Important",
+        "importantNotUrgent": "Important mais pas Urgent",
+        "urgentNotImportant": "Urgent mais pas Important",
+        "notUrgentNotImportant": "Ni Urgent ni Important"
+      }
+    },
+    "swot": {
+      "displayName": "Analyse SWOT",
+      "description": "Matrice d'analyse stratégique Forces/Faiblesses/Opportunités/Menaces",
+      "boxes": {
+        "strengths": "Forces",
+        "weaknesses": "Faiblesses",
+        "opportunities": "Opportunités",
+        "threats": "Menaces"
+      }
+    },
+    "moscow": {
+      "displayName": "MoSCoW",
+      "description": "Méthode de priorisation Must/Should/Could/Won't have",
+      "boxes": {
+        "mustHave": "Must Have",
+        "shouldHave": "Should Have",
+        "couldHave": "Could Have",
+        "wontHave": "Won't Have"
+      }
+    },
+    "effort_impact": {
+      "displayName": "Effort vs Impact",
+      "description": "Matrice d'analyse effort/impact pour prioriser les actions",
+      "boxes": {
+        "lowEffortHighImpact": "Faible Effort - Fort Impact",
+        "highEffortHighImpact": "Fort Effort - Fort Impact",
+        "lowEffortLowImpact": "Faible Effort - Faible Impact",
+        "highEffortLowImpact": "Fort Effort - Faible Impact"
+      }
+    },
+    "cornell": {
+      "displayName": "Notes Cornell",
+      "description": "Système de prise de notes structuré avec indices, notes et résumé",
+      "boxes": {
+        "cues": "Indices et Questions",
+        "notes": "Notes Détaillées",
+        "summary": "Résumé"
+      }
+    }
   }
 }
