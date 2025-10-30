@@ -41,13 +41,24 @@ Alle UI-Elemente, Einstellungen, Meldungen und Tooltips sind mit **96 Übersetzu
 
 ## ⚠️ Aktuelle Einschränkungen
 
-Der Board-Modus verwendet einen vereinfachten Editor, der nicht alle erweiterten Funktionen von Obsidian enthält:
+Der Board-Modus verwendet CodeMirror 6 für die Bearbeitung, enthält aber nicht alle erweiterten Funktionen von Obsidian:
 
-- **Bilder**: Mit `![[image.png]]` eingefügte Bilder werden in den Rahmen des Board-Modus nicht angezeigt  
-- **Link-Vorschläge**: Beim Tippen von `[[` werden keine Notizen vorgeschlagen (du kannst den vollständigen Link trotzdem manuell eingeben)  
-- **Inline Plugin Calls**: Inline-Dataview-Abfragen (`= this.file.name`) oder Templater-Befehle (`<% tp.date.now() %>`) werden in Rahmen nicht ausgeführt  
+- **Link-Vorschläge**: Beim Tippen von `[[` werden keine Notizen vorgeschlagen (du kannst den vollständigen Link trotzdem manuell eingeben)
+- **Inline Plugin Calls**: Inline-Dataview-Abfragen (`= this.file.name`) oder Templater-Befehle (`<% tp.date.now() %>`) werden in Rahmen nicht ausgeführt
 
-**Zukunftspläne**: Integration von CodeMirror 6 (dem nativen Editor von Obsidian), um diese Einschränkungen zu beheben. Wenn du Erfahrung mit CM6 hast, ist dein Beitrag sehr willkommen!
+### 📎 Embed-Unterstützung
+
+**NEU**: Embed-Vorschau wird jetzt im Board-Modus unterstützt!
+
+- **Bilder**: `![[image.png]]` wird korrekt im Vorschaumodus angezeigt
+- **Notizen**: `![[andere-notiz.md]]` rendert den Notizeninhalt
+- **Obsidian Bases**: `![[table.base]]` zeigt interaktive Datenbankansichten an
+
+**Persistente Ansichtsauswahl für Bases**: Um die Ansichtsauswahl in einer Base persistent zu machen, verwende die Fragment-Syntax:
+```markdown
+![[table.base#AnsichtsName]]
+```
+Dies stellt sicher, dass die angegebene Ansicht beim Laden der Notiz immer angezeigt wird.
 
 ## 🔄 Zwei Anzeigemodi
 

@@ -41,13 +41,24 @@ Todos los elementos de la interfaz, configuraciones, mensajes y tooltips están 
 
 ## ⚠️ Limitaciones actuales
 
-El modo tablero usa un editor simplificado que no incluye todas las funciones avanzadas de edición de Obsidian:
+El modo tablero usa CodeMirror 6 para la edición pero no incluye todas las funciones avanzadas de edición de Obsidian:
 
-- **Imágenes**: Las imágenes insertadas con `![[image.png]]` no se muestran en los marcos del modo tablero  
-- **Sugerencias de enlaces**: Al escribir `[[`, el editor no sugiere tus notas (aunque aún puedes escribir el enlace completo manualmente)  
-- **Llamadas a plugins en línea**: Las consultas en línea de Dataview (`= this.file.name`) o comandos de Templater (`<% tp.date.now() %>`) no se ejecutan en los marcos  
+- **Sugerencias de enlaces**: Al escribir `[[`, el editor no sugiere tus notas (aunque aún puedes escribir el enlace completo manualmente)
+- **Llamadas a plugins en línea**: Las consultas en línea de Dataview (`= this.file.name`) o comandos de Templater (`<% tp.date.now() %>`) no se ejecutan en los marcos
 
-**Planes futuros**: Integrar CodeMirror 6 (el editor nativo de Obsidian) para resolver estas limitaciones. ¡Si tienes experiencia en integración con CM6, tu contribución será muy bienvenida!
+### 📎 Soporte para Embeds
+
+**NUEVO**: ¡La vista previa de embeds ahora es compatible en el modo tablero!
+
+- **Imágenes**: `![[image.png]]` se muestra correctamente en el modo de vista previa
+- **Notas**: `![[otra-nota.md]]` renderiza el contenido de la nota
+- **Obsidian Bases**: `![[table.base]]` muestra vistas de base de datos interactivas
+
+**Selección de vista persistente para Bases**: Para que la selección de vista en una base sea persistente, usa la sintaxis con fragmento:
+```markdown
+![[table.base#NombreDeLaVista]]
+```
+Esto asegura que la vista especificada se muestre siempre al cargar la nota.
 
 ## 🔄 Dos modos de visualización
 

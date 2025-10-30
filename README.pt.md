@@ -41,14 +41,24 @@ Todos os elementos da interface, configurações, mensagens e dicas foram traduz
 
 ## ⚠️ Limitações atuais
 
-O modo quadro utiliza um editor simplificado que não inclui todas as funcionalidades avançadas do Obsidian:
+O modo quadro utiliza CodeMirror 6 para edição, mas não inclui todas as funcionalidades avançadas do Obsidian:
 
-- **Imagens**: As imagens inseridas com `![[image.png]]` não são exibidas nos quadros do modo quadro  
-- **Sugestões de links**: Ao digitar `[[`, o editor não sugere as suas notas (mas ainda é possível escrever o link completo manualmente)  
-- **Chamadas de plugins inline**: Consultas inline do Dataview (`= this.file.name`) ou comandos do Templater (`<% tp.date.now() %>`) não são executados nos quadros  
+- **Sugestões de links**: Ao digitar `[[`, o editor não sugere as suas notas (mas ainda é possível escrever o link completo manualmente)
+- **Chamadas de plugins inline**: Consultas inline do Dataview (`= this.file.name`) ou comandos do Templater (`<% tp.date.now() %>`) não são executados nos quadros
 
-**Planos futuros**: Integrar o CodeMirror 6 (editor nativo do Obsidian) para resolver essas limitações.  
-Se você tem experiência com integração CM6, sua contribuição será muito bem-vinda!
+### 📎 Suporte para Embeds
+
+**NOVO**: Pré-visualização de embeds agora é suportada no modo quadro!
+
+- **Imagens**: `![[image.png]]` é exibida corretamente no modo de pré-visualização
+- **Notas**: `![[outra-nota.md]]` renderiza o conteúdo da nota
+- **Obsidian Bases**: `![[table.base]]` exibe visualizações interativas de banco de dados
+
+**Seleção de visualização persistente para Bases**: Para tornar a seleção de visualização em uma base persistente, use a sintaxe com fragmento:
+```markdown
+![[table.base#NomeDaVisualizacao]]
+```
+Isso garante que a visualização especificada seja sempre exibida ao carregar a nota.
 
 ## 🔄 Dois modos de exibição
 
