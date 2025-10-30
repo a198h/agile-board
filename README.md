@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.7.8-blue)
+![version](https://img.shields.io/badge/version-0.8.0-blue)
 
 🌍 Read this in other languages:
 [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
@@ -24,7 +24,7 @@ Transform your notes into visual dashboards with editable frames. Each frame rep
 
 ## 🌍 Multilingual Support
 
-**NEW in v0.7.8**: Enhanced markdown formatting and Tasks plugin integration!
+**NEW in v0.8.0**: Embed preview support and complete layout translations in 7 languages!
 
 - 🇺🇸 **English** - reference language
 - 🇫🇷 **Français** - traduction complète
