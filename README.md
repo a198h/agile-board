@@ -1,7 +1,7 @@
 ![version](https://img.shields.io/badge/version-0.7.8-blue)
 
-🌍 Read this in other languages: 
-[Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md)
+🌍 Read this in other languages:
+[Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
 
 ---
 
