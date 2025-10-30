@@ -1,5 +1,5 @@
 // src/agileBoardView.ts
-import { FileView, TFile, WorkspaceLeaf } from "obsidian";
+import { FileView, MarkdownView, TFile, WorkspaceLeaf } from "obsidian";
 import { LayoutBlock, LayoutModel } from "./types";
 import { SectionInfo, parseHeadingsInFile } from "./sectionParser";
 import { SimpleMarkdownFrame } from "./simpleMarkdownFrame";
@@ -158,22 +158,38 @@ export class AgileBoardView extends FileView {
     // Notifier le synchroniseur que le changement vient de cette vue
     this.plugin.fileSynchronizer.notifyBoardViewChange(this.file);
 
-    // Récupérer le contenu actuel du fichier
-    const fileContent = await this.app.vault.read(this.file);
-    const lines = fileContent.split('\n');
-
     // Trouver la section correspondante
     const sections = await parseHeadingsInFile(this.app, this.file);
     const section = sections[title];
-    if (!section) return;
+    if (!section) {
+      console.error(`❌ [AgileBoardView] Section "${title}" introuvable!`);
+      return;
+    }
 
-    // Remplacer le contenu de la section
-    const before = lines.slice(0, section.start + 1);
-    const after = lines.slice(section.end);
-    const newLines = [...before, ...newContent.split('\n'), ...after];
+    // Tenter d'utiliser l'API Editor si une vue Markdown active existe
+    const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
 
-    // Sauvegarder le fichier
-    await this.app.vault.modify(this.file, newLines.join('\n'));
+    if (activeView && activeView.file?.path === this.file.path && activeView.editor) {
+      // MÉTHODE OPTIMALE: Utiliser editor.replaceRange() pour modifier seulement la section
+      const editor = activeView.editor;
+
+      // Calculer les positions de début et fin de la section (sans le heading)
+      const startPos = { line: section.start + 1, ch: 0 };
+      const endPos = { line: section.end, ch: 0 };
+
+      // Remplacer uniquement la section concernée
+      editor.replaceRange(newContent + '\n', startPos, endPos);
+    } else {
+      // FALLBACK: Réécrire tout le fichier si pas d'éditeur actif
+      const fileContent = await this.app.vault.read(this.file);
+      const lines = fileContent.split('\n');
+
+      const before = lines.slice(0, section.start + 1);
+      const after = lines.slice(section.end);
+      const newLines = [...before, ...newContent.split('\n'), ...after];
+
+      await this.app.vault.modify(this.file, newLines.join('\n'));
+    }
   }
 
   private showNoLayoutMessage(): void {

@@ -7,9 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for v0.8.0
-- Implement onClearAll event for better architecture
-- CodeMirror 6 integration with full image support (`![[image.png]]`) in frames
+## [0.8.0] - 2025-10-30
+
+### ✨ Major Features
+
+- **📎 Embed Preview Support**: Full support for embedded content in Board mode
+  - **Images**: `![[image.png]]` displays correctly in preview mode
+  - **Notes**: `![[other-note.md]]` renders note content with full markdown
+  - **Obsidian Bases**: `![[table.base]]` displays interactive database views
+  - **Persistent View Selection**: Use `![[table.base#ViewName]]` syntax for persistent base views
+
+### 🌍 Internationalization
+
+- **🇷🇺 Russian Language Support**: Complete Russian translation added (7 languages total)
+- **📋 Layout Translations**: All 5 default layouts now have complete translations in all languages
+  - Display names and descriptions translated
+  - Box/frame titles translated for each layout
+  - Languages: English, French, Spanish, German, Portuguese, Chinese (Simplified), Russian
+
+### 🔧 Technical Improvements
+
+- **CodeMirror 6 Integration**: Full migration to CodeMirror 6 for frame editing
+  - Better performance and stability
+  - Native Obsidian Live Preview features integration
+  - Improved markdown rendering in edit mode
+- **Post-processing System**: Smart embed rendering in preview mode
+  - Detects `<span class="internal-embed">` and replaces with visual content
+  - Supports fragment syntax for persistent views (`#ViewName`)
+- **Interactive Elements**: Proper handling of clickable elements in bases
+  - Base menus, toolbars, and buttons work correctly
+  - No accidental editor triggering on interactive clicks
+
+### 🐛 Bug Fixes
+
+- **Closes #18**: Complete layout translations for all supported languages
+- **Callout Display**: Fixed overflow issue causing callouts to be cut off after editing
+- **Base Fragment Support**: Fixed `![[file.base#View]]` syntax to properly resolve files and pass fragments
+- **Edit/Preview Mode**: Source text displays correctly in edit mode, embeds in preview mode
+
+### 🧹 Code Quality
+
+- **Removed Dead Code**: Deleted 187 lines of unused `EmbedPreviewPlugin` code
+- **Clean Architecture**: Clear separation between edit mode (source text) and preview mode (visual embeds)
+- **Documentation**: Updated all 7 README files with embed support documentation
+
+### 📝 Documentation
+
+- **README Updates**: All language versions updated with:
+  - CodeMirror 6 integration status
+  - Embed preview support documentation
+  - Persistent view selection syntax for Bases
+- **Russian README**: Complete translation of all documentation
+- **Current Limitations**: Updated to reflect new capabilities
 
 ## [0.7.8] - 2025-09-22
 

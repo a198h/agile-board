@@ -1,5 +1,5 @@
 // src/components/markdown/MarkdownRenderer.ts
-import { App, TFile, Component, MarkdownRenderer as ObsidianMarkdownRenderer } from "obsidian";
+import { App, TFile, Component, MarkdownRenderer as ObsidianMarkdownRenderer, MarkdownRenderChild } from "obsidian";
 import { SectionInfo } from "../../types";
 import { BaseUIComponent } from "../../core/baseComponent";
 
@@ -9,6 +9,8 @@ import { BaseUIComponent } from "../../core/baseComponent";
  */
 export class MarkdownRenderer extends BaseUIComponent {
   private component: Component;
+  private renderComponent: Component;
+  private app: App;
 
   constructor(
     container: HTMLElement,
@@ -17,10 +19,15 @@ export class MarkdownRenderer extends BaseUIComponent {
     private section: SectionInfo
   ) {
     super(container, app);
+    this.app = app;
     this.component = new Component();
-    
+    this.renderComponent = new Component();
+
     this.registerDisposable({
-      dispose: () => this.component.unload()
+      dispose: () => {
+        this.component.unload();
+        this.renderComponent.unload();
+      }
     });
   }
 
@@ -39,19 +46,169 @@ export class MarkdownRenderer extends BaseUIComponent {
     }
 
     try {
+      // Décharger et recharger le component pour un rendu propre
+      this.renderComponent.unload();
+      this.renderComponent = new Component();
+      this.renderComponent.load();
+
+      // Utiliser renderMarkdown (API v1.0+) avec le bon sourcePath
       await ObsidianMarkdownRenderer.renderMarkdown(
         content,
         this.containerEl,
         this.file.path,
-        this.component
+        this.renderComponent
       );
-      
+
+      // Post-traiter les embeds qui n'ont pas été rendus par Obsidian
+      await this.processEmbeds(content);
+
       // Après le rendu, configurer les gestionnaires d'événements pour les boutons de copie
       this.setupCopyButtonHandlers();
     } catch (error) {
       console.warn('MarkdownRenderer failed, falling back to simple HTML:', error);
       this.renderFallbackHTML(content);
     }
+  }
+
+  /**
+   * Post-traite les embeds ![[...]] qui n'ont pas été rendus par Obsidian.
+   * Obsidian convertit ![[...]] en <span class="internal-embed">, mais ne les rend pas visuellement.
+   * On cherche ces spans et on les remplace par le contenu visuel.
+   */
+  private async processEmbeds(content: string): Promise<void> {
+    if (!this.containerEl) return;
+
+    // Chercher tous les <span class="internal-embed"> générés par Obsidian
+    const embedSpans = this.containerEl.querySelectorAll('span.internal-embed');
+
+    if (embedSpans.length === 0) return;
+
+    // Remplacer chaque span par le contenu visuel
+    for (const span of Array.from(embedSpans)) {
+      try {
+        await this.replaceEmbedSpan.call(this, span as HTMLElement);
+      } catch (error) {
+        console.error('Erreur remplacement embed:', error);
+      }
+    }
+  }
+
+  /**
+   * Remplace un <span class="internal-embed"> par le contenu visuel.
+   */
+  private async replaceEmbedSpan(span: HTMLElement): Promise<void> {
+    // Récupérer le lien depuis les attributs src ou alt
+    const linkPath = span.getAttribute('src') || span.getAttribute('alt') || span.textContent || '';
+
+    if (!linkPath) return;
+
+    // Vérifier que this.app existe
+    if (!this.app || !this.app.metadataCache) {
+      console.error('app ou metadataCache est undefined');
+      return;
+    }
+
+    // Séparer le chemin du fichier et le fragment (#View pour les bases)
+    const [filePath, fragment] = linkPath.split('#');
+
+    // Résoudre le fichier cible en utilisant seulement le chemin sans fragment
+    const tfile = this.app.metadataCache.getFirstLinkpathDest(
+      filePath,
+      this.file.path
+    ) as TFile | null;
+
+    // Créer le conteneur pour l'embed
+    const embedContainer = document.createElement('div');
+    embedContainer.classList.add('agile-embed-preview');
+    embedContainer.style.margin = '0.5em 0';
+
+    if (!tfile) {
+      embedContainer.textContent = `⚠ ${linkPath} introuvable`;
+      embedContainer.style.color = 'var(--text-error)';
+    } else if (this.isImageFile(tfile)) {
+      // Rendu image
+      const img = document.createElement('img');
+      img.src = this.app.vault.getResourcePath(tfile);
+      img.alt = tfile.name;
+      img.style.maxWidth = '100%';
+      img.style.height = 'auto';
+      img.style.display = 'block';
+      embedContainer.appendChild(img);
+    } else if (tfile.extension === 'md') {
+      // Rendu note markdown
+      const noteDiv = document.createElement('div');
+      noteDiv.classList.add('markdown-embed', 'inline-embed');
+      noteDiv.style.border = '1px solid var(--background-modifier-border)';
+      noteDiv.style.borderRadius = 'var(--radius-s)';
+      noteDiv.style.padding = '0.5em';
+      noteDiv.style.backgroundColor = 'var(--background-secondary)';
+
+      try {
+        const noteContent = await this.app.vault.read(tfile);
+        const contentDiv = document.createElement('div');
+        contentDiv.classList.add('markdown-embed-content');
+
+        await ObsidianMarkdownRenderer.renderMarkdown(
+          noteContent,
+          contentDiv,
+          tfile.path,
+          this.renderComponent
+        );
+
+        noteDiv.appendChild(contentDiv);
+      } catch (error) {
+        noteDiv.textContent = `⚠ Erreur: ${tfile.name}`;
+        noteDiv.style.color = 'var(--text-error)';
+        console.error('Erreur rendu note embed:', error);
+      }
+
+      embedContainer.appendChild(noteDiv);
+    } else if (tfile.extension === 'base') {
+      // Rendu base - utiliser l'API render() synchrone pour que le plugin Bases puisse traiter
+      const baseDiv = document.createElement('div');
+      baseDiv.classList.add('agile-embed-base', 'markdown-preview-view', 'markdown-rendered');
+      baseDiv.style.minHeight = '100px';
+
+      // Utiliser l'API render() synchrone recommandée dans la doc
+      const embedMarkdown = `![[${linkPath}]]`;
+
+      try {
+        // API synchrone qui devrait permettre au plugin Bases de s'exécuter
+        ObsidianMarkdownRenderer.render(
+          this.app,
+          embedMarkdown,
+          baseDiv,
+          this.file.path,
+          this.renderComponent
+        );
+      } catch (error) {
+        baseDiv.textContent = `⚠ Erreur: ${tfile.name}`;
+        baseDiv.style.color = 'var(--text-error)';
+        console.error('Erreur rendu base embed:', error);
+      }
+
+      embedContainer.appendChild(baseDiv);
+    } else {
+      // Fichier générique
+      embedContainer.textContent = `📎 ${tfile.name}`;
+    }
+
+    // Si le span est le seul enfant d'un <p>, remplacer le <p> entier
+    const parent = span.parentElement;
+    if (parent && parent.tagName === 'P' && parent.children.length === 1 && parent.textContent?.trim() === span.textContent?.trim()) {
+      parent.replaceWith(embedContainer);
+    } else {
+      // Sinon, remplacer juste le span
+      span.replaceWith(embedContainer);
+    }
+  }
+
+  /**
+   * Vérifie si un fichier est une image.
+   */
+  private isImageFile(file: TFile): boolean {
+    const ext = file.extension.toLowerCase();
+    return ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp', 'tiff', 'avif', 'heic'].includes(ext);
   }
 
   /**
@@ -64,9 +221,12 @@ export class MarkdownRenderer extends BaseUIComponent {
       width: 100%;
       height: 100%;
       overflow: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
       padding: 0.5rem;
       cursor: text;
       box-sizing: border-box;
+      display: block;
     `;
 
     // Améliorer les styles des blocs de code pour respecter le thème
@@ -116,8 +276,19 @@ export class MarkdownRenderer extends BaseUIComponent {
       .agile-board-frame pre:hover .copy-code-button {
         opacity: 1 !important;
       }
+
+      /* Styles pour les callouts dans les cadres */
+      .agile-board-frame .callout {
+        overflow: visible !important;
+        margin: 0.5em 0 !important;
+      }
+
+      .agile-board-frame .callout-content {
+        overflow: visible !important;
+        display: block !important;
+      }
     `;
-    
+
     if (!document.head.querySelector('#agile-board-code-styles')) {
       style.id = 'agile-board-code-styles';
       document.head.appendChild(style);

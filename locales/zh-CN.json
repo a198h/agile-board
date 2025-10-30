@@ -143,5 +143,56 @@
     "create": "创建",
     "edit": "编辑",
     "close": "关闭"
+  },
+  "layouts": {
+    "eisenhower": {
+      "displayName": "艾森豪威尔矩阵",
+      "description": "紧急/重要优先级矩阵用于任务管理",
+      "boxes": {
+        "urgentImportant": "紧急且重要",
+        "importantNotUrgent": "重要但不紧急",
+        "urgentNotImportant": "紧急但不重要",
+        "notUrgentNotImportant": "既不紧急也不重要"
+      }
+    },
+    "swot": {
+      "displayName": "SWOT分析",
+      "description": "战略分析矩阵：优势/劣势/机会/威胁",
+      "boxes": {
+        "strengths": "优势",
+        "weaknesses": "劣势",
+        "opportunities": "机会",
+        "threats": "威胁"
+      }
+    },
+    "moscow": {
+      "displayName": "MoSCoW",
+      "description": "Must/Should/Could/Won't have 优先级方法",
+      "boxes": {
+        "mustHave": "必须拥有",
+        "shouldHave": "应该拥有",
+        "couldHave": "可以拥有",
+        "wontHave": "不会拥有"
+      }
+    },
+    "effort_impact": {
+      "displayName": "努力 vs 影响",
+      "description": "努力/影响分析矩阵用于优先排序行动",
+      "boxes": {
+        "lowEffortHighImpact": "低努力 - 高影响",
+        "highEffortHighImpact": "高努力 - 高影响",
+        "lowEffortLowImpact": "低努力 - 低影响",
+        "highEffortLowImpact": "高努力 - 低影响"
+      }
+    },
+    "cornell": {
+      "displayName": "康奈尔笔记",
+      "description": "结构化笔记系统，包含提示、笔记和总结",
+      "boxes": {
+        "cues": "提示和问题",
+        "notes": "详细笔记",
+        "summary": "总结"
+      }
+    }
   }
 }

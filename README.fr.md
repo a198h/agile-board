@@ -1,7 +1,7 @@
-![version](https://img.shields.io/badge/version-0.7.8-blue)
+![version](https://img.shields.io/badge/version-0.8.0-blue)
 
-🌍 Read this in other languages: 
-[English](README.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md)
+🌍 Read this in other languages:
+[English](README.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
 
 ---
 
@@ -37,13 +37,24 @@ L'interface s'adapte automatiquement au paramètre de langue de votre Obsidian. 
 
 ## ⚠️ Limites actuelles
 
-Le mode Board utilise un éditeur simplifié qui n'inclut pas toutes les fonctionnalités d'édition avancées d'Obsidian :
+Le mode Board utilise CodeMirror 6 pour l'édition mais n'inclut pas toutes les fonctionnalités d'édition avancées d'Obsidian :
 
-- **Images** : Les images insérées avec `![[image.png]]` ne s'affichent pas dans les cadres en mode Board
 - **Suggestions de liens** : En tapant `[[`, l'éditeur ne propose pas vos notes (vous pouvez toujours taper le lien complet manuellement)
 - **Appels inline de plugins** : Les requêtes Dataview inline (`= this.file.name`) ou les commandes Templater (`<% tp.date.now() %>`) ne s'exécutent pas dans les cadres
 
-**Plans futurs** : Nous visons à intégrer CodeMirror 6 (l'éditeur natif d'Obsidian) pour résoudre ces limitations. Si vous avez de l'expérience avec l'intégration CM6, votre contribution serait très bienvenue !
+### 📎 Support des embeds
+
+**NOUVEAU** : L'aperçu des embeds est maintenant supporté en mode Board !
+
+- **Images** : `![[image.png]]` s'affiche correctement en mode prévisualisation
+- **Notes** : `![[autre-note.md]]` affiche le contenu de la note
+- **Obsidian Bases** : `![[table.base]]` affiche les vues de base de données interactives
+
+**Sélection de vue persistante pour les Bases** : Pour rendre persistante la sélection de vue dans une base, utilisez la syntaxe avec fragment :
+```markdown
+![[table.base#NomDeLaVue]]
+```
+Cela garantit que la vue spécifiée est toujours affichée au chargement de la note.
 
 
 ## 🔄 Deux modes d'affichage

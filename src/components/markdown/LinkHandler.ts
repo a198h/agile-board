@@ -285,6 +285,11 @@ export class LinkHandler {
            element.closest('.image-embed') !== null ||
            element.closest('.task-list-item-checkbox') !== null ||
            element.getAttribute('data-href') !== null ||
-           element.closest('[data-href]') !== null;
+           element.closest('[data-href]') !== null ||
+           // Bases Obsidian - ne pas intercepter les clics sur les éléments interactifs
+           element.closest('.agile-embed-base') !== null ||
+           element.closest('.base-view') !== null ||
+           element.closest('.base-view-header') !== null ||
+           element.closest('.base-view-toolbar') !== null;
   }
 }

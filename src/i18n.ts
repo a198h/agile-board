@@ -180,6 +180,10 @@ export async function initializeI18n(): Promise<void> {
     // Charger les traductions chinoises (simplifiées)
     const zhCNTranslations = await import('../locales/zh-CN.json');
     loadTranslations('zh-CN', zhCNTranslations.default);
+
+    // Charger les traductions russes
+    const ruTranslations = await import('../locales/ru.json');
+    loadTranslations('ru', ruTranslations.default);
   } catch (error) {
     console.error('[i18n] Failed to load translations:', error);
   }

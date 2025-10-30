@@ -1,7 +1,7 @@
-![version](https://img.shields.io/badge/version-0.7.8-blue)
+![version](https://img.shields.io/badge/version-0.8.0-blue)
 
-🌍 用其他语言阅读:  
-[English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md)
+🌍 用其他语言阅读:
+[English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [Русский](README.ru.md)
 
 ---
 
@@ -41,14 +41,24 @@
 
 ## ⚠️ 当前限制
 
-看板模式使用的是简化版编辑器，不包含 Obsidian 的所有高级功能：
+看板模式使用 CodeMirror 6 进行编辑，但不包含 Obsidian 的所有高级功能：
 
-- **图片**: 使用 `![[image.png]]` 插入的图片不会在看板模式的框中显示  
-- **链接提示**: 输入 `[[` 时，不会自动提示笔记（仍可手动输入完整链接）  
-- **内联插件调用**: 内联 Dataview 查询 (`= this.file.name`) 或 Templater 命令 (`<% tp.date.now() %>`) 不会在框中执行  
+- **链接提示**: 输入 `[[` 时，不会自动提示笔记（仍可手动输入完整链接）
+- **内联插件调用**: 内联 Dataview 查询 (`= this.file.name`) 或 Templater 命令 (`<% tp.date.now() %>`) 不会在框中执行
 
-**未来计划**: 集成 CodeMirror 6（Obsidian 的原生编辑器），以解决这些限制。  
-如果你有 CM6 集成经验，欢迎贡献！
+### 📎 嵌入支持
+
+**新功能**: 看板模式现已支持嵌入预览！
+
+- **图片**: `![[image.png]]` 在预览模式下正确显示
+- **笔记**: `![[other-note.md]]` 渲染笔记内容
+- **Obsidian Bases**: `![[table.base]]` 显示交互式数据库视图
+
+**Bases 的持久视图选择**: 要使 base 中的视图选择持久化，请使用片段语法：
+```markdown
+![[table.base#视图名称]]
+```
+这确保在加载笔记时始终显示指定的视图。
 
 ## 🔄 两种显示模式
 
