@@ -108,9 +108,12 @@ export class MarkdownRenderer extends BaseUIComponent {
       return;
     }
 
-    // Résoudre le fichier cible
+    // Séparer le chemin du fichier et le fragment (#View pour les bases)
+    const [filePath, fragment] = linkPath.split('#');
+
+    // Résoudre le fichier cible en utilisant seulement le chemin sans fragment
     const tfile = this.app.metadataCache.getFirstLinkpathDest(
-      linkPath,
+      filePath,
       this.file.path
     ) as TFile | null;
 

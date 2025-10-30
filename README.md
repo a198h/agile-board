@@ -37,13 +37,24 @@ The interface automatically adapts to your Obsidian language setting. All UI ele
 
 ## ⚠️ Current Limitations
 
-The Board mode uses a simplified editor that doesn't include all of Obsidian's advanced editing features:
+The Board mode uses CodeMirror 6 for editing but doesn't include all of Obsidian's advanced editing features:
 
-- **Images**: Pictures inserted with `![[image.png]]` won't display in Board mode frames
 - **Link suggestions**: When typing `[[`, the editor won't suggest your notes (you can still type the full link manually)
 - **Inline plugin calls**: Inline Dataview queries (`= this.file.name`) or Templater commands (`<% tp.date.now() %>`) don't execute in frames
 
-**Future plans**: We aim to integrate CodeMirror 6 (Obsidian's native editor) to resolve these limitations. If you have experience with CM6 integration, your contribution would be very welcome!
+### 📎 Embed Support
+
+**NEW**: Embed preview is now supported in Board mode!
+
+- **Images**: `![[image.png]]` displays correctly in preview mode
+- **Notes**: `![[other-note.md]]` renders the note content
+- **Obsidian Bases**: `![[table.base]]` displays interactive database views
+
+**Persistent view selection for Bases**: To persist the view selection in a base, use the fragment syntax:
+```markdown
+![[table.base#ViewName]]
+```
+This ensures the specified view is always displayed when the note loads.
 
 
 ## 🔄 Two display modes
