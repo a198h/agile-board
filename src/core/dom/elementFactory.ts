@@ -49,12 +49,14 @@ export class ElementFactory {
     this.applyStyles(frame, {
       gridColumn: `${block.x + 1} / span ${block.w}`,
       gridRow: `${block.y + 1} / span ${block.h}`,
-      minHeight: "100px",
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
       border: "1px solid var(--background-modifier-border)",
       padding: "0.5rem",
       backgroundColor: "var(--background-primary)",
       borderRadius: "0.5rem",
-      overflow: "auto"
+      overflow: "hidden"
     });
     
     return frame;
@@ -167,16 +169,16 @@ export class ElementFactory {
   public static createPreviewContainer(): HTMLElement {
     const preview = document.createElement("div");
     preview.className = "agile-board-preview";
-    
+
     this.applyStyles(preview, {
       width: "100%",
-      height: "100%",
+      flex: "1",
       overflow: "auto",
       padding: "0.5rem",
       cursor: "text",
       boxSizing: "border-box"
     });
-    
+
     return preview;
   }
 

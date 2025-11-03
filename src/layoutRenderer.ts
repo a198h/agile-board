@@ -352,17 +352,16 @@ export class LayoutRenderer implements ILayoutRenderer {
   private createGrid(blocks: LayoutModel): HTMLElement {
     const grid = document.createElement('div');
     grid.className = PLUGIN_CONSTANTS.CSS_CLASSES.GRID;
-    
-    // Configuration de la grille CSS
+
+    // Configuration de la grille CSS - dimensions contrôlées par inline styles
     Object.assign(grid.style, {
       display: 'grid',
       gridTemplateColumns: `repeat(${PLUGIN_CONSTANTS.GRID.COLUMNS}, 1fr)`,
       gap: '0.5rem',
       padding: '1rem',
-      minHeight: '90vh',
-      maxHeight: '90vh'
+      minHeight: '90vh'
     });
-    
+
     return grid;
   }
 
@@ -380,17 +379,20 @@ export class LayoutRenderer implements ILayoutRenderer {
   ): Promise<HTMLElement> {
     const blockElement = document.createElement('section');
     blockElement.className = PLUGIN_CONSTANTS.CSS_CLASSES.FRAME;
-    
-    // Configuration du positionnement CSS Grid
+
+    // Configuration du positionnement CSS Grid avec flex layout pour le contenu
     Object.assign(blockElement.style, {
       gridColumn: `${block.x + 1} / span ${block.w}`,
       gridRow: `${block.y + 1} / span ${block.h}`,
+      display: 'flex',
+      flexDirection: 'column',
       minHeight: '100px',
+      boxSizing: 'border-box',
       border: '1px solid var(--background-modifier-border)',
       padding: '0.5rem',
       backgroundColor: 'var(--background-primary)',
       borderRadius: '0.5rem',
-      overflow: 'auto'
+      overflow: 'hidden'
     });
 
     // Ajouter le titre
@@ -417,6 +419,7 @@ export class LayoutRenderer implements ILayoutRenderer {
     const titleElement = document.createElement('strong');
     Object.assign(titleElement.style, {
       display: 'block',
+      padding: '0.5em 0.75em',
       marginBottom: '0.5em'
     });
     titleElement.textContent = title;
@@ -436,12 +439,19 @@ export class LayoutRenderer implements ILayoutRenderer {
     sectionInfo?: any
   ): Promise<HTMLElement> {
     const contentContainer = document.createElement('div');
-    
+
+    // Configurer le container pour prendre l'espace restant et permettre le scroll
+    Object.assign(contentContainer.style, {
+      flex: '1',
+      overflow: 'auto',
+      minHeight: '0'
+    });
+
     if (sectionInfo) {
       // Contenu éditable avec MarkdownBox
       const initialContent = sectionInfo.lines.join('\n');
       const onContentChange = this.createContentChangeHandler(view, sectionInfo);
-      
+
       new MarkdownBox(this.app, contentContainer, initialContent, onContentChange);
     } else {
       // Message d'erreur pour section manquante
@@ -450,7 +460,7 @@ export class LayoutRenderer implements ILayoutRenderer {
       errorMessage.textContent = 'Section introuvable';
       contentContainer.appendChild(errorMessage);
     }
-    
+
     return contentContainer;
   }
 
