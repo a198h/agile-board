@@ -96,7 +96,9 @@ export class Sidebar {
     sectionTitle.style.color = 'var(--text-normal)';
     
     const infoContent = selectionSection.createDiv('info-content');
-    infoContent.innerHTML = `<p style="color: var(--text-muted); margin: 0;">${t('editor.sidebar.selection.empty')}</p>`;
+    const emptyP = infoContent.createEl('p');
+    emptyP.addClass('agile-selection-empty');
+    emptyP.textContent = t('editor.sidebar.selection.empty');
   }
 
   /**
@@ -169,15 +171,21 @@ export class Sidebar {
     sectionTitle.style.fontSize = '14px';
     sectionTitle.style.color = 'var(--text-normal)';
     
-    const helpText = helpSection.createDiv();
-    helpText.innerHTML = `
-      <div style="font-size: 12px; line-height: 1.4; color: var(--text-muted);">
-        <p style="margin: 0 0 6px 0;"><strong>${t('editor.sidebar.help.create').split(':')[0]}:</strong> ${t('editor.sidebar.help.create').split(':')[1]}</p>
-        <p style="margin: 0 0 6px 0;"><strong>${t('editor.sidebar.help.move').split(':')[0]}:</strong> ${t('editor.sidebar.help.move').split(':')[1]}</p>
-        <p style="margin: 0 0 6px 0;"><strong>${t('editor.sidebar.help.resize').split(':')[0]}:</strong> ${t('editor.sidebar.help.resize').split(':')[1]}</p>
-        <p style="margin: 0;"><strong>${t('editor.sidebar.help.select').split(':')[0]}:</strong> ${t('editor.sidebar.help.select').split(':')[1]}</p>
-      </div>
-    `;
+    const helpText = helpSection.createDiv('agile-help-text');
+
+    const createHelpItem = (text: string, isLast: boolean = false) => {
+      const p = helpText.createEl('p');
+      p.addClass(isLast ? 'agile-help-item-last' : 'agile-help-item');
+      const [label, description] = text.split(':');
+      const strong = p.createEl('strong');
+      strong.textContent = label + ':';
+      p.appendText(' ' + description);
+    };
+
+    createHelpItem(t('editor.sidebar.help.create'));
+    createHelpItem(t('editor.sidebar.help.move'));
+    createHelpItem(t('editor.sidebar.help.resize'));
+    createHelpItem(t('editor.sidebar.help.select'), true);
   }
 
   /**
@@ -212,9 +220,10 @@ export class Sidebar {
   /**
    * Met à jour les informations de sélection.
    */
-  updateSelectionInfo(content: string): void {
+  updateSelectionInfo(content: HTMLElement): void {
     if (this.infoContent) {
-      this.infoContent.innerHTML = content;
+      this.infoContent.empty();
+      this.infoContent.appendChild(content);
     }
   }
 

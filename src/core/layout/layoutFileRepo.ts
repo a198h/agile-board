@@ -278,8 +278,9 @@ export class LayoutFileRepo {
 
     const pluginId = this.plugin.manifest.id;
     const basePath = adapter.getBasePath();
-    
-    return path.join(basePath, ".obsidian", "plugins", pluginId, FILE_CONSTANTS.LAYOUTS_DIR);
+    const configDir = this.plugin.app.vault.configDir;
+
+    return path.join(basePath, configDir, "plugins", pluginId, FILE_CONSTANTS.LAYOUTS_DIR);
   }
 
   private async findLayoutFile(name: string): Promise<string | null> {
@@ -336,21 +337,21 @@ export class LayoutFileRepo {
 
   private isValidLayoutFile(layout: unknown): layout is LayoutFile {
     if (typeof layout !== 'object' || layout === null) return false;
-    
-    const l = layout as any;
-    
+
+    const l = layout as Record<string, unknown>;
+
     return (
       typeof l.name === 'string' &&
       Array.isArray(l.boxes) &&
-      l.boxes.every((box: any) => this.isValidLayoutBox(box))
+      l.boxes.every((box: unknown) => this.isValidLayoutBox(box))
     );
   }
 
   private isValidLayoutBox(box: unknown): box is LayoutBox {
     if (typeof box !== 'object' || box === null) return false;
-    
-    const b = box as any;
-    
+
+    const b = box as Record<string, unknown>;
+
     return (
       typeof b.id === 'string' &&
       typeof b.title === 'string' &&

@@ -324,12 +324,26 @@ export class ViewSwitcher {
     modeButton.setAttribute('aria-label', 'Changer de mode');
     
     // Contenu du bouton - seulement l'icône
-    modeButton.innerHTML = `
-      <svg class="svg-icon lucide-edit-3" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 20h9"></path>
-        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-      </svg>
-    `;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'svg-icon lucide-edit-3');
+    svg.setAttribute('width', '16');
+    svg.setAttribute('height', '16');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '2');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+
+    const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path1.setAttribute('d', 'M12 20h9');
+    svg.appendChild(path1);
+
+    const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path2.setAttribute('d', 'M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z');
+    svg.appendChild(path2);
+
+    modeButton.appendChild(svg);
     modeButton.setAttribute('aria-label', 'Passer en mode Source');
     modeButton.setAttribute('title', 'Passer en mode Source');
     
