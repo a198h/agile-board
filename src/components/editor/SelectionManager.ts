@@ -104,37 +104,56 @@ export class SelectionManager {
   /**
    * Génère les informations de sélection pour l'interface.
    */
-  generateSelectionInfo(): string {
+  generateSelectionInfo(): HTMLElement {
+    const container = document.createElement('div');
+
     if (!this.selectedBox) {
-      return `<p style="color: var(--text-muted);">${t('editor.sidebar.selection.empty')}</p>`;
+      const emptyP = container.createEl('p');
+      emptyP.addClass('agile-selection-empty');
+      emptyP.textContent = t('editor.sidebar.selection.empty');
+      return container;
     }
 
     const box = this.selectedBox.box;
-    return `
-      <div style="font-size: 14px; line-height: 1.4;">
-        <div style="margin-bottom: 8px;">
-          <strong>${t('editor.sidebar.selection.frameTitle')}:</strong> ${box.title}
-        </div>
-        <div style="margin-bottom: 8px;">
-          <strong>${t('editor.sidebar.selection.position')}:</strong> (${box.x + 1}, ${box.y + 1})
-        </div>
-        <div style="margin-bottom: 8px;">
-          <strong>${t('editor.sidebar.selection.size')}:</strong> ${box.w} × ${box.h}
-        </div>
-        <div style="margin-bottom: 8px;">
-          <strong>ID:</strong> <code style="font-size: 11px;">${box.id}</code>
-        </div>
-      </div>
-      <div style="margin-top: 15px;">
-        <input 
-          type="text" 
-          placeholder="${t('editor.sidebar.selection.placeholder')}" 
-          value="${box.title}"
-          style="width: 100%; padding: 8px; border: 1px solid var(--background-modifier-border); border-radius: 4px;"
-          class="box-title-input"
-        />
-      </div>
-    `;
+
+    // Section d'informations
+    const infoDiv = container.createDiv('agile-selection-info');
+
+    // Titre du cadre
+    const titleDiv = infoDiv.createDiv('agile-info-item');
+    const titleLabel = titleDiv.createEl('strong');
+    titleLabel.textContent = t('editor.sidebar.selection.frameTitle') + ':';
+    titleDiv.appendText(' ' + box.title);
+
+    // Position
+    const posDiv = infoDiv.createDiv('agile-info-item');
+    const posLabel = posDiv.createEl('strong');
+    posLabel.textContent = t('editor.sidebar.selection.position') + ':';
+    posDiv.appendText(` (${box.x + 1}, ${box.y + 1})`);
+
+    // Taille
+    const sizeDiv = infoDiv.createDiv('agile-info-item');
+    const sizeLabel = sizeDiv.createEl('strong');
+    sizeLabel.textContent = t('editor.sidebar.selection.size') + ':';
+    sizeDiv.appendText(` ${box.w} × ${box.h}`);
+
+    // ID
+    const idDiv = infoDiv.createDiv('agile-info-item');
+    const idLabel = idDiv.createEl('strong');
+    idLabel.textContent = 'ID:';
+    const idCode = idDiv.createEl('code', { cls: 'agile-box-id' });
+    idCode.textContent = box.id;
+
+    // Input de modification de titre
+    const inputContainer = container.createDiv('agile-title-input-container');
+    const titleInput = inputContainer.createEl('input', {
+      cls: 'box-title-input',
+      type: 'text',
+      placeholder: t('editor.sidebar.selection.placeholder'),
+      value: box.title
+    });
+
+    return container;
   }
 
   /**

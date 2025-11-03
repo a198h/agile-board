@@ -106,10 +106,11 @@ export class LayoutSettingsTab extends PluginSettingTab {
       emptyMessage.style.textAlign = 'center';
       emptyMessage.style.color = 'var(--text-muted)';
       emptyMessage.style.padding = '40px 20px';
-      emptyMessage.innerHTML = `
-        <div style="font-size: 16px; margin-bottom: 10px;">${t('settings.list.empty.title')}</div>
-        <div style="font-size: 14px;">${t('settings.list.empty.subtitle')}</div>
-      `;
+      const titleDiv = emptyMessage.createDiv('agile-empty-title');
+      titleDiv.textContent = t('settings.list.empty.title');
+
+      const subtitleDiv = emptyMessage.createDiv('agile-empty-subtitle');
+      subtitleDiv.textContent = t('settings.list.empty.subtitle');
       return;
     }
 

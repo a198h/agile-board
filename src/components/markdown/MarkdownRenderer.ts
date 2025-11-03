@@ -112,10 +112,17 @@ export class MarkdownRenderer extends BaseUIComponent {
     const [filePath, fragment] = linkPath.split('#');
 
     // Résoudre le fichier cible en utilisant seulement le chemin sans fragment
-    const tfile = this.app.metadataCache.getFirstLinkpathDest(
+    const resolvedFile = this.app.metadataCache.getFirstLinkpathDest(
       filePath,
       this.file.path
-    ) as TFile | null;
+    );
+
+    // Vérifier que c'est bien un fichier (pas un dossier)
+    if (!(resolvedFile instanceof TFile)) {
+      return; // Pas un fichier valide, ignorer
+    }
+
+    const tfile = resolvedFile;
 
     // Créer le conteneur pour l'embed
     const embedContainer = document.createElement('div');

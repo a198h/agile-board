@@ -158,9 +158,8 @@ export class LayoutEditor extends Modal {
     toolbar.style.borderRadius = '0 0 6px 6px';
 
     const info = toolbar.createDiv('layout-info');
-    info.innerHTML = `<span style="color: var(--text-muted);">
-      ${t('editor.toolbar.info', { count: this.layout.boxes.length })}
-    </span>`;
+    const infoSpan = info.createEl('span', { cls: 'agile-toolbar-info' });
+    infoSpan.textContent = t('editor.toolbar.info', { count: this.layout.boxes.length });
 
     const actions = toolbar.createDiv('layout-actions');
     actions.style.display = 'flex';

@@ -185,15 +185,23 @@ export class Sidebar implements EditorComponent {
     section.appendChild(title);
 
     const helpText = document.createElement('div');
-    helpText.innerHTML = `
-      <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">
-        <p><strong>Créer:</strong> Cliquez et glissez sur la grille</p>
-        <p><strong>Déplacer:</strong> Glissez un cadre existant</p>
-        <p><strong>Redimensionner:</strong> Utilisez les poignées aux coins</p>
-        <p><strong>Sélectionner:</strong> Cliquez sur un cadre</p>
-        <p><strong>Annuler:</strong> Appuyez sur Échap pendant une action</p>
-      </div>
-    `;
+    helpText.className = 'agile-sidebar-help-text';
+
+    const createHelpItem = (label: string, text: string) => {
+      const p = document.createElement('p');
+      const strong = document.createElement('strong');
+      strong.textContent = label + ':';
+      p.appendChild(strong);
+      p.appendText(' ' + text);
+      return p;
+    };
+
+    helpText.appendChild(createHelpItem('Créer', 'Cliquez et glissez sur la grille'));
+    helpText.appendChild(createHelpItem('Déplacer', 'Glissez un cadre existant'));
+    helpText.appendChild(createHelpItem('Redimensionner', 'Utilisez les poignées aux coins'));
+    helpText.appendChild(createHelpItem('Sélectionner', 'Cliquez sur un cadre'));
+    helpText.appendChild(createHelpItem('Annuler', 'Appuyez sur Échap pendant une action'));
+
     section.appendChild(helpText);
 
     this.container!.appendChild(section);

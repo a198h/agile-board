@@ -4,6 +4,12 @@ import { parseHeadingsInFile } from "./sectionParser";
 import { AGILE_BOARD_VIEW_TYPE, AgileBoardView } from "./agileBoardView";
 import AgileBoardPlugin from "./main";
 
+// Interface pour typer les propriétés internes d'AgileBoardView
+interface AgileBoardViewWithState extends AgileBoardView {
+  isUpdating?: boolean;
+  frames?: Map<string, { updateContent(content: string): Promise<void> }>;
+}
+
 export class FileSynchronizer {
   private eventRefs: EventRef[] = [];
 
@@ -56,26 +62,30 @@ export class FileSynchronizer {
   }
 
   private async updateBoardView(boardView: AgileBoardView, file: TFile): Promise<void> {
+    const viewWithState = boardView as AgileBoardViewWithState;
+
     // Eviter les boucles infinies en vérifiant si la vue est en cours de modification
-    if ((boardView as any).isUpdating) return;
+    if (viewWithState.isUpdating) return;
 
     try {
-      (boardView as any).isUpdating = true;
+      viewWithState.isUpdating = true;
 
       // Parser les nouvelles sections
       const newSections = await parseHeadingsInFile(this.plugin.app, file);
 
       // Mettre à jour chaque frame avec le nouveau contenu
-      for (const [title, frame] of (boardView as any).frames) {
-        const newSection = newSections[title];
-        if (newSection) {
-          // Convertir SectionInfo en string en joignant les lignes
-          const newContent = newSection.lines.join('\n');
-          await frame.updateContent(newContent);
+      if (viewWithState.frames) {
+        for (const [title, frame] of viewWithState.frames) {
+          const newSection = newSections[title];
+          if (newSection) {
+            // Convertir SectionInfo en string en joignant les lignes
+            const newContent = newSection.lines.join('\n');
+            await frame.updateContent(newContent);
+          }
         }
       }
     } finally {
-      (boardView as any).isUpdating = false;
+      viewWithState.isUpdating = false;
     }
   }
 
@@ -84,11 +94,12 @@ export class FileSynchronizer {
   notifyBoardViewChange(file: TFile): void {
     const boardView = this.getBoardViewForFile(file);
     if (boardView) {
-      (boardView as any).isUpdating = true;
-      
+      const viewWithState = boardView as AgileBoardViewWithState;
+      viewWithState.isUpdating = true;
+
       // Remettre à false après un court délai
       setTimeout(() => {
-        (boardView as any).isUpdating = false;
+        viewWithState.isUpdating = false;
       }, 100);
     }
   }
