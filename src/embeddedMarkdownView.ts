@@ -206,7 +206,7 @@ export class EmbeddedMarkdownView {
     // Supprimer le fichier temporaire
     if (this.tempFile) {
       try {
-        await this.app.vault.delete(this.tempFile);
+        await this.app.fileManager.trashFile(this.tempFile);
       } catch (error) {
         this.logger.error(`Erreur suppression fichier temporaire pour ${this.sectionTitle}:`, error);
       }
