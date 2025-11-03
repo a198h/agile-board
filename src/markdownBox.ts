@@ -77,18 +77,18 @@ export class MarkdownBox {
    */
   private createMainContainer(parent: HTMLElement): HTMLElement {
     const container = parent.createDiv("markdown-box");
-    
+
     // Configuration CSS optimisée pour les grilles
     Object.assign(container.style, {
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden',
+      width: '100%',
       height: '100%',
-      maxHeight: '100%',
       boxSizing: 'border-box',
       padding: '0.25rem'
     });
-    
+
     return container;
   }
 
@@ -313,35 +313,19 @@ export class MarkdownBox {
     try {
       this.previewEl.empty();
 
-      // Force le conteneur à occuper tout l'espace disponible
-      this.previewEl.style.position = "relative";
-      this.previewEl.style.width = "100%";
-      this.previewEl.style.height = "100%";
-      this.previewEl.style.minHeight = "60px"; // adapte si besoin
-
       if (!this.content.trim()) {
         const placeholder = document.createElement("div");
         placeholder.innerText = "Cliquez pour commencer à écrire…";
-        // Styles en dur pour occuper tout l'espace et centrer le texte
-        placeholder.style.position = "absolute";
-        placeholder.style.top = "0";
-        placeholder.style.left = "0";
-        placeholder.style.right = "0";
-        placeholder.style.bottom = "0";
-        placeholder.style.width = "100%";
-        placeholder.style.height = "100%";
         placeholder.style.display = "flex";
         placeholder.style.alignItems = "center";
         placeholder.style.justifyContent = "center";
+        placeholder.style.minHeight = "60px";
         placeholder.style.opacity = "0.5";
         placeholder.style.cursor = "text";
         placeholder.style.userSelect = "none";
         placeholder.style.fontStyle = "italic";
         this.previewEl.appendChild(placeholder);
       } else {
-        // Nettoie le style si contenu non vide
-        this.previewEl.style.position = "";
-        this.previewEl.style.minHeight = "";
         await MarkdownRenderer.render(
           this.app,
           this.content,
@@ -362,44 +346,16 @@ export class MarkdownBox {
     try {
       this.isEditing = true;
       this.isDirty = false;
-      
+
       this.editorEl.value = this.content;
       this.previewEl.style.display = "none";
       this.editorEl.style.display = "block";
-      
-      // S'assurer que le container conserve ses propriétés de grille ET sa hauteur
-      const container = this.boxEl.parentElement;
-      
-      if (container && container.classList.contains("agile-board-frame")) {
-        // Sauvegarder les propriétés CSS Grid existantes
-        const computedStyle = getComputedStyle(container);
-        const gridColumn = computedStyle.gridColumn;
-        const gridRow = computedStyle.gridRow;
-        const currentHeight = computedStyle.height;
-        
-        // Préserver la hauteur ET les propriétés de grille
-        container.style.height = currentHeight;
-        container.style.minHeight = currentHeight;
-        container.style.maxHeight = currentHeight;
-        
-        // IMPORTANT : Préserver les propriétés de grille qui pourraient être écrasées
-        if (gridColumn && gridColumn !== 'auto') {
-          container.style.gridColumn = gridColumn;
-        }
-        if (gridRow && gridRow !== 'auto') {
-          container.style.gridRow = gridRow;
-        }
-      }
-      
-      // S'assurer que l'éditeur occupe tout l'espace disponible
-      this.editorEl.style.height = "100%";
-      this.editorEl.style.minHeight = "calc(100% - 1rem)";
-      
+
       this.editorEl.focus();
-      
+
       // Placer le curseur à la fin du texte
       this.editorEl.setSelectionRange(this.content.length, this.content.length);
-      
+
     } catch (error) {
       this.logger.error('Erreur lors de l\'ouverture de l\'éditeur:', error);
       this.isEditing = false;
@@ -413,26 +369,16 @@ export class MarkdownBox {
     try {
       const newContent = this.editorEl.value;
       const hasChanged = newContent !== this.content;
-      
+
       if (hasChanged) {
         this.content = newContent;
       }
-      
+
       this.editorEl.style.display = "none";
       this.previewEl.style.display = "block";
-      
-      // Rétablir le comportement flexible du container
-      const container = this.boxEl.parentElement;
-      if (container && container.classList.contains("agile-board-frame")) {
-        // Retirer les contraintes de hauteur fixe pour permettre au contenu de s'adapter
-        container.style.minHeight = "100px"; // Hauteur minimum raisonnable
-        container.style.maxHeight = "100%";   // Reprendre la hauteur de la grille
-        // Garder la hauteur actuelle comme base
-        // container.style.height reste inchangé pour conserver la taille
-      }
-      
+
       await this.renderPreview();
-      
+
       if (hasChanged) {
         try {
           await this.onChange(this.content);
@@ -440,10 +386,10 @@ export class MarkdownBox {
           this.logger.error('Erreur lors de la notification de changement:', error);
         }
       }
-      
+
       this.isEditing = false;
       this.isDirty = false;
-      
+
     } catch (error) {
       this.logger.error('Erreur lors de la fermeture de l\'éditeur:', error);
     }

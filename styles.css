@@ -2,10 +2,8 @@
 
 /* === Cadres === */
 .agile-board-frame > strong {
-  display: block;
+  /* Layout contrôlé par inline styles - uniquement propriétés visuelles ici */
   font-size: 1.1rem;
-  padding: 0.5em 0.75em;
-  margin-bottom: 0.5em;
   font-weight: 500;
   color: var(--text-normal);
   border-bottom: 1px solid var(--background-modifier-border);
@@ -14,14 +12,10 @@
 }
 
 .agile-board-frame {
+  /* Layout et dimensions contrôlés par inline styles - uniquement propriétés visuelles ici */
   border: 1px solid var(--background-modifier-border);
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  padding: 0;
-  display: block;
-  overflow: hidden;
-  min-height: 80px;
-  box-sizing: border-box;
   background: var(--background-primary);
   transition: all 0.2s ease;
 }
@@ -52,12 +46,7 @@
 
 /* === Grille === */
 .agile-board-grid {
-  min-height: 70vh;
-  height: 100vh;
-  display: grid;
-  grid-template-columns: repeat(24, 1fr);
-  gap: 12px;
-  padding: 12px;
+  /* Les dimensions et configuration de la grille sont contrôlées par inline styles */
 }
 
 /* === Éditeur === */
