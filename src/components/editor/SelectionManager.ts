@@ -145,7 +145,7 @@ export class SelectionManager {
 
     // Input de modification de titre
     const inputContainer = container.createDiv('agile-title-input-container');
-    const titleInput = inputContainer.createEl('input', {
+    inputContainer.createEl('input', {
       cls: 'box-title-input',
       type: 'text',
       placeholder: t('editor.sidebar.selection.placeholder'),
