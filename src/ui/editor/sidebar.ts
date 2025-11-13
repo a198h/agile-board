@@ -33,8 +33,8 @@ export class Sidebar implements EditorComponent {
     if (!this.selectionSection) return;
 
     if (selectionInfo.hasSelection && selectionInfo.box) {
-      this.selectionSection.style.display = 'block';
-      
+      this.selectionSection.classList.remove('layout-editor-section--hidden');
+
       // Mettre à jour les champs
       if (this.titleInput) {
         this.titleInput.value = selectionInfo.box.title;
@@ -61,7 +61,7 @@ export class Sidebar implements EditorComponent {
         }
       });
     } else {
-      this.selectionSection.style.display = 'none';
+      this.selectionSection.classList.add('layout-editor-section--hidden');
     }
   }
 
@@ -71,16 +71,7 @@ export class Sidebar implements EditorComponent {
   private setupSidebar(): void {
     if (!this.container) return;
 
-    this.container.style.cssText = `
-      width: 250px;
-      padding: 20px;
-      background: var(--background-primary);
-      border-left: 1px solid var(--background-modifier-border);
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    `;
+    this.container.className = 'layout-editor-sidebar';
 
     this.createSelectionSection();
     this.createActionsSection();
@@ -93,16 +84,11 @@ export class Sidebar implements EditorComponent {
    */
   private createSelectionSection(): void {
     const section = document.createElement('div');
-    section.style.display = 'none'; // Caché par défaut
-    
+    section.className = 'layout-editor-section layout-editor-section--hidden';
+
     const title = document.createElement('h3');
     title.textContent = 'Cadre sélectionné';
-    title.style.cssText = `
-      margin: 0 0 12px 0;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-normal);
-    `;
+    title.className = 'layout-editor-section-title';
     section.appendChild(title);
 
     // Champ titre
@@ -126,23 +112,14 @@ export class Sidebar implements EditorComponent {
    */
   private createActionsSection(): void {
     const section = document.createElement('div');
-    
+
     const title = document.createElement('h3');
     title.textContent = 'Actions';
-    title.style.cssText = `
-      margin: 0 0 12px 0;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-normal);
-    `;
+    title.className = 'layout-editor-section-title';
     section.appendChild(title);
 
     const buttonContainer = document.createElement('div');
-    buttonContainer.style.cssText = `
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    `;
+    buttonContainer.className = 'layout-editor-section';
 
     // Bouton nouvelle box
     new ButtonComponent(buttonContainer)

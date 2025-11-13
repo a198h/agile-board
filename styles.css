@@ -212,6 +212,35 @@
   font-size: 0.9em;
 }
 
+/* === Layout Editor Sidebar === */
+.layout-editor-sidebar {
+  width: 250px;
+  padding: 20px;
+  background: var(--background-primary);
+  border-left: 1px solid var(--background-modifier-border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.layout-editor-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.layout-editor-section--hidden {
+  display: none;
+}
+
+.layout-editor-section-title {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-normal);
+}
+
 /* === Couleurs de l'éditeur de layout === */
 :root {
   --agile-board-color-0: #8b94a3;
