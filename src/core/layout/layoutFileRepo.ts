@@ -2,13 +2,11 @@
 
 import { Plugin, FileSystemAdapter, Notice } from "obsidian";
 import * as fs from "fs/promises";
+import * as fsSync from "fs";
 import * as path from "path";
 import { createContextLogger } from "../logger";
 import { TIMING_CONSTANTS, GRID_CONSTANTS, FILE_CONSTANTS } from "../constants";
 import { ErrorHandler, ErrorSeverity } from "../errorHandler";
-
-// Import synchronous fs for file watching
-const fsSync = require('fs');
 
 /**
  * Interface pour un layout selon le nouveau format de grille
@@ -173,7 +171,7 @@ export class LayoutFileRepo {
   /**
    * Démarre la surveillance des changements de fichiers
    */
-  public async startWatching(callback: () => void): Promise<void> {
+  public startWatching(callback: () => void): void {
     try {
       if (this.fileWatcher) {
         this.fileWatcher.close();

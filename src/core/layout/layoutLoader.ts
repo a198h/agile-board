@@ -38,7 +38,7 @@ export class LayoutLoader implements ILayoutLoader {
     await this.fileRepo.initialize();
 
     // Charger d'abord les layouts intégrés (par défaut)
-    await this.loadBundledLayouts(registry);
+    this.loadBundledLayouts(registry);
     
     // Puis charger les layouts personnalisés depuis /layouts/
     await this.loadIndividualLayouts(registry);
@@ -50,7 +50,7 @@ export class LayoutLoader implements ILayoutLoader {
   /**
    * Charge les layouts intégrés depuis src/layouts/
    */
-  private async loadBundledLayouts(registry: LayoutRegistry): Promise<void> {
+  private loadBundledLayouts(registry: LayoutRegistry): void {
     const bundledLayouts = [
       { name: 'eisenhower', data: eisenhowerData },
       { name: 'swot', data: swotData },
