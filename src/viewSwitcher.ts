@@ -190,13 +190,7 @@ export class ViewSwitcher {
       const markdownView = leaf.view as MarkdownView;
       if (markdownView.file) {
         const hasLayout = this.hasAgileBoardLayout(markdownView.file);
-        
-        // Debug: console.log('🔍 Checking markdown view:', { 
-        //   fileName: markdownView.file.name, 
-        //   hasLayout,
-        //   isActive: leaf === this.plugin.app.workspace.activeLeaf
-        // });
-        
+
         if (hasLayout) {
           this.ensureBoardModeButtonForView(markdownView);
         } else {
@@ -209,12 +203,7 @@ export class ViewSwitcher {
     boardLeaves.forEach(leaf => {
       const boardView = leaf.view as AgileBoardView;
       const isActive = leaf === activeLeaf;
-      
-      // Debug: console.log('🔍 Checking board view:', { 
-      //   fileName: boardView.file?.name,
-      //   isActive
-      // });
-      
+
       if (isActive) {
         this.ensureNormalModeButtonForView(boardView);
       }
@@ -245,8 +234,6 @@ export class ViewSwitcher {
       
       // Ajouter un attribut pour identifier le bouton
       button.setAttribute('data-agile-board-button', 'board-mode');
-      
-      // Debug: console.log('🔄 Bouton Mode Board ajouté pour', markdownView.file?.name);
     } catch (error) {
       console.error('Erreur lors de l\'ajout du bouton Mode Board:', error);
     }
@@ -259,7 +246,6 @@ export class ViewSwitcher {
     const existingButton = viewActions.querySelector('.agile-board-switch-button');
     if (existingButton) {
       existingButton.remove();
-      // Debug: console.log('🗑️ Bouton Mode Board supprimé pour', markdownView.file?.name);
     }
   }
 
@@ -294,8 +280,6 @@ export class ViewSwitcher {
       
       // Ajouter le bouton de mode dans la barre d'état
       this.addModeButtonToStatusBar(boardView);
-      
-      // Debug: console.log('🔄 Bouton Mode Live Preview et bouton de mode ajoutés pour', boardView.file?.name);
     } catch (error) {
       console.error('Erreur lors de l\'ajout des boutons:', error);
     }

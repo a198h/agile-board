@@ -2,7 +2,7 @@
 import { App, TFile, Component, MarkdownRenderer } from "obsidian";
 import { BaseUIComponent } from "../baseComponent";
 import { MarkdownProcessor } from "../business/markdownProcessor";
-import { ElementFactory, MediaElementFactory } from "../dom/elementFactory";
+import { ElementFactory, MediaElementFactory, setHtmlContent } from "../dom";
 import { EmbedRenderer } from "./embedRenderer";
 import { TaskManager } from "./taskManager";
 import { ErrorHandler, ErrorSeverity } from "../errorHandler";
@@ -83,9 +83,10 @@ export class MarkdownPreview extends BaseUIComponent {
     try {
       // Utiliser le processeur pour pré-traiter le contenu
       const preprocessed = MarkdownProcessor.preprocessMarkdown(this.currentContent);
-      
+
       // Utiliser MarkdownRenderer d'Obsidian
-      await MarkdownRenderer.renderMarkdown(
+      await MarkdownRenderer.render(
+        this.app,
         preprocessed.content,
         this.containerEl,
         this.config.file.path,
@@ -121,9 +122,9 @@ export class MarkdownPreview extends BaseUIComponent {
    */
   private renderWithFallbackParser(): void {
     if (!this.containerEl) return;
-    
+
     const html = MarkdownProcessor.parseMarkdownToHTML(this.currentContent);
-    this.containerEl.innerHTML = html;
+    setHtmlContent(this.containerEl, html);
     this.setupInteractiveElements();
   }
 

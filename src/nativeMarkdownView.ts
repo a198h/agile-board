@@ -96,7 +96,8 @@ export class NativeMarkdownView {
 
     // Utiliser MarkdownRenderer avec Component correctement configuré
     try {
-      await MarkdownRenderer.renderMarkdown(
+      await MarkdownRenderer.render(
+        this.app,
         this.markdownContent,
         this.previewContainer,
         this.sourceFile.path,

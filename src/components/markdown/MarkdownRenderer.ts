@@ -2,6 +2,7 @@
 import { App, TFile, Component, MarkdownRenderer as ObsidianMarkdownRenderer, MarkdownRenderChild } from "obsidian";
 import { SectionInfo } from "../../types";
 import { BaseUIComponent } from "../../core/baseComponent";
+import { setHtmlContent } from "../../core/dom";
 
 /**
  * Composant responsable du rendu de prévisualisation markdown.
@@ -51,8 +52,9 @@ export class MarkdownRenderer extends BaseUIComponent {
       this.renderComponent = new Component();
       this.renderComponent.load();
 
-      // Utiliser renderMarkdown (API v1.0+) avec le bon sourcePath
-      await ObsidianMarkdownRenderer.renderMarkdown(
+      // Utiliser MarkdownRenderer.render (API v1.0+) avec le bon sourcePath
+      await ObsidianMarkdownRenderer.render(
+        this.app,
         content,
         this.containerEl,
         this.file.path,
@@ -155,7 +157,8 @@ export class MarkdownRenderer extends BaseUIComponent {
         const contentDiv = document.createElement('div');
         contentDiv.classList.add('markdown-embed-content');
 
-        await ObsidianMarkdownRenderer.renderMarkdown(
+        await ObsidianMarkdownRenderer.render(
+          this.app,
           noteContent,
           contentDiv,
           tfile.path,
@@ -323,7 +326,7 @@ export class MarkdownRenderer extends BaseUIComponent {
     if (!this.containerEl) return;
 
     const html = this.parseMarkdownToHTML(content);
-    this.containerEl.innerHTML = html;
+    setHtmlContent(this.containerEl, html);
   }
 
   /**

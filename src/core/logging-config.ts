@@ -152,7 +152,7 @@ export class LoggingConfig {
       callback: () => {
         const logger = Logger.getInstance();
         const stats = logger.getStats();
-        console.log('📊 Statistiques de logging:', stats);
+        console.debug('📊 Statistiques de logging:', stats);
         
         // Créer un résumé lisible
         const summary = [

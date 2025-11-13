@@ -36,7 +36,7 @@ function extractObsidianExtensions(app: App): Extension[] {
   // @ts-ignore - state.extensions n'est pas dans les types publics mais existe
   const extensions = cm.state.extensions || [];
 
-  console.log('📦 [FrameCM6Editor] Extensions Obsidian extraites:', extensions.length);
+  console.debug('📦 [FrameCM6Editor] Extensions Obsidian extraites:', extensions.length);
   return extensions;
 }
 
@@ -185,7 +185,7 @@ export class FrameCM6Editor {
       },
     });
 
-    console.log('🔄 [FrameCM6Editor] Contenu mis à jour:', content.substring(0, 50));
+    console.debug('🔄 [FrameCM6Editor] Contenu mis à jour:', content.substring(0, 50));
   }
 
   /**
@@ -204,7 +204,7 @@ export class FrameCM6Editor {
     if (this.view) {
       this.view.destroy();
       this.view = null;
-      console.log('🗑️ [FrameCM6Editor] Éditeur détruit');
+      console.debug('🗑️ [FrameCM6Editor] Éditeur détruit');
     }
   }
 }

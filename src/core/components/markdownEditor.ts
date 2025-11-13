@@ -343,7 +343,7 @@ export class MarkdownEditor extends BaseUIComponent {
     }
     
     this.autoExitTimeout = setTimeout(() => {
-      console.log('MarkdownEditor: Fermeture automatique après timeout');
+      console.debug('MarkdownEditor: Fermeture automatique après timeout');
       this.config.onExitEdit();
     }, 30000); // 30 secondes
   }

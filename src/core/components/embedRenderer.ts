@@ -1,7 +1,7 @@
 // src/core/components/embedRenderer.ts
 import { App, TFile } from "obsidian";
 import { MarkdownProcessor } from "../business/markdownProcessor";
-import { ElementFactory, MediaElementFactory } from "../dom/elementFactory";
+import { ElementFactory, MediaElementFactory, setHtmlContent } from "../dom";
 import { ErrorHandler, ErrorSeverity } from "../errorHandler";
 
 /**
@@ -168,11 +168,11 @@ export class EmbedRenderer {
   ): Promise<void> {
     const fileContent = await config.app.vault.read(targetFile);
     const preview = MarkdownProcessor.extractPreview(fileContent, 10);
-    
+
     const contentDiv = embedEl.querySelector('div:last-child');
     if (contentDiv) {
       const html = MarkdownProcessor.parseMarkdownToHTML(preview);
-      contentDiv.innerHTML = html;
+      setHtmlContent(contentDiv as HTMLElement, html);
     }
   }
 

@@ -104,7 +104,8 @@ export class MarkdownSubView {
       this.renderEmptyState();
     } else {
       // Utiliser MarkdownRenderer pour un rendu natif
-      await MarkdownRenderer.renderMarkdown(
+      await MarkdownRenderer.render(
+        this.app,
         this.markdownContent,
         this.previewEl,
         this.file.path,
