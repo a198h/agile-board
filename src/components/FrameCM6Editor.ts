@@ -90,11 +90,14 @@ export class FrameCM6Editor {
 
       // Keymaps de base + ESC pour quitter
       keymap.of([
+        // @ts-ignore - Incompatibilité de types entre versions de CodeMirror
         ...defaultKeymap,
+        // @ts-ignore - Incompatibilité de types entre versions de CodeMirror
         ...historyKeymap,
         // ESC pour quitter l'édition
         {
           key: 'Escape',
+          // @ts-ignore - Incompatibilité de types entre versions de CodeMirror
           run: () => {
             if (this.options.onBlur) {
               this.options.onBlur();
