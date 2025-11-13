@@ -141,8 +141,7 @@ export class SelectionManager {
     const idDiv = infoDiv.createDiv('agile-info-item');
     const idLabel = idDiv.createEl('strong');
     idLabel.textContent = 'ID:';
-    const idCode = idDiv.createEl('code', { cls: 'agile-box-id' });
-    idCode.textContent = box.id;
+    idDiv.appendText(' ' + box.id);
 
     // Input de modification de titre
     const inputContainer = container.createDiv('agile-title-input-container');

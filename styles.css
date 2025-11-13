@@ -280,3 +280,15 @@
   border: none;
   border-radius: 4px;
 }
+
+/* === Selection Info Styles === */
+.agile-info-item {
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  color: var(--text-normal);
+}
+
+.agile-selection-info {
+  font-size: 12px;
+}
