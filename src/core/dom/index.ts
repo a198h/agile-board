@@ -6,3 +6,4 @@
 
 export { ElementFactory, MediaElementFactory } from './elementFactory';
 export { DimensionManager, type DimensionSnapshot } from './dimensionManager';
+export { setCssProps, setGridPosition } from './cssHelper';

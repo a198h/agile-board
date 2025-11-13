@@ -1,22 +1,43 @@
 /* style.css */
 
-/* === Cadres === */
-.agile-board-frame > strong {
-  /* Layout contrôlé par inline styles - uniquement propriétés visuelles ici */
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: var(--text-normal);
-  border-bottom: 1px solid var(--background-modifier-border);
-  border-radius: 6px 6px 0 0;
-  background: var(--background-secondary);
+/* === CSS Variables for dynamic values === */
+:root {
+  --ab-grid-cols: 24;
+  --ab-gap: 0.5rem;
+  --ab-padding: 1rem;
 }
 
+/* === Container === */
+.agile-board-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: auto;
+}
+
+/* === Grille === */
+.agile-board-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--ab-grid-cols, 24), 1fr);
+  gap: var(--ab-gap, 0.5rem);
+  padding: var(--ab-padding, 1rem);
+  min-height: 90vh;
+  max-height: 90vh;
+}
+
+/* Frame positioning via CSS variables */
 .agile-board-frame {
-  /* Layout et dimensions contrôlés par inline styles - uniquement propriétés visuelles ici */
+  grid-column: var(--ab-col-start) / span var(--ab-col-span);
+  grid-row: var(--ab-row-start) / span var(--ab-row-span);
+  min-height: 100px;
   border: 1px solid var(--background-modifier-border);
-  border-radius: 6px;
+  padding: 0.5rem;
+  background-color: var(--background-primary);
+  border-radius: 0.5rem;
+  overflow: auto;
+  box-sizing: border-box;
+  display: block;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  background: var(--background-primary);
   transition: all 0.2s ease;
 }
 
@@ -24,6 +45,62 @@
   border-color: var(--interactive-accent);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px);
+}
+
+/* === Frame Title === */
+.agile-board-frame > strong,
+.agile-board-frame-title {
+  display: block;
+  font-size: 1.1rem;
+  padding: 0.5em 0.75em;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  color: var(--text-normal);
+  border-bottom: 1px solid var(--background-modifier-border);
+  border-radius: 6px 6px 0 0;
+  background: var(--background-secondary);
+}
+
+/* === MarkdownBox Components === */
+.markdown-box {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+  padding: 0.25rem;
+}
+
+.markdown-preview {
+  flex: 1;
+  overflow: auto;
+  cursor: text;
+  white-space: pre-wrap;
+}
+
+.markdown-editor {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+  resize: none;
+  overflow: auto;
+  display: none;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: var(--text-normal);
+  padding: 0.5em;
+  border-radius: 4px;
+}
+
+.markdown-editor:focus {
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
 }
 
 /* === Styles pour le mode Board === */
@@ -44,25 +121,19 @@
   background: var(--background-primary);
 }
 
-/* === Grille === */
-.agile-board-grid {
-  /* Les dimensions et configuration de la grille sont contrôlées par inline styles */
+/* === Error Overlay === */
+.agile-board-error {
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--background-secondary);
+  border: 2px dashed var(--color-accent);
+  border-radius: 1rem;
+  font-size: 1.1em;
+  margin-bottom: 1rem;
 }
 
-/* === Éditeur === */
-.editor {
-  color: var(--text-normal);
-  font-size: var(--font-text-size);
-  font-family: inherit;
-  border: 1px solid var(--background-modifier-border);
-  padding: 0.5em;
-  border-radius: 4px;
-  background: var(--background-primary);
-}
-
-.preview {
-  cursor: text;
-  white-space: pre-wrap;
+.agile-board-error-message {
+  opacity: 0.6;
 }
 
 /* === Couleurs de l'éditeur de layout === */
