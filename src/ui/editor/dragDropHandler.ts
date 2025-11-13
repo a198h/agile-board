@@ -262,8 +262,9 @@ export class DragDropHandler implements EventHandler {
     const clampedX = Math.max(0, Math.min(newX, this.config.gridSize - 1));
     const clampedY = Math.max(0, Math.min(newY, this.config.gridSize - 1));
 
-    this.originalBoxState.element.style.left = `${clampedX * this.cellSize}px`;
-    this.originalBoxState.element.style.top = `${clampedY * this.cellSize}px`;
+    const element = this.originalBoxState.element;
+    element.style.setProperty('left', `${clampedX * this.cellSize}px`);
+    element.style.setProperty('top', `${clampedY * this.cellSize}px`);
   }
 
   /**
@@ -286,36 +287,40 @@ export class DragDropHandler implements EventHandler {
 
     // Appliquer le resize selon le handle
     switch (this.dragState.handle) {
-      case 'se': // Sud-Est
+      case 'se': { // Sud-Est
         newW = Math.max(this.config.minBoxSize, newW + deltaGridX);
         newH = Math.max(this.config.minBoxSize, newH + deltaGridY);
         break;
-      case 'sw': // Sud-Ouest
+      }
+      case 'sw': { // Sud-Ouest
         newW = Math.max(this.config.minBoxSize, newW - deltaGridX);
         newH = Math.max(this.config.minBoxSize, newH + deltaGridY);
         newX = Math.max(0, newX + deltaGridX);
         break;
-      case 'ne': // Nord-Est
+      }
+      case 'ne': { // Nord-Est
         newW = Math.max(this.config.minBoxSize, newW + deltaGridX);
         newH = Math.max(this.config.minBoxSize, newH - deltaGridY);
         newY = Math.max(0, newY + deltaGridY);
         break;
-      case 'nw': // Nord-Ouest
+      }
+      case 'nw': { // Nord-Ouest
         newW = Math.max(this.config.minBoxSize, newW - deltaGridX);
         newH = Math.max(this.config.minBoxSize, newH - deltaGridY);
         newX = Math.max(0, newX + deltaGridX);
         newY = Math.max(0, newY + deltaGridY);
         break;
+      }
     }
 
     // Contraintes de grille
     newW = Math.min(newW, this.config.gridSize - newX);
     newH = Math.min(newH, this.config.gridSize - newY);
 
-    element.style.left = `${newX * this.cellSize}px`;
-    element.style.top = `${newY * this.cellSize}px`;
-    element.style.width = `${newW * this.cellSize}px`;
-    element.style.height = `${newH * this.cellSize}px`;
+    element.style.setProperty('left', `${newX * this.cellSize}px`);
+    element.style.setProperty('top', `${newY * this.cellSize}px`);
+    element.style.setProperty('width', `${newW * this.cellSize}px`);
+    element.style.setProperty('height', `${newH * this.cellSize}px`);
   }
 
   /**

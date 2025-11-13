@@ -9,7 +9,7 @@ export class DOMHelper {
      * Applique les styles z-index selon le contexte
      */
     static applyZIndex(element: HTMLElement, context: keyof typeof UI_CONSTANTS.Z_INDEX): void {
-        element.style.zIndex = UI_CONSTANTS.Z_INDEX[context].toString();
+        element.style.setProperty('z-index', UI_CONSTANTS.Z_INDEX[context].toString());
     }
 
     /**
@@ -31,31 +31,20 @@ export class DOMHelper {
     }
 
     /**
-     * Crée un élément avec classes CSS et styles
+     * Crée un élément avec classes CSS uniquement.
+     * Pour les styles dynamiques, utiliser setCssProps() du module core/dom.
      */
     static createElement<T extends keyof HTMLElementTagNameMap>(
         tag: T,
-        className?: string,
-        styles?: Partial<CSSStyleDeclaration>
+        className?: string
     ): HTMLElementTagNameMap[T] {
         const element = document.createElement(tag);
-        
+
         if (className) {
             element.className = className;
         }
-        
-        if (styles) {
-            Object.assign(element.style, styles);
-        }
-        
-        return element;
-    }
 
-    /**
-     * Applique des styles en lot à un élément
-     */
-    static applyStyles(element: HTMLElement, styles: Partial<CSSStyleDeclaration>): void {
-        Object.assign(element.style, styles);
+        return element;
     }
 
     /**

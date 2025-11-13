@@ -110,15 +110,7 @@ export class EmbedRenderer {
   private static createEmbedContainer(fileName: string): HTMLElement {
     const embedDiv = ElementFactory.createElement('div', {
       className: 'markdown-embed agile-board-embed',
-      attributes: { 'data-file': fileName },
-      styles: {
-        border: '1px solid var(--background-modifier-border)',
-        borderRadius: '4px',
-        padding: '1rem',
-        margin: '0.5rem 0',
-        background: 'var(--background-primary-alt)',
-        cursor: 'pointer'
-      }
+      attributes: { 'data-file': fileName }
     });
 
     const titleDiv = this.createTitleElement(fileName);
@@ -135,13 +127,8 @@ export class EmbedRenderer {
    */
   private static createTitleElement(fileName: string): HTMLElement {
     return ElementFactory.createElement('div', {
-      textContent: `📄 ${fileName}`,
-      styles: {
-        fontWeight: 'bold',
-        marginBottom: '0.5rem',
-        color: 'var(--text-accent)',
-        fontSize: '0.9em'
-      }
+      className: 'agile-board-embed-title',
+      textContent: `📄 ${fileName}`
     });
   }
 
@@ -150,11 +137,8 @@ export class EmbedRenderer {
    */
   private static createContentElement(initialText = 'Chargement...'): HTMLElement {
     return ElementFactory.createElement('div', {
-      textContent: initialText,
-      styles: {
-        color: 'var(--text-muted)',
-        fontStyle: 'italic'
-      }
+      className: 'agile-board-embed-content',
+      textContent: initialText
     });
   }
 

@@ -1,4 +1,5 @@
 // src/core/logging-config.ts
+import { Plugin } from "obsidian";
 import { Logger, LogLevel } from "./logger";
 
 /**
@@ -99,7 +100,7 @@ export class LoggingConfig {
    * Crée une commande Obsidian pour changer le niveau de logging.
    * @param plugin Plugin pour enregistrer la commande
    */
-  public static addLogLevelCommands(plugin: any): void {
+  public static addLogLevelCommands(plugin: Plugin): void {
     // Commande pour définir le niveau DEBUG
     plugin.addCommand({
       id: 'set-log-level-debug',

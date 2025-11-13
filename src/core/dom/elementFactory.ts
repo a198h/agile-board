@@ -4,10 +4,10 @@ import { setGridPosition } from "./cssHelper";
 
 /**
  * Configuration pour la création d'éléments.
+ * Note: Pour les styles dynamiques, utiliser setCssProps() après création.
  */
 export interface ElementConfig {
   className?: string;
-  styles?: Partial<CSSStyleDeclaration>;
   attributes?: Record<string, string>;
   textContent?: string;
 }
@@ -158,19 +158,8 @@ export class ElementFactory {
   }
 
   /**
-   * Applique des styles CSS à un élément de manière type-safe.
-   * @param element Element cible
-   * @param styles Styles à appliquer
-   */
-  public static applyStyles(
-    element: HTMLElement, 
-    styles: Partial<CSSStyleDeclaration>
-  ): void {
-    Object.assign(element.style, styles);
-  }
-
-  /**
    * Crée un élément avec configuration complète.
+   * Pour les styles dynamiques, utiliser setCssProps() après création.
    * @param tag Type d'élément
    * @param config Configuration de l'élément
    * @returns Element configuré
@@ -180,25 +169,21 @@ export class ElementFactory {
     config: ElementConfig = {}
   ): HTMLElementTagNameMap[K] {
     const element = document.createElement(tag);
-    
+
     if (config.className) {
       element.className = config.className;
     }
-    
-    if (config.styles) {
-      this.applyStyles(element, config.styles);
-    }
-    
+
     if (config.attributes) {
       Object.entries(config.attributes).forEach(([key, value]) => {
         element.setAttribute(key, value);
       });
     }
-    
+
     if (config.textContent) {
       element.textContent = config.textContent;
     }
-    
+
     return element;
   }
 }

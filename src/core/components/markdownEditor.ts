@@ -54,17 +54,9 @@ export class MarkdownEditor extends BaseUIComponent {
    */
   private setupContainer(): void {
     if (!this.containerEl) return;
-    
+
     this.containerEl.empty();
     this.containerEl.className = "agile-board-editor";
-    
-    ElementFactory.applyStyles(this.containerEl, {
-      width: "100%",
-      height: "100%",
-      boxSizing: "border-box",
-      display: "block",
-      position: "relative" // Permet le positionnement absolu des enfants
-    });
   }
 
   /**
@@ -75,29 +67,12 @@ export class MarkdownEditor extends BaseUIComponent {
     
     // Créer un toolbar avec bouton de fermeture
     const toolbar = ElementFactory.createElement('div', {
-      className: 'agile-board-editor-toolbar',
-      styles: {
-        position: 'absolute',
-        top: '0.25rem',
-        right: '0.25rem',
-        zIndex: '10',
-        display: 'flex',
-        gap: '0.25rem'
-      }
+      className: 'agile-board-editor-toolbar'
     });
 
     const closeButton = ElementFactory.createElement('button', {
       textContent: '✕',
-      className: 'agile-board-close-btn',
-      styles: {
-        background: 'var(--background-primary)',
-        border: '1px solid var(--background-modifier-border)',
-        borderRadius: '3px',
-        padding: '0.25rem 0.5rem',
-        cursor: 'pointer',
-        fontSize: '0.8rem',
-        color: 'var(--text-muted)'
-      }
+      className: 'agile-board-close-btn'
     });
 
     closeButton.addEventListener('click', (e) => {

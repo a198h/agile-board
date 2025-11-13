@@ -158,6 +158,31 @@
   height: 100%;
   display: none;
   box-sizing: border-box;
+  position: relative;
+}
+
+.agile-board-editor-toolbar {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  z-index: 10;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.agile-board-close-btn {
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 3px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.agile-board-close-btn:hover {
+  background: var(--background-secondary);
+  color: var(--text-normal);
 }
 
 .agile-board-textarea {
@@ -291,4 +316,26 @@
 
 .agile-selection-info {
   font-size: 12px;
+}
+
+/* === Embed Styles === */
+.agile-board-embed {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  background: var(--background-primary-alt);
+  cursor: pointer;
+}
+
+.agile-board-embed-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: var(--text-accent);
+  font-size: 0.9em;
+}
+
+.agile-board-embed-content {
+  color: var(--text-muted);
+  font-style: italic;
 }

@@ -50,18 +50,9 @@ export class MarkdownPreview extends BaseUIComponent {
    */
   private initializePreview(): void {
     if (!this.containerEl) return;
-    
+
     this.containerEl.empty();
     this.containerEl.className = "agile-board-preview";
-    
-    ElementFactory.applyStyles(this.containerEl, {
-      width: "100%",
-      height: "100%",
-      overflow: "auto",
-      padding: "0.5rem",
-      cursor: "text",
-      boxSizing: "border-box"
-    });
 
     this.renderContent();
     this.setupClickHandler();
