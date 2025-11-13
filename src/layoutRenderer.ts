@@ -1,8 +1,8 @@
 // src/layoutRenderer.ts
 import { App, MarkdownView, TFile } from "obsidian";
-import { 
-  LayoutModel, 
-  SectionRegistry, 
+import {
+  LayoutModel,
+  SectionRegistry,
   LayoutRenderer as ILayoutRenderer,
   PLUGIN_CONSTANTS,
   LayoutBlock,
@@ -13,6 +13,7 @@ import { parseHeadingsInFile } from "./sectionParser";
 import { MarkdownBox } from "./markdownBox";
 import { createContextLogger } from "./core/logger";
 import { ErrorHandler, ErrorSeverity } from "./core/errorHandler";
+import { setGridPosition } from "./core/dom";
 
 /**
  * Plan de rendu structuré pour un layout.
@@ -319,14 +320,6 @@ export class LayoutRenderer implements ILayoutRenderer {
     const container = view.containerEl.createDiv(
       PLUGIN_CONSTANTS.CSS_CLASSES.CONTAINER
     );
-    
-    // Application des styles de base
-    Object.assign(container.style, {
-      position: 'relative',
-      width: '100%',
-      minHeight: '100vh',
-      overflow: 'auto'
-    });
 
     this.activeContainers.add(container);
     return container;
@@ -353,15 +346,6 @@ export class LayoutRenderer implements ILayoutRenderer {
     const grid = document.createElement('div');
     grid.className = PLUGIN_CONSTANTS.CSS_CLASSES.GRID;
 
-    // Configuration de la grille CSS - dimensions contrôlées par inline styles
-    Object.assign(grid.style, {
-      display: 'grid',
-      gridTemplateColumns: `repeat(${PLUGIN_CONSTANTS.GRID.COLUMNS}, 1fr)`,
-      gap: '0.5rem',
-      padding: '1rem',
-      minHeight: '90vh'
-    });
-
     return grid;
   }
 
@@ -380,20 +364,8 @@ export class LayoutRenderer implements ILayoutRenderer {
     const blockElement = document.createElement('section');
     blockElement.className = PLUGIN_CONSTANTS.CSS_CLASSES.FRAME;
 
-    // Configuration du positionnement CSS Grid avec flex layout pour le contenu
-    Object.assign(blockElement.style, {
-      gridColumn: `${block.x + 1} / span ${block.w}`,
-      gridRow: `${block.y + 1} / span ${block.h}`,
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100px',
-      boxSizing: 'border-box',
-      border: '1px solid var(--background-modifier-border)',
-      padding: '0.5rem',
-      backgroundColor: 'var(--background-primary)',
-      borderRadius: '0.5rem',
-      overflow: 'hidden'
-    });
+    // Set grid position using CSS custom properties
+    setGridPosition(blockElement, block.x, block.y, block.w, block.h);
 
     // Ajouter le titre
     const titleElement = this.createBlockTitle(block.title);
@@ -417,11 +389,7 @@ export class LayoutRenderer implements ILayoutRenderer {
    */
   private createBlockTitle(title: string): HTMLElement {
     const titleElement = document.createElement('strong');
-    Object.assign(titleElement.style, {
-      display: 'block',
-      padding: '0.5em 0.75em',
-      marginBottom: '0.5em'
-    });
+    titleElement.className = 'agile-board-frame-title';
     titleElement.textContent = title;
     return titleElement;
   }
@@ -439,28 +407,21 @@ export class LayoutRenderer implements ILayoutRenderer {
     sectionInfo?: any
   ): Promise<HTMLElement> {
     const contentContainer = document.createElement('div');
-
-    // Configurer le container pour prendre l'espace restant et permettre le scroll
-    Object.assign(contentContainer.style, {
-      flex: '1',
-      overflow: 'auto',
-      minHeight: '0'
-    });
-
+    
     if (sectionInfo) {
       // Contenu éditable avec MarkdownBox
       const initialContent = sectionInfo.lines.join('\n');
       const onContentChange = this.createContentChangeHandler(view, sectionInfo);
-
+      
       new MarkdownBox(this.app, contentContainer, initialContent, onContentChange);
     } else {
       // Message d'erreur pour section manquante
       const errorMessage = document.createElement('p');
-      errorMessage.style.opacity = '0.6';
+      errorMessage.className = 'agile-board-error-message';
       errorMessage.textContent = 'Section introuvable';
       contentContainer.appendChild(errorMessage);
     }
-
+    
     return contentContainer;
   }
 
@@ -517,17 +478,6 @@ export class LayoutRenderer implements ILayoutRenderer {
   ): HTMLElement {
     const overlay = document.createElement('div');
     overlay.className = PLUGIN_CONSTANTS.CSS_CLASSES.ERROR;
-    
-    // Styles de base pour l'overlay
-    Object.assign(overlay.style, {
-      padding: '2rem',
-      textAlign: 'center',
-      backgroundColor: 'var(--background-secondary)',
-      border: '2px dashed var(--color-accent)',
-      borderRadius: '1rem',
-      fontSize: '1.1em',
-      marginBottom: '1rem'
-    });
 
     // Titre d'erreur
     const title = document.createElement('h2');
@@ -557,8 +507,7 @@ export class LayoutRenderer implements ILayoutRenderer {
    */
   private createMissingSectionsList(missingTitles: string[]): HTMLElement {
     const list = document.createElement('ul');
-    list.style.textAlign = 'left';
-    
+
     missingTitles.forEach(title => {
       const listItem = document.createElement('li');
       listItem.textContent = `# ${title}`;
