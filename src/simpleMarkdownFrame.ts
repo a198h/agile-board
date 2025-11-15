@@ -39,7 +39,7 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
 
     // Créer la fonction debounced pour la synchronisation (500ms)
     this.debouncedSync = debounce((content: string) => {
-      this.onChange(content);
+      void this.onChange(content);
     }, 500);
 
     // Initialiser les composants modulaires

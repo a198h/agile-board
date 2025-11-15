@@ -1,13 +1,14 @@
 // src/layoutRenderer.ts
 import { App, MarkdownView, TFile } from "obsidian";
-import { 
-  LayoutModel, 
-  SectionRegistry, 
+import {
+  LayoutModel,
+  SectionRegistry,
   LayoutRenderer as ILayoutRenderer,
   PLUGIN_CONSTANTS,
   LayoutBlock,
   Result,
-  PluginError
+  PluginError,
+  SectionInfo
 } from "./types";
 import { parseHeadingsInFile } from "./sectionParser";
 import { MarkdownBox } from "./markdownBox";
@@ -375,7 +376,7 @@ export class LayoutRenderer implements ILayoutRenderer {
   private async createBlockElement(
     view: MarkdownView,
     block: LayoutBlock,
-    sectionInfo?: any
+    sectionInfo?: SectionInfo
   ): Promise<HTMLElement> {
     const blockElement = document.createElement('section');
     blockElement.className = PLUGIN_CONSTANTS.CSS_CLASSES.FRAME;
@@ -436,7 +437,7 @@ export class LayoutRenderer implements ILayoutRenderer {
   private async createBlockContent(
     view: MarkdownView,
     block: LayoutBlock,
-    sectionInfo?: any
+    sectionInfo?: SectionInfo
   ): Promise<HTMLElement> {
     const contentContainer = document.createElement('div');
 
@@ -472,7 +473,7 @@ export class LayoutRenderer implements ILayoutRenderer {
    */
   private createContentChangeHandler(
     view: MarkdownView,
-    sectionInfo: any
+    sectionInfo: SectionInfo
   ): (newContent: string) => Promise<void> {
     return async (newContent: string) => {
       try {
@@ -531,7 +532,7 @@ export class LayoutRenderer implements ILayoutRenderer {
 
     // Titre d'erreur
     const title = document.createElement('h2');
-    title.textContent = '❌ Impossible d\'appliquer le modèle';
+    title.textContent = 'Impossible d\'appliquer le modèle';
     overlay.appendChild(title);
 
     // Description
@@ -578,10 +579,10 @@ export class LayoutRenderer implements ILayoutRenderer {
     const button = document.createElement('button');
     button.className = 'mod-cta';
     button.style.marginTop = '1em';
-    button.textContent = '➕ Réinitialiser la note avec le modèle';
+    button.textContent = 'Réinitialiser la note avec le modèle';
     
-    button.addEventListener('click', async () => {
-      await this.handleAutoFix(view, blocks);
+    button.addEventListener('click', () => {
+      void this.handleAutoFix(view, blocks);
     });
     
     return button;

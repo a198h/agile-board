@@ -183,7 +183,7 @@ export class DimensionManager {
 
     Object.entries(dimensions).forEach(([prop, value]) => {
       if (value !== undefined) {
-        (element.style as any)[prop] = value;
+        (element.style as unknown as Record<string, string>)[prop] = value;
       }
     });
   }

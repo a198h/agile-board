@@ -192,13 +192,13 @@ export class LayoutEditor extends Modal {
 
     // Bouton Sauvegarder
     const saveButton = buttonContainer.createEl('button');
-    saveButton.textContent = '💾 Sauvegarder';
+    saveButton.textContent = 'Sauvegarder';
     saveButton.className = 'mod-cta';
     saveButton.addEventListener('click', () => this.handleSave());
 
     // Bouton Annuler
     const cancelButton = buttonContainer.createEl('button');
-    cancelButton.textContent = '❌ Annuler';
+    cancelButton.textContent = 'Annuler';
     cancelButton.addEventListener('click', () => this.handleCancel());
   }
 

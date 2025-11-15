@@ -29,7 +29,7 @@ export interface ErrorDisplayOptions {
  */
 export interface ErrorContext {
   severity: ErrorSeverity;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   userMessage?: string;
   showNotice?: boolean;
   noticeDuration?: number;
@@ -172,43 +172,51 @@ export class ErrorHandler {
    */
   private static formatPluginErrorMessage(error: PluginError): string {
     switch (error.type) {
-      case 'LAYOUT_NOT_FOUND':
+      case 'LAYOUT_NOT_FOUND': {
         const available = error.availableLayouts ? ` (disponibles: ${error.availableLayouts.join(', ')})` : '';
         return `Tableau "${error.layoutName}" introuvable${available}`;
-      
-      case 'INVALID_LAYOUT_FORMAT':
+      }
+
+      case 'INVALID_LAYOUT_FORMAT': {
         const filePath = error.filePath ? ` dans ${error.filePath}` : '';
         return `Format de tableau invalide${filePath}: ${error.details}`;
-      
-      case 'FILE_SYSTEM_ERROR':
+      }
+
+      case 'FILE_SYSTEM_ERROR': {
         const fileInfo = error.filePath ? ` (${error.filePath})` : '';
         const operation = error.operation ? ` lors de l'opération "${error.operation}"` : '';
         return `Erreur système de fichiers${fileInfo}${operation}: ${error.error.message}`;
-      
-      case 'VALIDATION_ERROR':
+      }
+
+      case 'VALIDATION_ERROR': {
         const modelInfo = error.modelName ? ` dans le modèle "${error.modelName}"` : '';
         return `Erreurs de validation${modelInfo}: ${error.errors.join(', ')}`;
-      
-      case 'SECTION_MISSING':
+      }
+
+      case 'SECTION_MISSING': {
         const sectionFileInfo = error.filePath ? ` dans ${error.filePath}` : '';
         return `Section manquante${sectionFileInfo}: ${error.sectionTitle}`;
+      }
 
-      case 'PARSING_ERROR':
+      case 'PARSING_ERROR': {
         const parseFileInfo = error.filePath ? ` dans ${error.filePath}` : '';
         const lineInfo = error.lineNumber ? ` (ligne ${error.lineNumber})` : '';
         return `Erreur de parsing${parseFileInfo}${lineInfo}: ${error.details}`;
+      }
 
-      case 'NETWORK_ERROR':
+      case 'NETWORK_ERROR': {
         const urlInfo = error.url ? ` (${error.url})` : '';
         return `Erreur réseau${urlInfo}: ${error.message}`;
+      }
 
-      case 'PERMISSION_ERROR':
+      case 'PERMISSION_ERROR': {
         const resourceInfo = error.resource ? ` pour "${error.resource}"` : '';
         return `Erreur de permission${resourceInfo}: ${error.message}`;
+      }
 
       case 'INITIALIZATION_ERROR':
         return `Erreur d'initialisation du composant "${error.component}": ${error.details}`;
-      
+
       default:
         return 'Erreur inconnue du plugin';
     }
@@ -274,7 +282,7 @@ export class ErrorHandler {
 
     switch (severity) {
       case ErrorSeverity.INFO:
-        console.info(fullMessage, error);
+        console.debug(fullMessage, error);
         break;
       case ErrorSeverity.WARNING:
         console.warn(fullMessage, error);

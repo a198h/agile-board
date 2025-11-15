@@ -24,7 +24,9 @@ export class NativeMarkdownView {
   ) {
     this.component = new Component();
     this.markdownContent = this.section.lines.join('\n');
-    this.debouncedOnChange = debounce(this.onChange, 300);
+    this.debouncedOnChange = debounce((content: string) => {
+      void this.onChange(content);
+    }, 300);
     
     this.initialize();
   }

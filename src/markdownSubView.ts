@@ -24,9 +24,11 @@ export class MarkdownSubView {
     this.contentEl = container;
     this.component = new Component();
     this.markdownContent = this.section.lines.join('\n');
-    
+
     // Débouncer les changements pour éviter les sauvegardes trop fréquentes
-    this.debouncedOnChange = debounce(this.onChange, 300);
+    this.debouncedOnChange = debounce((content: string) => {
+      void this.onChange(content);
+    }, 300);
     
     this.render();
     this.setupEventListeners();

@@ -2,10 +2,11 @@
 
 import { Plugin } from "obsidian";
 
-import { 
+import {
   LayoutLoader as ILayoutLoader,
   LayoutRegistry,
-  LayoutModel
+  LayoutModel,
+  LayoutBlock
 } from "../../types";
 import { LayoutFileRepo } from "./layoutFileRepo";
 import { createContextLogger } from "../logger";
@@ -61,7 +62,7 @@ export class LayoutLoader implements ILayoutLoader {
 
     for (const layout of bundledLayouts) {
       if (layout.data) {
-        const legacyModel: LayoutModel = layout.data.boxes.map((box: any) => ({
+        const legacyModel: LayoutModel = layout.data.boxes.map((box: LayoutBlock) => ({
           title: box.title,
           x: box.x,
           y: box.y,

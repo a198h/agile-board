@@ -123,8 +123,8 @@ export default class AgileBoardPlugin extends Plugin {
    * @returns true si l'objet implémente LifecycleAware
    */
   private isLifecycleAware(obj: unknown): obj is LifecycleAware {
-    return obj !== null && typeof obj === 'object' && 
-           (typeof (obj as any).onLoad === 'function' || typeof (obj as any).onUnload === 'function');
+    return obj !== null && typeof obj === 'object' &&
+           (typeof (obj as Record<string, unknown>).onLoad === 'function' || typeof (obj as Record<string, unknown>).onUnload === 'function');
   }
 
   /**

@@ -11,7 +11,7 @@ export class ViewSwitcher {
 
   private markAsManualChange(file: TFile): void {
     // Notifier le ModelDetector qu'un changement manuel a eu lieu
-    const plugin = this.plugin as any;
+    const plugin = this.plugin as unknown as { modelDetector?: { markUserManualChange: (path: string) => void } };
     if (plugin.modelDetector) {
       plugin.modelDetector.markUserManualChange(file.path);
     }
@@ -279,7 +279,7 @@ export class ViewSwitcher {
 
     try {
       // Bouton pour mode Live Preview dans la toolbar
-      const livePreviewButton = (boardView as any).addAction(
+      const livePreviewButton = (boardView as unknown as { addAction: (icon: string, title: string, callback: () => void) => HTMLElement }).addAction(
         "document",
         "Mode Live Preview",
         () => {

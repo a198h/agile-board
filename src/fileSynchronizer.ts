@@ -5,7 +5,8 @@ import { AGILE_BOARD_VIEW_TYPE, AgileBoardView } from "./agileBoardView";
 import AgileBoardPlugin from "./main";
 
 // Interface pour typer les propriétés internes d'AgileBoardView
-interface AgileBoardViewWithState extends AgileBoardView {
+// Note: We use type assertion via 'unknown' to access private properties
+interface AgileBoardViewWithState {
   isUpdating?: boolean;
   frames?: Map<string, { updateContent(content: string): Promise<void> }>;
 }
@@ -62,7 +63,7 @@ export class FileSynchronizer {
   }
 
   private async updateBoardView(boardView: AgileBoardView, file: TFile): Promise<void> {
-    const viewWithState = boardView as AgileBoardViewWithState;
+    const viewWithState = boardView as unknown as AgileBoardViewWithState;
 
     // Eviter les boucles infinies en vérifiant si la vue est en cours de modification
     if (viewWithState.isUpdating) return;
@@ -94,7 +95,7 @@ export class FileSynchronizer {
   notifyBoardViewChange(file: TFile): void {
     const boardView = this.getBoardViewForFile(file);
     if (boardView) {
-      const viewWithState = boardView as AgileBoardViewWithState;
+      const viewWithState = boardView as unknown as AgileBoardViewWithState;
       viewWithState.isUpdating = true;
 
       // Remettre à false après un court délai

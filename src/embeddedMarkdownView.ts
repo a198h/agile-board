@@ -21,7 +21,9 @@ export class EmbeddedMarkdownView {
     private onChange: (content: string) => void
   ) {
     this.component = new Component();
-    this.debouncedOnChange = debounce(this.onChange, 300);
+    this.debouncedOnChange = debounce((content: string) => {
+      void this.onChange(content);
+    }, 300);
     
     this.initialize();
   }

@@ -71,8 +71,10 @@ export class ModelDetector implements IModelDetector {
     const fileOpenListener = this.handleFileOpen.bind(this) as EventListener;
     const metadataResolvedListener = this.handleMetadataResolved.bind(this) as EventListener;
 
-    this.plugin.app.workspace.on("file-open" as any, fileOpenListener);
-    (this.plugin.app.metadataCache.on as any)("resolved", metadataResolvedListener);
+    // @ts-expect-error - Using undocumented Obsidian API events
+    this.plugin.app.workspace.on("file-open", fileOpenListener);
+    // @ts-expect-error - Using undocumented Obsidian API events
+    this.plugin.app.metadataCache.on("resolved", metadataResolvedListener);
   }
 
   /**
@@ -99,8 +101,10 @@ export class ModelDetector implements IModelDetector {
   private unregisterEventListeners(): void {
     // Note: Obsidian ne fournit pas de référence exacte aux listeners,
     // donc on utilise les méthodes originales
-    this.plugin.app.workspace.off("file-open" as any, this.handleFileOpen);
-    (this.plugin.app.metadataCache.off as any)("resolved", this.handleMetadataResolved);
+    // @ts-ignore - Using undocumented Obsidian API events
+    this.plugin.app.workspace.off("file-open", this.handleFileOpen);
+    // @ts-ignore - Using undocumented Obsidian API events
+    this.plugin.app.metadataCache.off("resolved", this.handleMetadataResolved);
     
     this.eventListeners.clear();
   }
@@ -398,12 +402,14 @@ export class ModelDetector implements IModelDetector {
    * @param modelName Nom du modèle à appliquer
    */
   private scheduleAutoSwitch(file: TFile, modelName: string): void {
-    setTimeout(async () => {
-      try {
-        await this.attemptAutoSwitch(file, modelName);
-      } catch (error) {
-        this.logger.error(`Erreur lors de l'auto-switch pour ${file.path}:`, error);
-      }
+    setTimeout(() => {
+      void (async () => {
+        try {
+          await this.attemptAutoSwitch(file, modelName);
+        } catch (error) {
+          this.logger.error(`Erreur lors de l'auto-switch pour ${file.path}:`, error);
+        }
+      })();
     }, PLUGIN_CONSTANTS.TIMING.AUTO_SWITCH_DELAY);
   }
 
@@ -437,7 +443,7 @@ export class ModelDetector implements IModelDetector {
       }
 
       // Exécution du basculement
-      const plugin = this.plugin as any;
+      const plugin = this.plugin as unknown as { viewSwitcher?: { switchToBoardView?: (file: TFile, modelName: string) => Promise<boolean> } };
       if (!plugin.viewSwitcher?.switchToBoardView) {
         return {
           success: false,
@@ -449,7 +455,7 @@ export class ModelDetector implements IModelDetector {
         };
       }
 
-      await plugin.viewSwitcher.switchToBoardView(file);
+      await plugin.viewSwitcher.switchToBoardView(file, modelName);
       return { success: true, data: undefined };
       
     } catch (error) {

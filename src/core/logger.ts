@@ -32,7 +32,7 @@ export interface LogEntry {
   level: LogLevel;
   context: string;
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
 /**
@@ -82,7 +82,7 @@ export class Logger {
    * @param message Message
    * @param data Données optionnelles
    */
-  public debug(context: string, message: string, data?: any): void {
+  public debug(context: string, message: string, data?: unknown): void {
     this.log(LogLevel.DEBUG, context, message, data);
   }
 
@@ -92,7 +92,7 @@ export class Logger {
    * @param message Message
    * @param data Données optionnelles
    */
-  public info(context: string, message: string, data?: any): void {
+  public info(context: string, message: string, data?: unknown): void {
     this.log(LogLevel.INFO, context, message, data);
   }
 
@@ -102,7 +102,7 @@ export class Logger {
    * @param message Message
    * @param data Données optionnelles
    */
-  public warn(context: string, message: string, data?: any): void {
+  public warn(context: string, message: string, data?: unknown): void {
     this.log(LogLevel.WARN, context, message, data);
   }
 
@@ -112,7 +112,7 @@ export class Logger {
    * @param message Message
    * @param data Données optionnelles
    */
-  public error(context: string, message: string, data?: any): void {
+  public error(context: string, message: string, data?: unknown): void {
     this.log(LogLevel.ERROR, context, message, data);
   }
 
@@ -123,7 +123,7 @@ export class Logger {
    * @param message Message
    * @param data Données optionnelles
    */
-  private log(level: LogLevel, context: string, message: string, data?: any): void {
+  private log(level: LogLevel, context: string, message: string, data?: unknown): void {
     // Vérifier si le niveau est suffisant
     if (level < this.config.level) {
       return;
@@ -204,14 +204,20 @@ export class Logger {
    * @param message Message formaté
    * @param data Données optionnelles
    */
-  private outputToConsole(level: LogLevel, message: string, data?: any): void {
+  private outputToConsole(level: LogLevel, message: string, data?: unknown): void {
     switch (level) {
       case LogLevel.DEBUG:
+        if (data !== undefined) {
+          console.debug(message, data);
+        } else {
+          console.debug(message);
+        }
+        break;
       case LogLevel.INFO:
         if (data !== undefined) {
-          console.log(message, data);
+          console.debug(message, data);
         } else {
-          console.log(message);
+          console.debug(message);
         }
         break;
       case LogLevel.WARN:
@@ -369,19 +375,19 @@ export class ContextLogger {
     private readonly logger: Logger = Logger.getInstance()
   ) {}
 
-  debug(message: string, data?: any): void {
+  debug(message: string, data?: unknown): void {
     this.logger.debug(this.context, message, data);
   }
 
-  info(message: string, data?: any): void {
+  info(message: string, data?: unknown): void {
     this.logger.info(this.context, message, data);
   }
 
-  warn(message: string, data?: any): void {
+  warn(message: string, data?: unknown): void {
     this.logger.warn(this.context, message, data);
   }
 
-  error(message: string, data?: any): void {
+  error(message: string, data?: unknown): void {
     this.logger.error(this.context, message, data);
   }
 }

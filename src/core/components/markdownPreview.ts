@@ -36,7 +36,9 @@ export class MarkdownPreview extends BaseUIComponent {
     super(container, app);
     this.component = new Component();
     this.currentContent = config.content;
-    this.debouncedOnChange = debounce(config.onContentChange, 1000);
+    this.debouncedOnChange = debounce((content: string) => {
+      void config.onContentChange(content);
+    }, 1000);
 
     this.registerDisposable({
       dispose: () => this.component.unload()
@@ -130,7 +132,7 @@ export class MarkdownPreview extends BaseUIComponent {
   /**
    * Post-traitement des éléments après rendu Obsidian.
    */
-  private postProcessElements(replacements: readonly any[]): void {
+  private postProcessElements(replacements: readonly unknown[]): void {
     // Traiter les images
     this.processImagePlaceholders();
     
@@ -257,7 +259,7 @@ export class MarkdownPreview extends BaseUIComponent {
           e.preventDefault();
           const href = link.getAttribute('data-href') || link.getAttribute('href');
           if (href && href !== '#') {
-            this.app.workspace.openLinkText(href, this.config.file.path);
+            void this.app.workspace.openLinkText(href, this.config.file.path);
           }
         });
       }

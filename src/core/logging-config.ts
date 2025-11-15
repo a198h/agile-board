@@ -103,7 +103,7 @@ export class LoggingConfig {
     // Commande pour définir le niveau DEBUG
     plugin.addCommand({
       id: 'set-log-level-debug',
-      name: 'Activer le logging DEBUG',
+      name: 'Activer le logging debug',
       callback: () => {
         Logger.getInstance().setLevel(LogLevel.DEBUG);
       }
@@ -112,7 +112,7 @@ export class LoggingConfig {
     // Commande pour définir le niveau INFO
     plugin.addCommand({
       id: 'set-log-level-info',
-      name: 'Activer le logging INFO',
+      name: 'Activer le logging info',
       callback: () => {
         Logger.getInstance().setLevel(LogLevel.INFO);
       }
@@ -121,7 +121,7 @@ export class LoggingConfig {
     // Commande pour définir le niveau WARN
     plugin.addCommand({
       id: 'set-log-level-warn',
-      name: 'Activer le logging WARN uniquement',
+      name: 'Activer le logging warn uniquement',
       callback: () => {
         Logger.getInstance().setLevel(LogLevel.WARN);
       }
@@ -130,7 +130,7 @@ export class LoggingConfig {
     // Commande pour définir le niveau ERROR
     plugin.addCommand({
       id: 'set-log-level-error',
-      name: 'Activer le logging ERROR uniquement',
+      name: 'Activer le logging error uniquement',
       callback: () => {
         Logger.getInstance().setLevel(LogLevel.ERROR);
       }

@@ -93,7 +93,7 @@ export class ValidationUtils {
         isValid: false,
         error: {
           type: 'VALIDATION_ERROR',
-          errors: [`${fieldName} doit être un entier positif (reçu: ${value})`]
+          errors: [`${fieldName} doit être un entier positif (reçu: ${String(value)})`]
         }
       };
     }
@@ -119,7 +119,7 @@ export class ValidationUtils {
         error: {
           type: 'VALIDATION_ERROR',
           errors: [
-            `${fieldName} doit être l'une des valeurs: ${allowedValues.join(', ')} (reçu: ${value})`
+            `${fieldName} doit être l'une des valeurs: ${allowedValues.join(', ')} (reçu: ${String(value)})`
           ]
         }
       };

@@ -272,10 +272,10 @@ export class LifecycleManager implements Disposable {
  * Décorateur pour marquer automatiquement une méthode comme nécessitant un nettoyage.
  * Utilise le LifecycleManager du contexte pour enregistrer les ressources.
  */
-export function managedResource(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+export function managedResource(target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
-  
-  descriptor.value = function(this: { lifecycleManager?: LifecycleManager }, ...args: any[]) {
+
+  descriptor.value = function(this: { lifecycleManager?: LifecycleManager }, ...args: unknown[]) {
     const result = originalMethod.apply(this, args);
     
     // Si la méthode retourne quelque chose de disposable, l'enregistrer
