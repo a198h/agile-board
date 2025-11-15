@@ -7,6 +7,7 @@ import * as path from "path";
 import { createContextLogger } from "../logger";
 import { TIMING_CONSTANTS, GRID_CONSTANTS, FILE_CONSTANTS } from "../constants";
 import { ErrorHandler, ErrorSeverity } from "../errorHandler";
+import type { LayoutBlock } from "../../types";
 
 /**
  * Interface pour un layout selon le nouveau format de grille
@@ -34,7 +35,7 @@ export interface LayoutFile {
 export class LayoutFileRepo {
   private readonly logger = createContextLogger('LayoutFileRepo');
   private readonly layoutsDir: string;
-  private fileWatcher?: any;
+  private fileWatcher?: ReturnType<typeof fsSync.watch>;
 
   constructor(private readonly plugin: Plugin) {
     this.layoutsDir = this.getLayoutsDirectoryPath();
@@ -246,7 +247,7 @@ export class LayoutFileRepo {
         // Convertir vers le nouveau format LayoutFile
         const layoutFile: LayoutFile = {
           name: layout.name,
-          boxes: layout.data.boxes.map((box: any, index: number) => ({
+          boxes: layout.data.boxes.map((box: LayoutBlock, index: number) => ({
             id: `box-${index}`,
             title: box.title,
             x: box.x,

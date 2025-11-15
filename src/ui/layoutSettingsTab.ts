@@ -171,14 +171,22 @@ export class LayoutSettingsTab extends PluginSettingTab {
     actionsContainer.style.gap = '5px';
 
     // Boutons d'action
-    this.createActionButton(actionsContainer, t('settings.list.action.edit'), 'edit', t('settings.list.action.editTooltip'), 
-      () => this.editLayout(layout));
-    this.createActionButton(actionsContainer, t('settings.list.action.duplicate'), 'copy', t('settings.list.action.duplicateTooltip'), 
-      () => this.duplicateLayout(layout));
-    this.createActionButton(actionsContainer, t('settings.list.action.export'), 'upload', t('settings.list.action.exportTooltip'), 
-      () => this.exportLayout(layout));
-    this.createActionButton(actionsContainer, t('settings.list.action.delete'), 'trash', t('settings.list.action.deleteTooltip'), 
-      () => this.deleteLayout(layout));
+    this.createActionButton(actionsContainer, t('settings.list.action.edit'), 'edit', t('settings.list.action.editTooltip'),
+      () => {
+        void this.editLayout(layout);
+      });
+    this.createActionButton(actionsContainer, t('settings.list.action.duplicate'), 'copy', t('settings.list.action.duplicateTooltip'),
+      () => {
+        void this.duplicateLayout(layout);
+      });
+    this.createActionButton(actionsContainer, t('settings.list.action.export'), 'upload', t('settings.list.action.exportTooltip'),
+      () => {
+        void this.exportLayout(layout);
+      });
+    this.createActionButton(actionsContainer, t('settings.list.action.delete'), 'trash', t('settings.list.action.deleteTooltip'),
+      () => {
+        void this.deleteLayout(layout);
+      });
   }
 
   private createActionButton(
@@ -196,30 +204,32 @@ export class LayoutSettingsTab extends PluginSettingTab {
   }
 
   private async createNewLayout(): Promise<void> {
-    const modal = new LayoutNameModal(this.app, t('settings.modal.newLayout.title'), '', async (name) => {
-      if (!name.trim()) {
-        new Notice(t('settings.message.nameEmpty'));
-        return;
-      }
+    const modal = new LayoutNameModal(this.app, t('settings.modal.newLayout.title'), '', (name) => {
+      void (async () => {
+        if (!name.trim()) {
+          new Notice(t('settings.message.nameEmpty'));
+          return;
+        }
 
-      try {
-        let newLayout: LayoutFile = {
-          name: name.trim(),
-            boxes: []
-        };
+        try {
+          let newLayout: LayoutFile = {
+            name: name.trim(),
+              boxes: []
+          };
 
-        const uniqueName = await this.layoutRepo.generateUniqueName(newLayout.name);
-        newLayout = { ...newLayout, name: uniqueName };
+          const uniqueName = await this.layoutRepo.generateUniqueName(newLayout.name);
+          newLayout = { ...newLayout, name: uniqueName };
 
-        await this.layoutRepo.saveLayout(newLayout);
-        UIErrorHandler.showSuccess(t('settings.message.created', { name: uniqueName }));
-        
-        this.refreshLayoutList();
-        this.editLayout(newLayout);
-      } catch (error) {
-        this.logger.error(t('settings.message.createError'), error);
-        new Notice(t('settings.message.createError'));
-      }
+          await this.layoutRepo.saveLayout(newLayout);
+          UIErrorHandler.showSuccess(t('settings.message.created', { name: uniqueName }));
+
+          this.refreshLayoutList();
+          this.editLayout(newLayout);
+        } catch (error) {
+          this.logger.error(t('settings.message.createError'), error);
+          new Notice(t('settings.message.createError'));
+        }
+      })();
     });
 
     modal.open();
@@ -227,8 +237,8 @@ export class LayoutSettingsTab extends PluginSettingTab {
 
   private async duplicateLayout(layout: LayoutFile): Promise<void> {
     const defaultName = `${layout.name} - Copie`;
-    const modal = new LayoutNameModal(this.app, t('settings.modal.duplicate.title'), defaultName, async (name) => {
-      await this.performLayoutDuplication(layout, name);
+    const modal = new LayoutNameModal(this.app, t('settings.modal.duplicate.title'), defaultName, (name) => {
+      void this.performLayoutDuplication(layout, name);
     });
 
     modal.open();
@@ -316,20 +326,22 @@ export class LayoutSettingsTab extends PluginSettingTab {
       this.app,
       t('settings.modal.delete.title'),
       t('settings.modal.delete.confirm', { name: layout.name }),
-      async () => {
-        try {
-          await this.layoutRepo.deleteLayout(layout.name);
-          new Notice(t('settings.message.deleted', { name: layout.name }));
-          this.refreshLayoutList();
-          
-          // Recharger le service de layout si nécessaire
-          if (this.plugin.layoutService) {
-            await this.plugin.layoutService.load();
+      () => {
+        void (async () => {
+          try {
+            await this.layoutRepo.deleteLayout(layout.name);
+            new Notice(t('settings.message.deleted', { name: layout.name }));
+            this.refreshLayoutList();
+
+            // Recharger le service de layout si nécessaire
+            if (this.plugin.layoutService) {
+              await this.plugin.layoutService.load();
+            }
+          } catch (error) {
+            this.logger.error(t('settings.message.deleteError'), error);
+            new Notice(t('settings.message.deleteError'));
           }
-        } catch (error) {
-          this.logger.error(t('settings.message.deleteError'), error);
-          new Notice(t('settings.message.deleteError'));
-        }
+        })();
       }
     );
     

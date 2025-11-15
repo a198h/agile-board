@@ -4,8 +4,9 @@ import { parseHeadingsInFile } from "./sectionParser";
 import { AGILE_BOARD_VIEW_TYPE, AgileBoardView } from "./agileBoardView";
 import AgileBoardPlugin from "./main";
 
-// Type pour accéder aux propriétés internes d'AgileBoardView
-type AgileBoardViewWithState = AgileBoardView & {
+// Interface pour typer les propriétés internes d'AgileBoardView
+// Note: We use type assertion via 'unknown' to access private properties
+interface AgileBoardViewWithState {
   isUpdating?: boolean;
   frames?: Map<string, { updateContent(content: string): Promise<void> }>;
 }
@@ -50,36 +51,31 @@ export class FileSynchronizer {
 
   private getBoardViewForFile(file: TFile): AgileBoardView | null {
     const leaves = this.plugin.app.workspace.getLeavesOfType(AGILE_BOARD_VIEW_TYPE);
-    
+
     for (const leaf of leaves) {
       const view = leaf.view as AgileBoardView;
       if (view.file?.path === file.path) {
         return view;
       }
     }
-    
+
     return null;
   }
 
   private async updateBoardView(boardView: AgileBoardView, file: TFile): Promise<void> {
-    // @ts-ignore - Accès aux propriétés internes pour éviter les boucles de mise à jour
-    const viewWithState = boardView as AgileBoardViewWithState;
+    const viewWithState = boardView as unknown as AgileBoardViewWithState;
 
     // Eviter les boucles infinies en vérifiant si la vue est en cours de modification
-    // @ts-expect-error - isUpdating est une propriété interne ajoutée dynamiquement
     if (viewWithState.isUpdating) return;
 
     try {
-      // @ts-expect-error - isUpdating est une propriété interne ajoutée dynamiquement
       viewWithState.isUpdating = true;
 
       // Parser les nouvelles sections
       const newSections = await parseHeadingsInFile(this.plugin.app, file);
 
       // Mettre à jour chaque frame avec le nouveau contenu
-      // @ts-expect-error - frames est une propriété privée d'AgileBoardView
       if (viewWithState.frames) {
-        // @ts-expect-error - frames est une propriété privée d'AgileBoardView
         for (const [title, frame] of viewWithState.frames) {
           const newSection = newSections[title];
           if (newSection) {
@@ -90,7 +86,6 @@ export class FileSynchronizer {
         }
       }
     } finally {
-      // @ts-expect-error - isUpdating est une propriété interne ajoutée dynamiquement
       viewWithState.isUpdating = false;
     }
   }
@@ -100,14 +95,11 @@ export class FileSynchronizer {
   notifyBoardViewChange(file: TFile): void {
     const boardView = this.getBoardViewForFile(file);
     if (boardView) {
-      // @ts-ignore - Accès aux propriétés internes pour éviter les boucles de mise à jour
-      const viewWithState = boardView as AgileBoardViewWithState;
-      // @ts-expect-error - isUpdating est une propriété interne ajoutée dynamiquement
+      const viewWithState = boardView as unknown as AgileBoardViewWithState;
       viewWithState.isUpdating = true;
 
       // Remettre à false après un court délai
       setTimeout(() => {
-        // @ts-expect-error - isUpdating est une propriété interne ajoutée dynamiquement
         viewWithState.isUpdating = false;
       }, 100);
     }

@@ -311,7 +311,7 @@ export class MarkdownBox {
           this.content,
           this.previewEl,
           this.app.workspace.getActiveFile()?.path ?? "",
-          this.app.workspace.getActiveFile() as any
+          this.app.workspace.getActiveFile() as never
         );
       }
     } catch (error) {

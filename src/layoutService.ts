@@ -68,8 +68,8 @@ export class LayoutService {
    */
   private async startFileWatching(): Promise<void> {
     try {
-      await this.fileRepo.startWatching(async () => {
-        await this.reload();
+      await this.fileRepo.startWatching(() => {
+        void this.reload();
       });
       this.isWatching = true;
     } catch (error) {

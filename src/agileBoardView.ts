@@ -70,10 +70,10 @@ export class AgileBoardView extends FileView {
     this.createGrid();
 
     // Créer les cadres
-    await this.createFrames(sections);
+    this.createFrames(sections);
   }
 
-  private async cleanup(): Promise<void> {
+  private cleanup(): void {
     // Nettoyer les frames existantes
     Array.from(this.frames.values()).forEach(frame => frame.unload());
     this.frames.clear();
@@ -97,7 +97,7 @@ export class AgileBoardView extends FileView {
     `;
   }
 
-  private async createFrames(sections: Record<string, SectionInfo>): Promise<void> {
+  private createFrames(sections: Record<string, SectionInfo>): void {
     if (!this.gridContainer) return;
 
     // Vérifier les titres manquants
@@ -145,7 +145,9 @@ export class AgileBoardView extends FileView {
         this.app,
         this.file!,
         section,
-        (newContent) => this.onFrameContentChanged(block.title, newContent)
+        (newContent) => {
+          this.onFrameContentChanged(block.title, newContent);
+        }
       );
 
       this.frames.set(block.title, simpleMarkdownFrame);
@@ -252,7 +254,9 @@ export class AgileBoardView extends FileView {
 
     const button = overlay.createEl("button", { cls: "mod-cta" });
     button.textContent = t("view.createMissingSections");
-    button.addEventListener("click", () => this.createMissingSections(missingTitles));
+    button.addEventListener("click", () => {
+      this.createMissingSections(missingTitles);
+    });
   }
 
   private async createMissingSections(missingTitles: string[]): Promise<void> {

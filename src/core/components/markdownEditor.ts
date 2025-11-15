@@ -34,7 +34,9 @@ export class MarkdownEditor extends BaseUIComponent {
     super(container, app);
     this.app = app;
     this.currentContent = config.content;
-    this.debouncedOnChange = debounce(config.onContentChange, 1000);
+    this.debouncedOnChange = debounce((content: string) => {
+      void config.onContentChange(content);
+    }, 1000);
 
     this.initializeEditor();
   }
