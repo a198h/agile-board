@@ -19,24 +19,26 @@
 .agile-board-grid {
   display: grid;
   grid-template-columns: repeat(var(--ab-grid-cols, 24), 1fr);
+  grid-template-rows: repeat(24, minmax(0, 1fr));
   gap: var(--ab-gap, 0.5rem);
   padding: var(--ab-padding, 1rem);
-  min-height: 90vh;
-  max-height: 90vh;
+  height: 90vh;
 }
 
 /* Frame positioning via CSS variables */
 .agile-board-frame {
   grid-column: var(--ab-col-start) / span var(--ab-col-span);
   grid-row: var(--ab-row-start) / span var(--ab-row-span);
-  min-height: 100px;
   border: 1px solid var(--background-modifier-border);
   padding: 0.5rem;
   background-color: var(--background-primary);
   border-radius: 0.5rem;
-  overflow: auto;
+  overflow: hidden;
   box-sizing: border-box;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  justify-self: stretch;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   transition: all 0.2s ease;
 }
@@ -59,6 +61,16 @@
   border-bottom: 1px solid var(--background-modifier-border);
   border-radius: 6px 6px 0 0;
   background: var(--background-secondary);
+  flex-shrink: 0;
+}
+
+/* === Frame Content === */
+.agile-board-frame-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* === MarkdownBox Components === */
@@ -66,8 +78,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  height: 100%;
-  max-height: 100%;
+  flex: 1;
+  min-height: 0;
   box-sizing: border-box;
   padding: 0.25rem;
 }

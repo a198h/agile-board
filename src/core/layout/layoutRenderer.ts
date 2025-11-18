@@ -408,12 +408,13 @@ export class LayoutRenderer implements ILayoutRenderer {
     sectionInfo?: SectionInfo
   ): HTMLElement {
     const contentContainer = document.createElement('div');
-    
+    contentContainer.className = 'agile-board-frame-content';
+
     if (sectionInfo) {
       // Contenu éditable avec MarkdownBox
       const initialContent = sectionInfo.lines.join('\n');
       const onContentChange = this.createContentChangeHandler(view, sectionInfo);
-      
+
       new MarkdownBox(this.app, contentContainer, initialContent, onContentChange);
     } else {
       // Message d'erreur pour section manquante
@@ -422,7 +423,7 @@ export class LayoutRenderer implements ILayoutRenderer {
       errorMessage.textContent = 'Section introuvable';
       contentContainer.appendChild(errorMessage);
     }
-    
+
     return contentContainer;
   }
 
