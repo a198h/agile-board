@@ -1,10 +1,10 @@
 // src/agileBoardView.ts
 import { FileView, MarkdownView, TFile, WorkspaceLeaf } from "obsidian";
-import { LayoutModel } from "./types";
-import { SectionInfo, parseHeadingsInFile } from "./sectionParser";
+import { LayoutModel } from "../types";
+import { SectionInfo, parseHeadingsInFile } from "../core/parsers/sectionParser";
 import { SimpleMarkdownFrame } from "./simpleMarkdownFrame";
-import { t } from "./i18n";
-import AgileBoardPlugin from "./main";
+import { t } from "../i18n";
+import AgileBoardPlugin from "../main";
 
 export const AGILE_BOARD_VIEW_TYPE = "agile-board-view";
 

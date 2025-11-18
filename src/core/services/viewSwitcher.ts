@@ -1,7 +1,7 @@
 // src/viewSwitcher.ts
 import { MarkdownView, TFile, WorkspaceLeaf } from "obsidian";
-import { AGILE_BOARD_VIEW_TYPE, AgileBoardView } from "./agileBoardView";
-import AgileBoardPlugin from "./main";
+import { AGILE_BOARD_VIEW_TYPE, AgileBoardView } from "../../views/agileBoardView";
+import AgileBoardPlugin from "../../main";
 
 export class ViewSwitcher {
   private checkInterval: NodeJS.Timeout | null = null;

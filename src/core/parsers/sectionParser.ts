@@ -1,9 +1,9 @@
 // src/sectionParser.ts
 import { TFile, App } from "obsidian";
-import { SectionInfo, SectionRegistry, Result, PluginError } from "./types";
+import { SectionInfo, SectionRegistry, Result, PluginError } from "../../types";
 
 // Re-export SectionInfo pour rétrocompatibilité
-export type { SectionInfo } from "./types";
+export type { SectionInfo } from "../../types";
 
 /**
  * Fonction utilitaire pour formater un PluginError en message lisible.

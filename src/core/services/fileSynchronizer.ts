@@ -1,8 +1,8 @@
 // src/fileSynchronizer.ts
 import { TFile, EventRef } from "obsidian";
-import { parseHeadingsInFile } from "./sectionParser";
-import { AGILE_BOARD_VIEW_TYPE, AgileBoardView } from "./agileBoardView";
-import AgileBoardPlugin from "./main";
+import { parseHeadingsInFile } from "../parsers/sectionParser";
+import { AGILE_BOARD_VIEW_TYPE, AgileBoardView } from "../../views/agileBoardView";
+import AgileBoardPlugin from "../../main";
 
 // Interface pour typer les propriétés internes d'AgileBoardView
 // Note: We use type assertion via 'unknown' to access private properties
