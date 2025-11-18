@@ -1,8 +1,8 @@
 // src/markdownSubView.ts
 import { App, TFile, Component, MarkdownRenderer } from "obsidian";
-import { SectionInfo } from "./sectionParser";
+import { SectionInfo } from "../core/parsers/sectionParser";
 import { debounce } from "ts-debounce";
-import { t } from "./i18n";
+import { t } from "../i18n";
 
 export class MarkdownSubView {
   private contentEl: HTMLElement;

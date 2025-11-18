@@ -1,10 +1,10 @@
 // src/main.ts
 import { Plugin } from "obsidian";
-import { LayoutService } from "./layoutService";
-import { ModelDetector } from "./modelDetector";
-import { AgileBoardView, AGILE_BOARD_VIEW_TYPE } from "./agileBoardView";
-import { ViewSwitcher } from "./viewSwitcher";
-import { FileSynchronizer } from "./fileSynchronizer";
+import { LayoutService } from "./core/layout/layoutService";
+import { ModelDetector } from "./core/services/modelDetector";
+import { AgileBoardView, AGILE_BOARD_VIEW_TYPE } from "./views/agileBoardView";
+import { ViewSwitcher } from "./core/services/viewSwitcher";
+import { FileSynchronizer } from "./core/services/fileSynchronizer";
 import { ErrorHandler, ErrorSeverity, LifecycleManager, LifecycleAware, createContextLogger, LoggingConfig } from "./core";
 import { PluginError } from "./types";
 import { LayoutSettingsTab } from "./ui/layoutSettingsTab";

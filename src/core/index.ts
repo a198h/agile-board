@@ -22,5 +22,4 @@ export * from './dom';
 export * from './business';
 
 // Services de layout
-export { LayoutValidator } from './layout/layoutValidator';
 export { LayoutLoader } from './layout/layoutLoader';

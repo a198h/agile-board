@@ -1,8 +1,8 @@
 // src/nativeMarkdownView.ts
 import { App, TFile, Component, MarkdownRenderer } from "obsidian";
-import { SectionInfo } from "./sectionParser";
+import { SectionInfo } from "../core/parsers/sectionParser";
 import { debounce } from "ts-debounce";
-import { createContextLogger } from "./core/logger";
+import { createContextLogger } from "../core/logger";
 
 export class NativeMarkdownView {
   private component: Component;

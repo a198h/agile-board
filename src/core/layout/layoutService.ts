@@ -1,17 +1,17 @@
 // src/layoutService.ts
 import { Plugin } from "obsidian";
-import { 
-  LayoutModel, 
+import {
+  LayoutModel,
   LayoutRegistry,
   LayoutLoader as ILayoutLoader,
   PluginError
-} from "./types";
-import { LayoutLoader } from "./core/layout/layoutLoader";
-import { LayoutFileRepo } from "./core/layout/layoutFileRepo";
-import { ErrorHandler, ErrorSeverity } from "./core/errorHandler";
-import { ValidationUtils } from "./core/validation";
-import { createContextLogger } from "./core/logger";
-import { t } from "./i18n";
+} from "../../types";
+import { LayoutLoader } from "./layoutLoader";
+import { LayoutFileRepo } from "./layoutFileRepo";
+import { ErrorHandler, ErrorSeverity } from "../errorHandler";
+import { ValidationUtils } from "../validation";
+import { createContextLogger } from "../logger";
+import { t } from "../../i18n";
 
 /**
  * Service principal de gestion des modèles de layout.

@@ -1,13 +1,13 @@
 // src/simpleMarkdownFrame.ts
 import { App, TFile } from "obsidian";
 import { debounce } from "ts-debounce";
-import { SectionInfo } from "./sectionParser";
-import { BaseUIComponent } from "./core/baseComponent";
-import { MarkdownRenderer } from "./components/markdown/MarkdownRenderer";
-import { FrameCM6Editor } from "./components/FrameCM6Editor";
-import { LinkHandler } from "./components/markdown/LinkHandler";
-import { CheckboxHandler } from "./components/markdown/CheckboxHandler";
-import { GridLayoutManager } from "./components/markdown/GridLayoutManager";
+import { SectionInfo } from "../core/parsers/sectionParser";
+import { BaseUIComponent } from "../core/baseComponent";
+import { MarkdownRenderer } from "../components/markdown/MarkdownRenderer";
+import { FrameCM6Editor } from "../components/FrameCM6Editor";
+import { LinkHandler } from "../components/markdown/LinkHandler";
+import { CheckboxHandler } from "../components/markdown/CheckboxHandler";
+import { GridLayoutManager } from "../components/markdown/GridLayoutManager";
 
 /**
  * Frame markdown refactorisé utilisant une architecture modulaire.

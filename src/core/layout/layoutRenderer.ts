@@ -9,12 +9,12 @@ import {
   Result,
   PluginError,
   SectionInfo
-} from "./types";
-import { parseHeadingsInFile, formatPluginError } from "./sectionParser";
-import { MarkdownBox } from "./markdownBox";
-import { createContextLogger } from "./core/logger";
-import { ErrorHandler, ErrorSeverity } from "./core/errorHandler";
-import { setGridPosition } from "./core/dom";
+} from "../../types";
+import { parseHeadingsInFile, formatPluginError } from "../parsers/sectionParser";
+import { MarkdownBox } from "../../components/markdown/markdownBox";
+import { createContextLogger } from "../logger";
+import { ErrorHandler, ErrorSeverity } from "../errorHandler";
+import { setGridPosition } from "../dom";
 
 /**
  * Plan de rendu structuré pour un layout.

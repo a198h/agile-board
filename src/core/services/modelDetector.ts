@@ -1,17 +1,17 @@
 // src/modelDetector.ts
 import { TFile, Plugin, MarkdownView } from "obsidian";
-import { 
-  LayoutService 
-} from "./layoutService";
-import { 
+import {
+  LayoutService
+} from "../layout/layoutService";
+import {
   ModelDetector as IModelDetector,
   FileDetectionState,
   PLUGIN_CONSTANTS,
   Result,
   PluginError
-} from "./types";
-import { createContextLogger } from "./core/logger";
-import { ErrorHandler, ErrorSeverity } from "./core/errorHandler";
+} from "../../types";
+import { createContextLogger } from "../logger";
+import { ErrorHandler, ErrorSeverity } from "../errorHandler";
 
 /**
  * Service de détection automatique des modèles Agile Board dans les fichiers.

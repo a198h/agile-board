@@ -1,8 +1,8 @@
 // src/embeddedMarkdownView.ts
 import { App, TFile, Component, MarkdownRenderer, WorkspaceLeaf } from "obsidian";
-import { SectionInfo } from "./sectionParser";
+import { SectionInfo } from "../core/parsers/sectionParser";
 import { debounce } from "ts-debounce";
-import { createContextLogger } from "./core/logger";
+import { createContextLogger } from "../core/logger";
 
 export class EmbeddedMarkdownView {
   private component: Component;
