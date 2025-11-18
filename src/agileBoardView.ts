@@ -1,6 +1,6 @@
 // src/agileBoardView.ts
 import { FileView, MarkdownView, TFile, WorkspaceLeaf } from "obsidian";
-import { LayoutBlock, LayoutModel } from "./types";
+import { LayoutModel } from "./types";
 import { SectionInfo, parseHeadingsInFile } from "./sectionParser";
 import { SimpleMarkdownFrame } from "./simpleMarkdownFrame";
 import { t } from "./i18n";
@@ -37,13 +37,13 @@ export class AgileBoardView extends FileView {
   }
 
   async onUnloadFile(file: TFile): Promise<void> {
-    await this.cleanup();
+    this.cleanup();
   }
 
   private async renderBoardLayout(): Promise<void> {
     if (!this.file) return;
 
-    await this.cleanup();
+    this.cleanup();
 
     // Vérifier si le fichier a un layout agile-board
     const cache = this.app.metadataCache.getFileCache(this.file);
@@ -146,7 +146,7 @@ export class AgileBoardView extends FileView {
         this.file!,
         section,
         (newContent) => {
-          this.onFrameContentChanged(block.title, newContent);
+          void this.onFrameContentChanged(block.title, newContent);
         }
       );
 
@@ -255,7 +255,7 @@ export class AgileBoardView extends FileView {
     const button = overlay.createEl("button", { cls: "mod-cta" });
     button.textContent = t("view.createMissingSections");
     button.addEventListener("click", () => {
-      this.createMissingSections(missingTitles);
+      void this.createMissingSections(missingTitles);
     });
   }
 

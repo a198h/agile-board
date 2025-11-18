@@ -5,9 +5,8 @@ import { LayoutFileRepo, LayoutFile } from "../core/layout/layoutFileRepo";
 import { LayoutValidator24 } from "../core/layout/layoutValidator24";
 import { LayoutEditor, LayoutEditorCallbacks } from "./layoutEditor";
 import { createContextLogger } from "../core/logger";
-import { TIMING_CONSTANTS, VALIDATION_CONSTANTS, generateBoxId } from "../core/constants";
+import { VALIDATION_CONSTANTS, generateBoxId } from "../core/constants";
 import { UIErrorHandler } from "./utils/ErrorHandler";
-import { NameGenerator } from "../core/utils/NameGenerator";
 import AgileBoardPlugin from "../main";
 import { t } from "../i18n";
 
@@ -32,8 +31,10 @@ export class LayoutSettingsTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
-    
-    containerEl.createEl('h2', { text: t('settings.header') });
+
+    new Setting(containerEl)
+      .setName(t('settings.header'))
+      .setHeading();
 
     // Boutons principaux
     this.createMainButtons(containerEl);
@@ -41,8 +42,8 @@ export class LayoutSettingsTab extends PluginSettingTab {
     // Liste des layouts
     this.layoutListContainer = containerEl.createDiv('layout-list-container');
     this.layoutListContainer.style.marginTop = '20px';
-    
-    this.refreshLayoutList();
+
+    void this.refreshLayoutList();
   }
 
   private createMainButtons(container: HTMLElement): void {
@@ -203,7 +204,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
       .onClick(onClick);
   }
 
-  private async createNewLayout(): Promise<void> {
+  private createNewLayout(): void {
     const modal = new LayoutNameModal(this.app, t('settings.modal.newLayout.title'), '', (name) => {
       void (async () => {
         if (!name.trim()) {
@@ -223,7 +224,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
           await this.layoutRepo.saveLayout(newLayout);
           UIErrorHandler.showSuccess(t('settings.message.created', { name: uniqueName }));
 
-          this.refreshLayoutList();
+          void this.refreshLayoutList();
           this.editLayout(newLayout);
         } catch (error) {
           this.logger.error(t('settings.message.createError'), error);
@@ -235,7 +236,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
     modal.open();
   }
 
-  private async duplicateLayout(layout: LayoutFile): Promise<void> {
+  private duplicateLayout(layout: LayoutFile): void {
     const defaultName = `${layout.name} - Copie`;
     const modal = new LayoutNameModal(this.app, t('settings.modal.duplicate.title'), defaultName, (name) => {
       void this.performLayoutDuplication(layout, name);
@@ -253,9 +254,9 @@ export class LayoutSettingsTab extends PluginSettingTab {
     try {
       const duplicatedLayout = await this.createDuplicatedLayout(sourceLayout, newName.trim());
       await this.layoutRepo.saveLayout(duplicatedLayout);
-      
+
       UIErrorHandler.showSuccess(t('settings.message.duplicated', { name: duplicatedLayout.name }));
-      this.refreshLayoutList();
+      void this.refreshLayoutList();
     } catch (error) {
       UIErrorHandler.handleLayoutError('la duplication', sourceLayout.name, error);
     }
@@ -280,7 +281,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
         try {
           await this.layoutRepo.saveLayout(updatedLayout);
           UIErrorHandler.showSuccess(t('settings.message.saved', { name: updatedLayout.name }));
-          this.refreshLayoutList();
+          void this.refreshLayoutList();
           
           // Recharger le service de layout si nécessaire
           if (this.plugin.layoutService) {
@@ -299,21 +300,21 @@ export class LayoutSettingsTab extends PluginSettingTab {
     editor.open();
   }
 
-  private async exportLayout(layout: LayoutFile): Promise<void> {
+  private exportLayout(layout: LayoutFile): void {
     try {
       const jsonString = JSON.stringify(layout, null, 2);
-      
+
       // Créer un lien de téléchargement
       const blob = new Blob([jsonString], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      
+
       const link = document.createElement('a');
       link.href = url;
       link.download = `${layout.name.replace(/[^a-zA-Z0-9-_]/g, '_')}.json`;
       link.click();
-      
+
       URL.revokeObjectURL(url);
-      
+
       new Notice(t('settings.message.exported', { name: layout.name }));
     } catch (error) {
       this.logger.error(t('settings.message.exportError'), error);
@@ -321,7 +322,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
     }
   }
 
-  private async deleteLayout(layout: LayoutFile): Promise<void> {
+  private deleteLayout(layout: LayoutFile): void {
     const modal = new ConfirmationModal(
       this.app,
       t('settings.modal.delete.title'),
@@ -331,7 +332,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
           try {
             await this.layoutRepo.deleteLayout(layout.name);
             new Notice(t('settings.message.deleted', { name: layout.name }));
-            this.refreshLayoutList();
+            void this.refreshLayoutList();
 
             // Recharger le service de layout si nécessaire
             if (this.plugin.layoutService) {
@@ -344,7 +345,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
         })();
       }
     );
-    
+
     modal.open();
   }
 
@@ -393,9 +394,9 @@ export class LayoutSettingsTab extends PluginSettingTab {
     // Créer et sauvegarder le layout final
     const finalLayout = await this.prepareFinalLayout(importedLayout);
     await this.layoutRepo.saveLayout(finalLayout);
-    
+
     UIErrorHandler.showSuccess(t('settings.message.imported', { name: finalLayout.name }));
-    this.refreshLayoutList();
+    void this.refreshLayoutList();
   }
 
   private async prepareFinalLayout(importedLayout: LayoutFile): Promise<LayoutFile> {

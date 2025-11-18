@@ -225,7 +225,7 @@ export class ViewSwitcher {
         () => {
           if (markdownView.file) {
             this.markAsManualChange(markdownView.file);
-            this.switchToBoardView(markdownView.file);
+            void this.switchToBoardView(markdownView.file);
           }
         }
       );
@@ -271,7 +271,7 @@ export class ViewSwitcher {
         () => {
           if (boardView.file) {
             this.markAsManualChange(boardView.file);
-            this.switchToMarkdownView(boardView.file);
+            void this.switchToMarkdownView(boardView.file);
           }
         }
       );
@@ -332,11 +332,11 @@ export class ViewSwitcher {
     modeButton.setAttribute('title', 'Passer en mode Source');
     
     // Gestionnaire de clic pour basculer vers le mode Source
-    modeButton.addEventListener('click', async () => {
+    modeButton.addEventListener('click', () => {
       if (!boardView.file) return;
-      
+
       this.markAsManualChange(boardView.file);
-      await this.switchToSourceMode(boardView.file);
+      void this.switchToSourceMode(boardView.file);
     });
   }
 

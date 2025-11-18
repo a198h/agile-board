@@ -21,7 +21,7 @@ export class FileSynchronizer {
     this.eventRefs.push(
       this.plugin.app.vault.on("modify", (file) => {
         if (file instanceof TFile) {
-          this.onFileModified(file);
+          void this.onFileModified(file);
         }
       })
     );
@@ -29,7 +29,7 @@ export class FileSynchronizer {
     // Écouter les changements de métadonnées (frontmatter)
     this.eventRefs.push(
       this.plugin.app.metadataCache.on("changed", (file) => {
-        this.onFileModified(file);
+        void this.onFileModified(file);
       })
     );
   }

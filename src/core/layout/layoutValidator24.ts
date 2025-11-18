@@ -2,7 +2,7 @@
 
 import { LayoutBox, LayoutFile } from "./layoutFileRepo";
 import { createContextLogger } from "../logger";
-import { GRID_CONSTANTS, VALIDATION_CONSTANTS } from '../constants';
+import { GRID_CONSTANTS } from '../constants';
 
 /**
  * Résultat de validation d'un layout

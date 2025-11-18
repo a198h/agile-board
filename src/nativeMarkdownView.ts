@@ -24,10 +24,13 @@ export class NativeMarkdownView {
   ) {
     this.component = new Component();
     this.markdownContent = this.section.lines.join('\n');
-    this.debouncedOnChange = debounce((content: string) => {
+    const debouncedFn = debounce((content: string) => {
       void this.onChange(content);
     }, 300);
-    
+    this.debouncedOnChange = (content: string) => {
+      void debouncedFn(content);
+    };
+
     this.initialize();
   }
 
@@ -35,7 +38,7 @@ export class NativeMarkdownView {
     this.setupContainers();
     this.createPreviewContainer();
     this.createEditorContainer();
-    this.renderPreview();
+    void this.renderPreview();
     this.setupEventListeners();
   }
 
@@ -158,12 +161,12 @@ export class NativeMarkdownView {
     });
 
     this.textArea.addEventListener('blur', () => {
-      this.exitEditMode();
+      void this.exitEditMode();
     });
 
     this.textArea.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        this.exitEditMode();
+        void this.exitEditMode();
       }
     });
   }

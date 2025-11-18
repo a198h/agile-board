@@ -21,11 +21,14 @@ export class EmbeddedMarkdownView {
     private onChange: (content: string) => void
   ) {
     this.component = new Component();
-    this.debouncedOnChange = debounce((content: string) => {
+    const debouncedFn = debounce((content: string) => {
       void this.onChange(content);
     }, 300);
-    
-    this.initialize();
+    this.debouncedOnChange = (content: string) => {
+      void debouncedFn(content);
+    };
+
+    void this.initialize();
   }
 
   private async initialize(): Promise<void> {
@@ -98,7 +101,7 @@ export class EmbeddedMarkdownView {
         // Forcer le mode Live Preview
         const view = this.tempLeaf.view;
         if (view && 'setState' in view) {
-          await (view as any).setState({
+          await (view as unknown as { setState: (state: unknown, result: unknown) => Promise<void> }).setState({
             mode: 'source',
             source: false // Live Preview
           }, {});
@@ -117,7 +120,7 @@ export class EmbeddedMarkdownView {
     // Écouter les changements du fichier temporaire
     const fileModifiedHandler = (file: TFile) => {
       if (file.path === this.tempFile?.path && !this.isUpdating) {
-        this.syncToSourceFile();
+        void this.syncToSourceFile();
       }
     };
 

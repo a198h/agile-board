@@ -1,6 +1,6 @@
 // src/sectionParser.ts
 import { TFile, App } from "obsidian";
-import { SectionInfo, SectionRegistry, Result, PluginError, ValidationResult } from "./types";
+import { SectionInfo, SectionRegistry, Result, PluginError } from "./types";
 
 // Re-export SectionInfo pour rétrocompatibilité
 export type { SectionInfo } from "./types";
@@ -11,7 +11,7 @@ export type { SectionInfo } from "./types";
  * @param error L'erreur à formater
  * @returns Message d'erreur formaté
  */
-function formatPluginError(error: PluginError): string {
+export function formatPluginError(error: PluginError): string {
   switch (error.type) {
     case 'LAYOUT_NOT_FOUND':
       return `Tableau '${error.layoutName}' introuvable`;
@@ -219,35 +219,6 @@ function createSectionInfo(
     end,
     lines: Object.freeze([...contentLines]) // Immutabilité profonde
   };
-}
-
-/**
- * Version sécurisée de createSectionInfo qui retourne un Result.
- * @param title Titre de la section
- * @param start Ligne de début
- * @param end Ligne de fin
- * @param allLines Toutes les lignes
- * @returns Result contenant la section ou l'erreur
- */
-function createSectionInfoSafe(
-  title: string,
-  start: number,
-  end: number,
-  allLines: readonly string[]
-): Result<SectionInfo> {
-  try {
-    const section = createSectionInfo(title, start, end, allLines);
-    return { success: true, data: section };
-  } catch (error) {
-    return {
-      success: false,
-      error: {
-        type: 'PARSING_ERROR',
-        details: error instanceof Error ? error.message : String(error),
-        lineNumber: start
-      }
-    };
-  }
 }
 
 /**
@@ -645,7 +616,7 @@ export async function parseHeadingsInFile(
         details: formatPluginError(parseResult.error),
         filePath: file.path
       };
-      throw error;
+      throw new Error(formatPluginError(error));
     }
     
     return parseResult.data;
@@ -662,7 +633,7 @@ export async function parseHeadingsInFile(
       filePath: file.path,
       operation: 'read'
     };
-    throw pluginError;
+    throw new Error(formatPluginError(pluginError));
   }
 }
 
@@ -719,7 +690,7 @@ export async function insertSectionIfMissing(
         errors: insertResult.error.type === 'VALIDATION_ERROR' ? insertResult.error.errors : [formatPluginError(insertResult.error)],
         modelName: title
       };
-      throw error;
+      throw new Error(formatPluginError(error));
     }
 
     // Écriture du contenu modifié
@@ -738,7 +709,7 @@ export async function insertSectionIfMissing(
       filePath: file.path,
       operation: 'insert-section'
     };
-    throw pluginError;
+    throw new Error(formatPluginError(pluginError));
   }
 }
 
@@ -779,7 +750,7 @@ export async function insertMissingSectionsInFile(
         type: 'VALIDATION_ERROR',
         errors: insertResult.error.type === 'VALIDATION_ERROR' ? insertResult.error.errors : [formatPluginError(insertResult.error)],
       };
-      throw error;
+      throw new Error(formatPluginError(error));
     }
 
     await app.vault.modify(file, insertResult.data);
@@ -796,7 +767,7 @@ export async function insertMissingSectionsInFile(
       filePath: file.path,
       operation: 'insert-sections-batch'
     };
-    throw pluginError;
+    throw new Error(formatPluginError(pluginError));
   }
 }
 

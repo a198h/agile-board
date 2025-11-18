@@ -10,7 +10,7 @@ import {
   PluginError,
   SectionInfo
 } from "./types";
-import { parseHeadingsInFile } from "./sectionParser";
+import { parseHeadingsInFile, formatPluginError } from "./sectionParser";
 import { MarkdownBox } from "./markdownBox";
 import { createContextLogger } from "./core/logger";
 import { ErrorHandler, ErrorSeverity } from "./core/errorHandler";
@@ -77,7 +77,7 @@ export class LayoutRenderer implements ILayoutRenderer {
         'LayoutRenderer.renderLayout',
         { severity: ErrorSeverity.WARNING }
       );
-      throw renderResult.error;
+      throw new Error(formatPluginError(renderResult.error));
     }
   }
 
@@ -252,11 +252,11 @@ export class LayoutRenderer implements ILayoutRenderer {
    * @param container Container principal
    * @param renderPlan Plan de rendu avec les erreurs
    */
-  private async renderErrorState(
+  private renderErrorState(
     view: MarkdownView,
     container: HTMLElement,
     renderPlan: RenderPlan
-  ): Promise<void> {
+  ): void {
     
     const errorOverlay = this.createErrorOverlay(
       view,
@@ -402,11 +402,11 @@ export class LayoutRenderer implements ILayoutRenderer {
    * @param sectionInfo Informations de la section
    * @returns Élément contenu
    */
-  private async createBlockContent(
+  private createBlockContent(
     view: MarkdownView,
     block: LayoutBlock,
     sectionInfo?: SectionInfo
-  ): Promise<HTMLElement> {
+  ): HTMLElement {
     const contentContainer = document.createElement('div');
     
     if (sectionInfo) {
@@ -589,7 +589,7 @@ export class LayoutRenderer implements ILayoutRenderer {
   ): Promise<void> {
     try {
       const content = await this.app.vault.read(file);
-      const { frontmatter, contentStart } = this.extractFrontmatter(content);
+      const { frontmatter } = this.extractFrontmatter(content);
       
       // Génération du nouveau contenu avec sections vides
       const sectionsContent = blocks
@@ -610,7 +610,7 @@ export class LayoutRenderer implements ILayoutRenderer {
         filePath: file.path,
         operation: 'reset-file'
       };
-      throw pluginError;
+      throw new Error(formatPluginError(pluginError));
     }
   }
 

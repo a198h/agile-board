@@ -491,7 +491,7 @@ export class LayoutEditor extends Modal {
   private clearAllBoxes(): void {
     if (this.layout.boxes.length === 0) return;
 
-    const confirmed = confirm(
+    const confirmed = window.confirm(
       t('editor.sidebar.actions.clearConfirm', { count: this.layout.boxes.length })
     );
     

@@ -1,7 +1,7 @@
 // src/core/errorHandler.ts
 import { Notice } from "obsidian";
 import { PluginError } from "../types";
-import { Logger, createContextLogger } from "./logger";
+import { createContextLogger } from "./logger";
 
 /**
  * Niveau de sévérité des erreurs.
@@ -229,21 +229,22 @@ export class ErrorHandler {
    */
   private static getUserFriendlyMessage(error: PluginError): string {
     switch (error.type) {
-      case 'LAYOUT_NOT_FOUND':
-        const suggestions = error.availableLayouts?.length 
+      case 'LAYOUT_NOT_FOUND': {
+        const suggestions = error.availableLayouts?.length
           ? ` Modèles disponibles : ${error.availableLayouts.join(', ')}`
           : '';
         return `Le modèle "${error.layoutName}" n'existe pas. Vérifiez le nom dans le frontmatter.${suggestions}`;
-      
+      }
+
       case 'INVALID_LAYOUT_FORMAT':
         return 'Les fichiers de tableau contiennent des erreurs de format. Vérifiez la syntaxe JSON.';
-      
+
       case 'FILE_SYSTEM_ERROR':
         return 'Impossible d\'accéder au fichier. Vérifiez les permissions et l\'emplacement.';
-      
+
       case 'VALIDATION_ERROR':
         return 'Le modèle de tableau contient des erreurs de configuration. Consultez la console pour plus de détails.';
-      
+
       case 'SECTION_MISSING':
         return `La section "${error.sectionTitle}" est requise mais introuvable. Ajoutez-la au document ou utilisez l'outil de réinitialisation.`;
 

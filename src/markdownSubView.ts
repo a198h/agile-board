@@ -1,5 +1,5 @@
 // src/markdownSubView.ts
-import { App, TFile, Component, MarkdownRenderer, Editor, MarkdownView } from "obsidian";
+import { App, TFile, Component, MarkdownRenderer } from "obsidian";
 import { SectionInfo } from "./sectionParser";
 import { debounce } from "ts-debounce";
 import { t } from "./i18n";
@@ -26,33 +26,36 @@ export class MarkdownSubView {
     this.markdownContent = this.section.lines.join('\n');
 
     // Débouncer les changements pour éviter les sauvegardes trop fréquentes
-    this.debouncedOnChange = debounce((content: string) => {
+    const debouncedFn = debounce((content: string) => {
       void this.onChange(content);
     }, 300);
-    
+    this.debouncedOnChange = (content: string) => {
+      void debouncedFn(content);
+    };
+
     this.render();
     this.setupEventListeners();
   }
 
-  private async render(): Promise<void> {
+  private render(): void {
     if (this.isRendering) return;
     this.isRendering = true;
 
     try {
       // Vider le contenu
       this.contentEl.empty();
-      
+
       // Créer les deux modes : preview et édition
       this.createPreviewMode();
       this.createEditMode();
-      
+
       // Afficher le mode approprié
       if (this.isEditing) {
         this.showEditMode();
       } else {
         this.showPreviewMode();
       }
-      
+
     } finally {
       this.isRendering = false;
     }
@@ -66,8 +69,8 @@ export class MarkdownSubView {
       overflow: auto;
       cursor: text;
     `;
-    
-    this.renderPreview();
+
+    void this.renderPreview();
   }
   
   private createEditMode(): void {
@@ -140,7 +143,7 @@ export class MarkdownSubView {
     
     const textNodes: Text[] = [];
     let node;
-    while (node = walker.nextNode()) {
+    while ((node = walker.nextNode())) {
       if (node.textContent?.includes('![[')) {
         textNodes.push(node as Text);
       }
@@ -196,7 +199,7 @@ export class MarkdownSubView {
       // Ajouter un clic pour ouvrir l'image
       img.addEventListener('click', (e) => {
         e.stopPropagation();
-        this.app.workspace.openLinkText(imageName, this.file.path);
+        void this.app.workspace.openLinkText(imageName, this.file.path);
       });
       
       container.appendChild(img);
@@ -229,7 +232,7 @@ export class MarkdownSubView {
     
     const textNodes: Text[] = [];
     let node;
-    while (node = walker.nextNode()) {
+    while ((node = walker.nextNode())) {
       if (node.textContent?.includes('[[') && !node.textContent?.includes('![[')) {
         textNodes.push(node as Text);
       }
@@ -278,7 +281,7 @@ export class MarkdownSubView {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      this.app.workspace.openLinkText(linkText, this.file.path);
+      void this.app.workspace.openLinkText(linkText, this.file.path);
     });
     
     return link;
@@ -450,7 +453,7 @@ export class MarkdownSubView {
     // Détecter les blocs de citation
     const blockquoteMatch = currentLine.match(/^(\s*)(>)\s+(.*)$/);
     if (blockquoteMatch) {
-      const [, indent, quote, content] = blockquoteMatch;
+      const [, indent, , content] = blockquoteMatch;
       
       if (!content.trim()) {
         event.preventDefault();
