@@ -11,7 +11,7 @@ export type { SectionInfo } from "./types";
  * @param error L'erreur à formater
  * @returns Message d'erreur formaté
  */
-function formatPluginError(error: PluginError): string {
+export function formatPluginError(error: PluginError): string {
   switch (error.type) {
     case 'LAYOUT_NOT_FOUND':
       return `Tableau '${error.layoutName}' introuvable`;
@@ -645,7 +645,7 @@ export async function parseHeadingsInFile(
         details: formatPluginError(parseResult.error),
         filePath: file.path
       };
-      throw error;
+      throw new Error(formatPluginError(error));
     }
     
     return parseResult.data;
@@ -662,7 +662,7 @@ export async function parseHeadingsInFile(
       filePath: file.path,
       operation: 'read'
     };
-    throw pluginError;
+    throw new Error(formatPluginError(pluginError));
   }
 }
 
@@ -719,7 +719,7 @@ export async function insertSectionIfMissing(
         errors: insertResult.error.type === 'VALIDATION_ERROR' ? insertResult.error.errors : [formatPluginError(insertResult.error)],
         modelName: title
       };
-      throw error;
+      throw new Error(formatPluginError(error));
     }
 
     // Écriture du contenu modifié
@@ -738,7 +738,7 @@ export async function insertSectionIfMissing(
       filePath: file.path,
       operation: 'insert-section'
     };
-    throw pluginError;
+    throw new Error(formatPluginError(pluginError));
   }
 }
 
@@ -779,7 +779,7 @@ export async function insertMissingSectionsInFile(
         type: 'VALIDATION_ERROR',
         errors: insertResult.error.type === 'VALIDATION_ERROR' ? insertResult.error.errors : [formatPluginError(insertResult.error)],
       };
-      throw error;
+      throw new Error(formatPluginError(error));
     }
 
     await app.vault.modify(file, insertResult.data);
@@ -796,7 +796,7 @@ export async function insertMissingSectionsInFile(
       filePath: file.path,
       operation: 'insert-sections-batch'
     };
-    throw pluginError;
+    throw new Error(formatPluginError(pluginError));
   }
 }
 

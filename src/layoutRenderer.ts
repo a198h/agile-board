@@ -10,7 +10,7 @@ import {
   PluginError,
   SectionInfo
 } from "./types";
-import { parseHeadingsInFile } from "./sectionParser";
+import { parseHeadingsInFile, formatPluginError } from "./sectionParser";
 import { MarkdownBox } from "./markdownBox";
 import { createContextLogger } from "./core/logger";
 import { ErrorHandler, ErrorSeverity } from "./core/errorHandler";
@@ -77,7 +77,7 @@ export class LayoutRenderer implements ILayoutRenderer {
         'LayoutRenderer.renderLayout',
         { severity: ErrorSeverity.WARNING }
       );
-      throw renderResult.error;
+      throw new Error(formatPluginError(renderResult.error));
     }
   }
 
@@ -610,7 +610,7 @@ export class LayoutRenderer implements ILayoutRenderer {
         filePath: file.path,
         operation: 'reset-file'
       };
-      throw pluginError;
+      throw new Error(formatPluginError(pluginError));
     }
   }
 
