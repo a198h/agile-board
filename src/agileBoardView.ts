@@ -1,6 +1,6 @@
 // src/agileBoardView.ts
 import { FileView, MarkdownView, TFile, WorkspaceLeaf } from "obsidian";
-import { LayoutBlock, LayoutModel } from "./types";
+import { LayoutModel } from "./types";
 import { SectionInfo, parseHeadingsInFile } from "./sectionParser";
 import { SimpleMarkdownFrame } from "./simpleMarkdownFrame";
 import { t } from "./i18n";

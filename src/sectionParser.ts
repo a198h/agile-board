@@ -1,6 +1,6 @@
 // src/sectionParser.ts
 import { TFile, App } from "obsidian";
-import { SectionInfo, SectionRegistry, Result, PluginError, ValidationResult } from "./types";
+import { SectionInfo, SectionRegistry, Result, PluginError } from "./types";
 
 // Re-export SectionInfo pour rétrocompatibilité
 export type { SectionInfo } from "./types";
@@ -219,35 +219,6 @@ function createSectionInfo(
     end,
     lines: Object.freeze([...contentLines]) // Immutabilité profonde
   };
-}
-
-/**
- * Version sécurisée de createSectionInfo qui retourne un Result.
- * @param title Titre de la section
- * @param start Ligne de début
- * @param end Ligne de fin
- * @param allLines Toutes les lignes
- * @returns Result contenant la section ou l'erreur
- */
-function createSectionInfoSafe(
-  title: string,
-  start: number,
-  end: number,
-  allLines: readonly string[]
-): Result<SectionInfo> {
-  try {
-    const section = createSectionInfo(title, start, end, allLines);
-    return { success: true, data: section };
-  } catch (error) {
-    return {
-      success: false,
-      error: {
-        type: 'PARSING_ERROR',
-        details: error instanceof Error ? error.message : String(error),
-        lineNumber: start
-      }
-    };
-  }
 }
 
 /**

@@ -589,7 +589,7 @@ export class LayoutRenderer implements ILayoutRenderer {
   ): Promise<void> {
     try {
       const content = await this.app.vault.read(file);
-      const { frontmatter, contentStart } = this.extractFrontmatter(content);
+      const { frontmatter } = this.extractFrontmatter(content);
       
       // Génération du nouveau contenu avec sections vides
       const sectionsContent = blocks

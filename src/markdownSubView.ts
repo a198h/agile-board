@@ -1,5 +1,5 @@
 // src/markdownSubView.ts
-import { App, TFile, Component, MarkdownRenderer, Editor, MarkdownView } from "obsidian";
+import { App, TFile, Component, MarkdownRenderer } from "obsidian";
 import { SectionInfo } from "./sectionParser";
 import { debounce } from "ts-debounce";
 import { t } from "./i18n";
@@ -453,7 +453,7 @@ export class MarkdownSubView {
     // Détecter les blocs de citation
     const blockquoteMatch = currentLine.match(/^(\s*)(>)\s+(.*)$/);
     if (blockquoteMatch) {
-      const [, indent, quote, content] = blockquoteMatch;
+      const [, indent, , content] = blockquoteMatch;
       
       if (!content.trim()) {
         event.preventDefault();

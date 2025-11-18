@@ -1,6 +1,6 @@
 // src/core/layout/layoutFileRepo.ts
 
-import { Plugin, FileSystemAdapter, Notice } from "obsidian";
+import { Plugin, FileSystemAdapter } from "obsidian";
 import * as fs from "fs/promises";
 import * as fsSync from "fs";
 import * as path from "path";

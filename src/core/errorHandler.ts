@@ -1,7 +1,7 @@
 // src/core/errorHandler.ts
 import { Notice } from "obsidian";
 import { PluginError } from "../types";
-import { Logger, createContextLogger } from "./logger";
+import { createContextLogger } from "./logger";
 
 /**
  * Niveau de sévérité des erreurs.

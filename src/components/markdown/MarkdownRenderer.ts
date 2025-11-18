@@ -1,5 +1,5 @@
 // src/components/markdown/MarkdownRenderer.ts
-import { App, TFile, Component, MarkdownRenderer as ObsidianMarkdownRenderer, MarkdownRenderChild } from "obsidian";
+import { App, TFile, Component, MarkdownRenderer as ObsidianMarkdownRenderer } from "obsidian";
 import { SectionInfo } from "../../types";
 import { BaseUIComponent } from "../../core/baseComponent";
 import { setHtmlContent } from "../../core/dom";
@@ -111,7 +111,7 @@ export class MarkdownRenderer extends BaseUIComponent {
     }
 
     // Séparer le chemin du fichier et le fragment (#View pour les bases)
-    const [filePath, fragment] = linkPath.split('#');
+    const [filePath] = linkPath.split('#');
 
     // Résoudre le fichier cible en utilisant seulement le chemin sans fragment
     const resolvedFile = this.app.metadataCache.getFirstLinkpathDest(

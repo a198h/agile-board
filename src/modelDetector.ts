@@ -169,13 +169,9 @@ export class ModelDetector implements IModelDetector {
       return;
     }
 
-    const resetResults = filesWithManualChanges.map(filePath => 
+    filesWithManualChanges.forEach(filePath =>
       this.updateFileState(filePath, { isManuallyChanged: false })
     );
-    
-    const successCount = resetResults.filter(r => r.success).length;
-    const failureCount = resetResults.length - successCount;
-    
   }
 
   /**

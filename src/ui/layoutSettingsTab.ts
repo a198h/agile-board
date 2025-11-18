@@ -5,9 +5,8 @@ import { LayoutFileRepo, LayoutFile } from "../core/layout/layoutFileRepo";
 import { LayoutValidator24 } from "../core/layout/layoutValidator24";
 import { LayoutEditor, LayoutEditorCallbacks } from "./layoutEditor";
 import { createContextLogger } from "../core/logger";
-import { TIMING_CONSTANTS, VALIDATION_CONSTANTS, generateBoxId } from "../core/constants";
+import { VALIDATION_CONSTANTS, generateBoxId } from "../core/constants";
 import { UIErrorHandler } from "./utils/ErrorHandler";
-import { NameGenerator } from "../core/utils/NameGenerator";
 import AgileBoardPlugin from "../main";
 import { t } from "../i18n";
 
