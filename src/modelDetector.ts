@@ -123,11 +123,7 @@ export class ModelDetector implements IModelDetector {
    * @param filePath Chemin du fichier modifié manuellement
    */
   public markUserManualChange(filePath: string): void {
-    const result = this.updateFileState(filePath, { isManuallyChanged: true });
-    
-    if (result.success) {
-    } else {
-    }
+    this.updateFileState(filePath, { isManuallyChanged: true });
   }
 
   /**
@@ -204,10 +200,9 @@ export class ModelDetector implements IModelDetector {
 
     try {
       const processingResult = this.processFileOpen(file);
-      
+
       if (processingResult.success) {
         await this.processFileForAutoSwitch(file, processingResult.data);
-      } else {
       }
     } catch (error) {
       this.logger.error(`Exception lors du traitement de l'ouverture du fichier ${file.path}:`, error);
@@ -228,9 +223,6 @@ export class ModelDetector implements IModelDetector {
     // Calculer si le flag manuel doit être réinitialisé
     const timeSinceLastOpen = now - currentState.lastProcessed;
     const shouldResetManualFlag = timeSinceLastOpen > PLUGIN_CONSTANTS.TIMING.FILE_REOPEN_THRESHOLD;
-    
-    if (shouldResetManualFlag && currentState.isManuallyChanged) {
-    }
 
     const newState: FileDetectionState = {
       filePath: file.path,
@@ -352,14 +344,11 @@ export class ModelDetector implements IModelDetector {
    */
   private async processFileForAutoSwitch(file: TFile, state: FileDetectionState): Promise<void> {
     const switchDecision = await this.evaluateAutoSwitchDecision(file, state);
-    
+
     if (!switchDecision.shouldSwitch) {
-      if (switchDecision.reason) {
-      }
       return;
     }
 
-    
     // Délai pour stabiliser la vue avant basculement
     this.scheduleAutoSwitch(file, state.modelName!);
   }
@@ -421,11 +410,7 @@ export class ModelDetector implements IModelDetector {
    * @param modelName Nom du modèle à appliquer
    */
   private async attemptAutoSwitch(file: TFile, modelName: string): Promise<void> {
-    const switchResult = await this.executeSafeAutoSwitch(file, modelName);
-    
-    if (switchResult.success) {
-    } else {
-    }
+    await this.executeSafeAutoSwitch(file, modelName);
   }
 
   /**
