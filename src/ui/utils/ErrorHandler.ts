@@ -12,7 +12,7 @@ export class UIErrorHandler {
     /**
      * Affiche une erreur à l'utilisateur et la log
      */
-    static showError(message: string, error?: Error | unknown, duration: number = TIMING_CONSTANTS.IMPORT_TIMEOUT_MS): void {
+    static showError(message: string, error?: unknown, duration: number = TIMING_CONSTANTS.IMPORT_TIMEOUT_MS): void {
         new Notice(`❌ ${message}`, duration);
         
         if (error) {
@@ -50,7 +50,7 @@ export class UIErrorHandler {
     /**
      * Gère une erreur lors d'une opération sur les layouts
      */
-    static handleLayoutError(operation: string, layoutName: string, error: Error | unknown): void {
+    static handleLayoutError(operation: string, layoutName: string, error: unknown): void {
         const message = `Erreur lors de ${operation} du tableau "${layoutName}"`;
         this.showError(message, error);
     }
