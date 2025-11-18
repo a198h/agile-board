@@ -204,12 +204,14 @@ export class LayoutEditor extends Modal {
    */
   private setupBoxEventListeners(boxState: BoxState): void {
     boxState.element.addEventListener('mousedown', (e) => {
+      // Sélectionner la box AVANT de démarrer le drag pour que handleMoveDrag utilise la bonne box
+      this.selectionManager.selectBox(boxState);
       this.dragDropHandler.startBoxDrag(e, boxState);
     });
-    
+
     boxState.element.addEventListener('click', (e) => {
       e.stopPropagation();
-      this.selectionManager.selectBox(boxState);
+      // La sélection est déjà faite dans mousedown
     });
 
     // Gestionnaires pour les poignées de redimensionnement
@@ -217,8 +219,10 @@ export class LayoutEditor extends Modal {
     handles.forEach((handle) => {
       const handleEl = handle as HTMLElement;
       const handleType = handleEl.className.split(' ')[1].replace('resize-', '');
-      
+
       handleEl.addEventListener('mousedown', (e) => {
+        // Sélectionner la box AVANT de démarrer le resize pour que handleResizeDrag utilise la bonne box
+        this.selectionManager.selectBox(boxState);
         this.dragDropHandler.startResizeDrag(e, handleType, boxState);
       });
     });
@@ -312,10 +316,17 @@ export class LayoutEditor extends Modal {
       this.boxManager.updateBoxPosition(selectedBox.box.id, newPos.x, newPos.y, false);
       selectedBox.box = movedBox;
       this.lastValidBoxState = { x: newPos.x, y: newPos.y, w: movedBox.w, h: movedBox.h };
-    } else if (this.lastValidBoxState) {
-      // Collision - revenir à la dernière position valide
-      this.boxManager.updateBoxPosition(selectedBox.box.id, this.lastValidBoxState.x, this.lastValidBoxState.y, true);
+
+      // Mettre à jour this.layout en temps réel pour que les prochaines vérifications soient correctes
+      this.layout = {
+        ...this.layout,
+        boxes: this.layout.boxes.map(b =>
+          b.id === selectedBox.box.id ? selectedBox.box : b
+        )
+      };
     }
+    // Si collision: ne rien faire, rester à la dernière position valide
+    // Pas besoin d'appeler updateBoxPosition car la box est déjà à lastValidBoxState
   }
 
   private handleResizeDrag(deltaX: number, deltaY: number): void {
@@ -345,19 +356,26 @@ export class LayoutEditor extends Modal {
       );
       selectedBox.box = resizedBox;
       this.lastValidBoxState = { x: newDimensions.x, y: newDimensions.y, w: newDimensions.w, h: newDimensions.h };
+
+      // Mettre à jour this.layout en temps réel pour que les prochaines vérifications soient correctes
+      this.layout = {
+        ...this.layout,
+        boxes: this.layout.boxes.map(b =>
+          b.id === selectedBox.box.id ? selectedBox.box : b
+        )
+      };
+      this.dragDropHandler.showResizePreview(newDimensions.x, newDimensions.y, newDimensions.w, newDimensions.h);
     } else if (this.lastValidBoxState) {
-      // Collision - revenir à la dernière taille/position valide
-      this.boxManager.updateBoxSizeAndPosition(
-        selectedBox.box.id,
+      // Collision - afficher la preview à la dernière taille valide
+      this.dragDropHandler.showResizePreview(
         this.lastValidBoxState.x,
         this.lastValidBoxState.y,
         this.lastValidBoxState.w,
-        this.lastValidBoxState.h,
-        true
+        this.lastValidBoxState.h
       );
     }
-
-    this.dragDropHandler.showResizePreview(newDimensions.x, newDimensions.y, newDimensions.w, newDimensions.h);
+    // Si collision: ne rien faire, rester à la dernière position/taille valide
+    // Pas besoin d'appeler updateBoxSizeAndPosition car la box est déjà à lastValidBoxState
   }
 
   /**
@@ -401,18 +419,9 @@ export class LayoutEditor extends Modal {
     const selectedBox = this.selectionManager.getSelectedBox();
     if (!selectedBox) return;
 
-    // Vérifier les collisions avant de finaliser
-    const collisionResult = this.validator.wouldCollide(selectedBox.box, this.layout.boxes, selectedBox.box.id);
-
-    if (collisionResult.hasCollisions && this.lastValidBoxState) {
-      // Restaurer la dernière position valide
-      selectedBox.box = {
-        ...selectedBox.box,
-        x: this.lastValidBoxState.x,
-        y: this.lastValidBoxState.y
-      };
-      this.boxManager.updateBoxPosition(selectedBox.box.id, this.lastValidBoxState.x, this.lastValidBoxState.y, false);
-    }
+    // selectedBox.box est déjà à une position valide garantie par handleMoveDrag()
+    // Pas besoin de re-vérifier les collisions ici car this.layout.boxes n'est pas à jour
+    // pendant le drag et donnerait un faux négatif
 
     this.updateLayoutFromBox(selectedBox);
     selectedBox.isDragging = false;
@@ -423,29 +432,11 @@ export class LayoutEditor extends Modal {
     const selectedBox = this.selectionManager.getSelectedBox();
     if (!selectedBox) return;
 
-    const collisionResult = this.validator.wouldCollide(selectedBox.box, this.layout.boxes, selectedBox.box.id);
+    // selectedBox.box est déjà à une taille/position valide garantie par handleResizeDrag()
+    // Pas besoin de re-vérifier les collisions ici car this.layout.boxes n'est pas à jour
+    // pendant le drag et donnerait un faux négatif
 
-    if (collisionResult.hasCollisions && this.lastValidBoxState) {
-      // Restaurer la dernière taille/position valide
-      selectedBox.box = {
-        ...selectedBox.box,
-        x: this.lastValidBoxState.x,
-        y: this.lastValidBoxState.y,
-        w: this.lastValidBoxState.w,
-        h: this.lastValidBoxState.h
-      };
-      this.boxManager.updateBoxSizeAndPosition(
-        selectedBox.box.id,
-        this.lastValidBoxState.x,
-        this.lastValidBoxState.y,
-        this.lastValidBoxState.w,
-        this.lastValidBoxState.h,
-        false
-      );
-    } else {
-      this.updateLayoutFromBox(selectedBox);
-    }
-
+    this.updateLayoutFromBox(selectedBox);
     this.dragDropHandler.hideResizePreview();
     selectedBox.isResizing = false;
     this.lastValidBoxState = null; // Reset
