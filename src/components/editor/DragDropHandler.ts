@@ -10,6 +10,7 @@ import { GridCanvas } from "./GridCanvas";
  */
 interface DragState {
   isActive: boolean;
+  isPending: boolean; // true = mousedown mais pas encore de mouvement significatif
   startX: number;
   startY: number;
   gridStartX: number;
@@ -25,9 +26,11 @@ interface DragState {
 export class DragDropHandler {
   private readonly validator = new LayoutValidator24();
   private readonly GRID_SIZE = GRID_CONSTANTS.SIZE;
-  
+  private readonly DRAG_THRESHOLD = 5; // pixels - minimum pour démarrer un drag réel
+
   private dragState: DragState = {
     isActive: false,
+    isPending: false,
     startX: 0,
     startY: 0,
     gridStartX: 0,
@@ -38,6 +41,7 @@ export class DragDropHandler {
   private previewBox: HTMLElement | null = null;
   private resizePreview: HTMLElement | null = null;
   private originalBoxState: LayoutBox | null = null;
+  private pendingBoxState: BoxState | null = null;
 
   constructor(
     private gridCanvas: GridCanvas,
@@ -65,6 +69,7 @@ export class DragDropHandler {
 
     this.dragState = {
       isActive: true,
+      isPending: false,
       startX: e.clientX,
       startY: e.clientY,
       gridStartX: gridPos.x,
@@ -84,9 +89,12 @@ export class DragDropHandler {
     if (!gridPos) return;
 
     this.originalBoxState = { ...boxState.box };
+    this.pendingBoxState = boxState;
 
+    // Ne pas activer le drag immédiatement - attendre un mouvement significatif
     this.dragState = {
-      isActive: true,
+      isActive: false,
+      isPending: true,
       startX: e.clientX,
       startY: e.clientY,
       gridStartX: gridPos.x,
@@ -94,8 +102,6 @@ export class DragDropHandler {
       type: 'move'
     };
 
-    boxState.isDragging = true;
-    this.onDragStart('move', boxState);
     e.stopPropagation();
     e.preventDefault();
   }
@@ -111,6 +117,7 @@ export class DragDropHandler {
 
     this.dragState = {
       isActive: true,
+      isPending: false,
       startX: e.clientX,
       startY: e.clientY,
       gridStartX: gridPos.x,
@@ -129,6 +136,22 @@ export class DragDropHandler {
    * Gestionnaire de mouvement de souris.
    */
   private onMouseMove(e: MouseEvent): void {
+    // Si drag en attente (mousedown mais pas encore bougé assez)
+    if (this.dragState.isPending && !this.dragState.isActive) {
+      const deltaPixelsX = Math.abs(e.clientX - this.dragState.startX);
+      const deltaPixelsY = Math.abs(e.clientY - this.dragState.startY);
+      const distance = Math.sqrt(deltaPixelsX * deltaPixelsX + deltaPixelsY * deltaPixelsY);
+
+      // Threshold dépassé - activer le drag réel
+      if (distance >= this.DRAG_THRESHOLD && this.pendingBoxState) {
+        this.dragState.isActive = true;
+        this.dragState.isPending = false;
+        this.pendingBoxState.isDragging = true;
+        this.onDragStart('move', this.pendingBoxState);
+      }
+      return;
+    }
+
     if (!this.dragState.isActive) return;
 
     const currentGridPos = this.gridCanvas.screenToGrid(e.clientX, e.clientY);
@@ -144,6 +167,12 @@ export class DragDropHandler {
    * Gestionnaire de relâchement de souris.
    */
   private onMouseUp(e: MouseEvent): void {
+    // Si c'était juste un clic (pas de drag réel)
+    if (this.dragState.isPending && !this.dragState.isActive) {
+      this.resetDragState();
+      return;
+    }
+
     if (!this.dragState.isActive) return;
 
     this.onDragEnd(this.dragState.type);
@@ -355,13 +384,15 @@ export class DragDropHandler {
    */
   private resetDragState(): void {
     this.dragState.isActive = false;
+    this.dragState.isPending = false;
     this.originalBoxState = null;
-    
+    this.pendingBoxState = null;
+
     if (this.previewBox) {
       this.previewBox.remove();
       this.previewBox = null;
     }
-    
+
     this.hideResizePreview();
   }
 

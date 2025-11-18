@@ -166,7 +166,7 @@ export class EmbedRenderer {
   private static attachClickHandler(embedEl: HTMLElement, config: EmbedConfig): void {
     embedEl.addEventListener('click', (e) => {
       e.preventDefault();
-      void config.app.workspace.openLinkText(config.fileName, config.sourcePath);
+      config.app.workspace.openLinkText(config.fileName, config.sourcePath);
     });
   }
 
@@ -175,9 +175,7 @@ export class EmbedRenderer {
    */
   private static loadContentLater(embedEl: HTMLElement, config: EmbedConfig): void {
     // Utiliser requestIdleCallback si disponible, sinon setTimeout
-    const loadFn = () => {
-      this.loadContentBackground(embedEl, config);
-    };
+    const loadFn = () => this.loadContentBackground(embedEl, config);
 
     if ('requestIdleCallback' in window) {
       requestIdleCallback(loadFn);

@@ -16,7 +16,7 @@ import { Sidebar } from "../components/editor/Sidebar";
  * Interface pour les interactions avec l'éditeur
  */
 export interface LayoutEditorCallbacks {
-  onSave: (layout: LayoutFile) => void;
+  onSave: (layout: LayoutFile) => void | Promise<void>;
   onCancel: () => void;
 }
 
@@ -28,13 +28,16 @@ export class LayoutEditor extends Modal {
   private readonly validator = new LayoutValidator24();
   private layout: LayoutFile;
   private readonly callbacks: LayoutEditorCallbacks;
-  
+
   // Composants modulaires
   private gridCanvas!: GridCanvas;
   private boxManager!: BoxManager;
   private dragDropHandler!: DragDropHandler;
   private selectionManager!: SelectionManager;
   private sidebar!: Sidebar;
+
+  // Système anti-collision : dernière position/taille valide
+  private lastValidBoxState: { x: number; y: number; w: number; h: number } | null = null;
 
   constructor(
     app: App,
@@ -201,12 +204,14 @@ export class LayoutEditor extends Modal {
    */
   private setupBoxEventListeners(boxState: BoxState): void {
     boxState.element.addEventListener('mousedown', (e) => {
+      // Sélectionner la box AVANT de démarrer le drag pour que handleMoveDrag utilise la bonne box
+      this.selectionManager.selectBox(boxState);
       this.dragDropHandler.startBoxDrag(e, boxState);
     });
-    
+
     boxState.element.addEventListener('click', (e) => {
       e.stopPropagation();
-      this.selectionManager.selectBox(boxState);
+      // La sélection est déjà faite dans mousedown
     });
 
     // Gestionnaires pour les poignées de redimensionnement
@@ -214,8 +219,10 @@ export class LayoutEditor extends Modal {
     handles.forEach((handle) => {
       const handleEl = handle as HTMLElement;
       const handleType = handleEl.className.split(' ')[1].replace('resize-', '');
-      
+
       handleEl.addEventListener('mousedown', (e) => {
+        // Sélectionner la box AVANT de démarrer le resize pour que handleResizeDrag utilise la bonne box
+        this.selectionManager.selectBox(boxState);
         this.dragDropHandler.startResizeDrag(e, handleType, boxState);
       });
     });
@@ -242,9 +249,17 @@ export class LayoutEditor extends Modal {
   /**
    * Gestionnaires des événements drag & drop.
    */
-  private handleDragStart(type: 'move' | 'resize' | 'create', box?: BoxState, handle?: string): void {
+  private handleDragStart(type: 'move' | 'resize' | 'create', box?: BoxState): void {
     if (type === 'create') {
       this.dragDropHandler.createPreviewBox();
+    } else if ((type === 'move' || type === 'resize') && box) {
+      // Sauvegarder la position/taille valide initiale
+      this.lastValidBoxState = {
+        x: box.box.x,
+        y: box.box.y,
+        w: box.box.w,
+        h: box.box.h
+      };
     }
   }
 
@@ -293,13 +308,25 @@ export class LayoutEditor extends Modal {
 
     const newPos = this.dragDropHandler.calculateMovePosition(originalBox, deltaX, deltaY);
     const movedBox = { ...originalBox, x: newPos.x, y: newPos.y };
-    
+
     const collisionResult = this.validator.wouldCollide(movedBox, this.layout.boxes, originalBox.id);
-    
+
     if (!collisionResult.hasCollisions) {
-      this.boxManager.updateBoxPosition(selectedBox.box.id, newPos.x, newPos.y);
+      // Mouvement valide - appliquer et sauvegarder
+      this.boxManager.updateBoxPosition(selectedBox.box.id, newPos.x, newPos.y, false);
       selectedBox.box = movedBox;
+      this.lastValidBoxState = { x: newPos.x, y: newPos.y, w: movedBox.w, h: movedBox.h };
+
+      // Mettre à jour this.layout en temps réel pour que les prochaines vérifications soient correctes
+      this.layout = {
+        ...this.layout,
+        boxes: this.layout.boxes.map(b =>
+          b.id === selectedBox.box.id ? selectedBox.box : b
+        )
+      };
     }
+    // Si collision: ne rien faire, rester à la dernière position valide
+    // Pas besoin d'appeler updateBoxPosition car la box est déjà à lastValidBoxState
   }
 
   private handleResizeDrag(deltaX: number, deltaY: number): void {
@@ -314,20 +341,41 @@ export class LayoutEditor extends Modal {
 
     const newDimensions = this.dragDropHandler.calculateResizeDimensions(originalBox, deltaX, deltaY, handle);
     const resizedBox = { ...originalBox, ...newDimensions };
-    
+
     const collisionResult = this.validator.wouldCollide(resizedBox, this.layout.boxes, originalBox.id);
-    
-    this.boxManager.updateBoxSizeAndPosition(
-      selectedBox.box.id, 
-      newDimensions.x, 
-      newDimensions.y, 
-      newDimensions.w, 
-      newDimensions.h, 
-      collisionResult.hasCollisions
-    );
-    
-    this.dragDropHandler.showResizePreview(newDimensions.x, newDimensions.y, newDimensions.w, newDimensions.h);
-    selectedBox.box = resizedBox;
+
+    if (!collisionResult.hasCollisions) {
+      // Resize valide - appliquer et sauvegarder
+      this.boxManager.updateBoxSizeAndPosition(
+        selectedBox.box.id,
+        newDimensions.x,
+        newDimensions.y,
+        newDimensions.w,
+        newDimensions.h,
+        false
+      );
+      selectedBox.box = resizedBox;
+      this.lastValidBoxState = { x: newDimensions.x, y: newDimensions.y, w: newDimensions.w, h: newDimensions.h };
+
+      // Mettre à jour this.layout en temps réel pour que les prochaines vérifications soient correctes
+      this.layout = {
+        ...this.layout,
+        boxes: this.layout.boxes.map(b =>
+          b.id === selectedBox.box.id ? selectedBox.box : b
+        )
+      };
+      this.dragDropHandler.showResizePreview(newDimensions.x, newDimensions.y, newDimensions.w, newDimensions.h);
+    } else if (this.lastValidBoxState) {
+      // Collision - afficher la preview à la dernière taille valide
+      this.dragDropHandler.showResizePreview(
+        this.lastValidBoxState.x,
+        this.lastValidBoxState.y,
+        this.lastValidBoxState.w,
+        this.lastValidBoxState.h
+      );
+    }
+    // Si collision: ne rien faire, rester à la dernière position/taille valide
+    // Pas besoin d'appeler updateBoxSizeAndPosition car la box est déjà à lastValidBoxState
   }
 
   /**
@@ -371,35 +419,27 @@ export class LayoutEditor extends Modal {
     const selectedBox = this.selectionManager.getSelectedBox();
     if (!selectedBox) return;
 
+    // selectedBox.box est déjà à une position valide garantie par handleMoveDrag()
+    // Pas besoin de re-vérifier les collisions ici car this.layout.boxes n'est pas à jour
+    // pendant le drag et donnerait un faux négatif
+
     this.updateLayoutFromBox(selectedBox);
     selectedBox.isDragging = false;
+    this.lastValidBoxState = null; // Reset
   }
 
   private finishResizeDrag(): void {
     const selectedBox = this.selectionManager.getSelectedBox();
     if (!selectedBox) return;
 
-    const collisionResult = this.validator.wouldCollide(selectedBox.box, this.layout.boxes, selectedBox.box.id);
-    
-    if (collisionResult.hasCollisions) {
-      // Restaurer l'état original
-      const originalBox = this.dragDropHandler.getOriginalBoxState();
-      if (originalBox) {
-        selectedBox.box = originalBox;
-        this.boxManager.updateBoxSizeAndPosition(
-          selectedBox.box.id,
-          originalBox.x,
-          originalBox.y,
-          originalBox.w,
-          originalBox.h
-        );
-      }
-    } else {
-      this.updateLayoutFromBox(selectedBox);
-    }
+    // selectedBox.box est déjà à une taille/position valide garantie par handleResizeDrag()
+    // Pas besoin de re-vérifier les collisions ici car this.layout.boxes n'est pas à jour
+    // pendant le drag et donnerait un faux négatif
 
+    this.updateLayoutFromBox(selectedBox);
     this.dragDropHandler.hideResizePreview();
     selectedBox.isResizing = false;
+    this.lastValidBoxState = null; // Reset
   }
 
   /**
@@ -514,16 +554,16 @@ export class LayoutEditor extends Modal {
   /**
    * Sauvegarde du layout.
    */
-  private saveLayout(): void {
+  private async saveLayout(): Promise<void> {
     const validation = this.validator.validateLayout(this.layout);
-    
+
     if (!validation.isValid) {
       const errorMessage = validation.errors.join('\n');
       new Notice(t('error.validationError', { errors: errorMessage }), 5000);
       return;
     }
 
-    this.callbacks.onSave(this.layout);
+    await this.callbacks.onSave(this.layout);
     this.close();
   }
 
