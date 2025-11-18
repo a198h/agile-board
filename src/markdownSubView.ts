@@ -26,11 +26,14 @@ export class MarkdownSubView {
     this.markdownContent = this.section.lines.join('\n');
 
     // Débouncer les changements pour éviter les sauvegardes trop fréquentes
-    this.debouncedOnChange = debounce((content: string) => {
+    const debouncedFn = debounce((content: string) => {
       void this.onChange(content);
     }, 300);
-    
-    this.render();
+    this.debouncedOnChange = (content: string) => {
+      void debouncedFn(content);
+    };
+
+    void this.render();
     this.setupEventListeners();
   }
 
@@ -66,8 +69,8 @@ export class MarkdownSubView {
       overflow: auto;
       cursor: text;
     `;
-    
-    this.renderPreview();
+
+    void this.renderPreview();
   }
   
   private createEditMode(): void {
@@ -196,7 +199,7 @@ export class MarkdownSubView {
       // Ajouter un clic pour ouvrir l'image
       img.addEventListener('click', (e) => {
         e.stopPropagation();
-        this.app.workspace.openLinkText(imageName, this.file.path);
+        void this.app.workspace.openLinkText(imageName, this.file.path);
       });
       
       container.appendChild(img);
@@ -278,7 +281,7 @@ export class MarkdownSubView {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      this.app.workspace.openLinkText(linkText, this.file.path);
+      void this.app.workspace.openLinkText(linkText, this.file.path);
     });
     
     return link;

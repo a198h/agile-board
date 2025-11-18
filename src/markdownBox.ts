@@ -181,7 +181,7 @@ export class MarkdownBox {
     
     if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
       event.preventDefault();
-      this.closeEditor();
+      void this.closeEditor();
       return;
     }
     
@@ -212,10 +212,10 @@ export class MarkdownBox {
                      textarea.value.substring(cursorPos);
       textarea.value = newText;
       textarea.setSelectionRange(cursorPos + listPrefix.length + 2, cursorPos + listPrefix.length + 2);
-      
+
       // Trigger input event to update preview
       this.content = textarea.value;
-      this.renderPreview();
+      void this.renderPreview();
     }
   }
 
@@ -266,7 +266,7 @@ export class MarkdownBox {
   private cancelEditing(): void {
     this.editorEl.value = this.content; // Restaurer le contenu original
     this.isDirty = false;
-    this.closeEditor();
+    void this.closeEditor();
   }
 
   /**

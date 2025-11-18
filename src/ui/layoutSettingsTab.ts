@@ -41,8 +41,8 @@ export class LayoutSettingsTab extends PluginSettingTab {
     // Liste des layouts
     this.layoutListContainer = containerEl.createDiv('layout-list-container');
     this.layoutListContainer.style.marginTop = '20px';
-    
-    this.refreshLayoutList();
+
+    void this.refreshLayoutList();
   }
 
   private createMainButtons(container: HTMLElement): void {
@@ -223,7 +223,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
           await this.layoutRepo.saveLayout(newLayout);
           UIErrorHandler.showSuccess(t('settings.message.created', { name: uniqueName }));
 
-          this.refreshLayoutList();
+          void this.refreshLayoutList();
           this.editLayout(newLayout);
         } catch (error) {
           this.logger.error(t('settings.message.createError'), error);
@@ -253,9 +253,9 @@ export class LayoutSettingsTab extends PluginSettingTab {
     try {
       const duplicatedLayout = await this.createDuplicatedLayout(sourceLayout, newName.trim());
       await this.layoutRepo.saveLayout(duplicatedLayout);
-      
+
       UIErrorHandler.showSuccess(t('settings.message.duplicated', { name: duplicatedLayout.name }));
-      this.refreshLayoutList();
+      void this.refreshLayoutList();
     } catch (error) {
       UIErrorHandler.handleLayoutError('la duplication', sourceLayout.name, error);
     }
@@ -280,7 +280,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
         try {
           await this.layoutRepo.saveLayout(updatedLayout);
           UIErrorHandler.showSuccess(t('settings.message.saved', { name: updatedLayout.name }));
-          this.refreshLayoutList();
+          void this.refreshLayoutList();
           
           // Recharger le service de layout si nécessaire
           if (this.plugin.layoutService) {
@@ -331,7 +331,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
           try {
             await this.layoutRepo.deleteLayout(layout.name);
             new Notice(t('settings.message.deleted', { name: layout.name }));
-            this.refreshLayoutList();
+            void this.refreshLayoutList();
 
             // Recharger le service de layout si nécessaire
             if (this.plugin.layoutService) {
@@ -393,9 +393,9 @@ export class LayoutSettingsTab extends PluginSettingTab {
     // Créer et sauvegarder le layout final
     const finalLayout = await this.prepareFinalLayout(importedLayout);
     await this.layoutRepo.saveLayout(finalLayout);
-    
+
     UIErrorHandler.showSuccess(t('settings.message.imported', { name: finalLayout.name }));
-    this.refreshLayoutList();
+    void this.refreshLayoutList();
   }
 
   private async prepareFinalLayout(importedLayout: LayoutFile): Promise<LayoutFile> {

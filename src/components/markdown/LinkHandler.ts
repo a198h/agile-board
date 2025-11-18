@@ -39,11 +39,11 @@ export class LinkHandler {
         e.stopPropagation();
         
         const href = linkElement.getAttribute('data-href') || 
-                    linkElement.getAttribute('href') || 
+                    linkElement.getAttribute('href') ||
                     linkElement.textContent;
-        
+
         if (href && href !== '#') {
-          this.app.workspace.openLinkText(href, this.file.path);
+          void this.app.workspace.openLinkText(href, this.file.path);
         }
       });
       
@@ -86,10 +86,10 @@ export class LinkHandler {
           const href = linkElement.getAttribute('data-href') || 
                       linkElement.getAttribute('href') || 
                       linkElement.textContent;
-          
+
           if (href && href !== '#') {
             const cleanHref = this.cleanHref(href);
-            this.app.workspace.openLinkText(cleanHref, this.file.path);
+            void this.app.workspace.openLinkText(cleanHref, this.file.path);
           }
         });
         
@@ -109,11 +109,12 @@ export class LinkHandler {
       el.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        
+
+
         const href = el.getAttribute('data-href');
         if (href) {
           const cleanHref = this.cleanHref(href);
-          this.app.workspace.openLinkText(cleanHref, this.file.path);
+          void this.app.workspace.openLinkText(cleanHref, this.file.path);
         }
       });
       
@@ -156,8 +157,8 @@ export class LinkHandler {
       if (linkInfo) {
         event.preventDefault();
         event.stopPropagation();
-        
-        this.app.workspace.openLinkText(linkInfo.href, this.file.path);
+
+        void this.app.workspace.openLinkText(linkInfo.href, this.file.path);
         return true;
       }
       

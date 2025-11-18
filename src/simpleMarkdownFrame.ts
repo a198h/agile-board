@@ -38,9 +38,12 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
     this.markdownContent = this.section.lines.join('\n');
 
     // Créer la fonction debounced pour la synchronisation (500ms)
-    this.debouncedSync = debounce((content: string) => {
+    const debouncedFn = debounce((content: string) => {
       void this.onChange(content);
     }, 500);
+    this.debouncedSync = (content: string) => {
+      void debouncedFn(content);
+    };
 
     // Initialiser les composants modulaires
     this.renderer = new MarkdownRenderer(container, app, file, section);
@@ -51,7 +54,7 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
     // Enregistrer les composants pour nettoyage automatique
     this.registerDisposable(this.renderer);
 
-    this.initializeFrame();
+    void this.initializeFrame();
   }
 
   /**
@@ -138,7 +141,7 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
     this.containerEl.addEventListener('checkbox-changed', () => {
       const updatedContent = this.checkboxHandler.updateMarkdownContent(this.markdownContent);
       this.handleContentChange(updatedContent);
-      this.refreshPreview();
+      void this.refreshPreview();
     });
   }
 
@@ -178,7 +181,7 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
           this.handleContentChange(newContent);
         },
         onBlur: () => {
-          this.exitEditMode();
+          void this.exitEditMode();
         },
         placeholder: `Éditer ${this.section.title}...`
       }

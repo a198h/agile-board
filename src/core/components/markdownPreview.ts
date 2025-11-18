@@ -56,7 +56,7 @@ export class MarkdownPreview extends BaseUIComponent {
     this.containerEl.empty();
     this.containerEl.className = "agile-board-preview";
 
-    this.renderContent();
+    void this.renderContent();
     this.setupClickHandler();
   }
 
@@ -176,9 +176,9 @@ export class MarkdownPreview extends BaseUIComponent {
     if (imageFile) {
       const imagePath = this.app.vault.getResourcePath(imageFile);
       const img = MediaElementFactory.createImage(
-        imagePath, 
+        imagePath,
         imageName,
-        () => this.app.workspace.openLinkText(imageName, this.config.file.path)
+        () => void this.app.workspace.openLinkText(imageName, this.config.file.path)
       );
       
       span.parentElement?.replaceChild(img, span);

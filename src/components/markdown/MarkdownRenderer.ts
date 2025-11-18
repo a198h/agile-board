@@ -184,7 +184,7 @@ export class MarkdownRenderer extends BaseUIComponent {
 
       try {
         // API synchrone qui devrait permettre au plugin Bases de s'exécuter
-        ObsidianMarkdownRenderer.render(
+        void ObsidianMarkdownRenderer.render(
           this.app,
           embedMarkdown,
           baseDiv,

@@ -21,11 +21,14 @@ export class EmbeddedMarkdownView {
     private onChange: (content: string) => void
   ) {
     this.component = new Component();
-    this.debouncedOnChange = debounce((content: string) => {
+    const debouncedFn = debounce((content: string) => {
       void this.onChange(content);
     }, 300);
-    
-    this.initialize();
+    this.debouncedOnChange = (content: string) => {
+      void debouncedFn(content);
+    };
+
+    void this.initialize();
   }
 
   private async initialize(): Promise<void> {
@@ -117,7 +120,7 @@ export class EmbeddedMarkdownView {
     // Écouter les changements du fichier temporaire
     const fileModifiedHandler = (file: TFile) => {
       if (file.path === this.tempFile?.path && !this.isUpdating) {
-        this.syncToSourceFile();
+        void this.syncToSourceFile();
       }
     };
 

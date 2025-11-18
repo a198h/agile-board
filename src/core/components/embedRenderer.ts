@@ -175,7 +175,7 @@ export class EmbedRenderer {
    */
   private static loadContentLater(embedEl: HTMLElement, config: EmbedConfig): void {
     // Utiliser requestIdleCallback si disponible, sinon setTimeout
-    const loadFn = () => this.loadContentBackground(embedEl, config);
+    const loadFn = () => void this.loadContentBackground(embedEl, config);
 
     if ('requestIdleCallback' in window) {
       requestIdleCallback(loadFn);
