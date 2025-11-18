@@ -205,7 +205,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
       .onClick(onClick);
   }
 
-  private async createNewLayout(): Promise<void> {
+  private createNewLayout(): void {
     const modal = new LayoutNameModal(this.app, t('settings.modal.newLayout.title'), '', (name) => {
       void (async () => {
         if (!name.trim()) {
@@ -237,7 +237,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
     modal.open();
   }
 
-  private async duplicateLayout(layout: LayoutFile): Promise<void> {
+  private duplicateLayout(layout: LayoutFile): void {
     const defaultName = `${layout.name} - Copie`;
     const modal = new LayoutNameModal(this.app, t('settings.modal.duplicate.title'), defaultName, (name) => {
       void this.performLayoutDuplication(layout, name);
@@ -301,21 +301,21 @@ export class LayoutSettingsTab extends PluginSettingTab {
     editor.open();
   }
 
-  private async exportLayout(layout: LayoutFile): Promise<void> {
+  private exportLayout(layout: LayoutFile): void {
     try {
       const jsonString = JSON.stringify(layout, null, 2);
-      
+
       // Créer un lien de téléchargement
       const blob = new Blob([jsonString], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      
+
       const link = document.createElement('a');
       link.href = url;
       link.download = `${layout.name.replace(/[^a-zA-Z0-9-_]/g, '_')}.json`;
       link.click();
-      
+
       URL.revokeObjectURL(url);
-      
+
       new Notice(t('settings.message.exported', { name: layout.name }));
     } catch (error) {
       this.logger.error(t('settings.message.exportError'), error);
