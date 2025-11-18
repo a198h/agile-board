@@ -33,29 +33,29 @@ export class MarkdownSubView {
       void debouncedFn(content);
     };
 
-    void this.render();
+    this.render();
     this.setupEventListeners();
   }
 
-  private async render(): Promise<void> {
+  private render(): void {
     if (this.isRendering) return;
     this.isRendering = true;
 
     try {
       // Vider le contenu
       this.contentEl.empty();
-      
+
       // Créer les deux modes : preview et édition
       this.createPreviewMode();
       this.createEditMode();
-      
+
       // Afficher le mode approprié
       if (this.isEditing) {
         this.showEditMode();
       } else {
         this.showPreviewMode();
       }
-      
+
     } finally {
       this.isRendering = false;
     }
