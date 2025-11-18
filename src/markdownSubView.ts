@@ -143,7 +143,7 @@ export class MarkdownSubView {
     
     const textNodes: Text[] = [];
     let node;
-    while (node = walker.nextNode()) {
+    while ((node = walker.nextNode())) {
       if (node.textContent?.includes('![[')) {
         textNodes.push(node as Text);
       }
@@ -232,7 +232,7 @@ export class MarkdownSubView {
     
     const textNodes: Text[] = [];
     let node;
-    while (node = walker.nextNode()) {
+    while ((node = walker.nextNode())) {
       if (node.textContent?.includes('[[') && !node.textContent?.includes('![[')) {
         textNodes.push(node as Text);
       }
