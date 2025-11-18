@@ -32,8 +32,10 @@ export class LayoutSettingsTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
-    
-    containerEl.createEl('h2', { text: t('settings.header') });
+
+    new Setting(containerEl)
+      .setName(t('settings.header'))
+      .setHeading();
 
     // Boutons principaux
     this.createMainButtons(containerEl);
