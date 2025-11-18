@@ -28,13 +28,16 @@ export class LayoutEditor extends Modal {
   private readonly validator = new LayoutValidator24();
   private layout: LayoutFile;
   private readonly callbacks: LayoutEditorCallbacks;
-  
+
   // Composants modulaires
   private gridCanvas!: GridCanvas;
   private boxManager!: BoxManager;
   private dragDropHandler!: DragDropHandler;
   private selectionManager!: SelectionManager;
   private sidebar!: Sidebar;
+
+  // Système anti-collision : dernière position/taille valide
+  private lastValidBoxState: { x: number; y: number; w: number; h: number } | null = null;
 
   constructor(
     app: App,
@@ -242,9 +245,17 @@ export class LayoutEditor extends Modal {
   /**
    * Gestionnaires des événements drag & drop.
    */
-  private handleDragStart(type: 'move' | 'resize' | 'create', box?: BoxState, handle?: string): void {
+  private handleDragStart(type: 'move' | 'resize' | 'create', box?: BoxState): void {
     if (type === 'create') {
       this.dragDropHandler.createPreviewBox();
+    } else if ((type === 'move' || type === 'resize') && box) {
+      // Sauvegarder la position/taille valide initiale
+      this.lastValidBoxState = {
+        x: box.box.x,
+        y: box.box.y,
+        w: box.box.w,
+        h: box.box.h
+      };
     }
   }
 
@@ -293,12 +304,17 @@ export class LayoutEditor extends Modal {
 
     const newPos = this.dragDropHandler.calculateMovePosition(originalBox, deltaX, deltaY);
     const movedBox = { ...originalBox, x: newPos.x, y: newPos.y };
-    
+
     const collisionResult = this.validator.wouldCollide(movedBox, this.layout.boxes, originalBox.id);
-    
+
     if (!collisionResult.hasCollisions) {
-      this.boxManager.updateBoxPosition(selectedBox.box.id, newPos.x, newPos.y);
+      // Mouvement valide - appliquer et sauvegarder
+      this.boxManager.updateBoxPosition(selectedBox.box.id, newPos.x, newPos.y, false);
       selectedBox.box = movedBox;
+      this.lastValidBoxState = { x: newPos.x, y: newPos.y, w: movedBox.w, h: movedBox.h };
+    } else if (this.lastValidBoxState) {
+      // Collision - revenir à la dernière position valide
+      this.boxManager.updateBoxPosition(selectedBox.box.id, this.lastValidBoxState.x, this.lastValidBoxState.y, true);
     }
   }
 
@@ -314,20 +330,34 @@ export class LayoutEditor extends Modal {
 
     const newDimensions = this.dragDropHandler.calculateResizeDimensions(originalBox, deltaX, deltaY, handle);
     const resizedBox = { ...originalBox, ...newDimensions };
-    
+
     const collisionResult = this.validator.wouldCollide(resizedBox, this.layout.boxes, originalBox.id);
-    
-    this.boxManager.updateBoxSizeAndPosition(
-      selectedBox.box.id, 
-      newDimensions.x, 
-      newDimensions.y, 
-      newDimensions.w, 
-      newDimensions.h, 
-      collisionResult.hasCollisions
-    );
-    
+
+    if (!collisionResult.hasCollisions) {
+      // Resize valide - appliquer et sauvegarder
+      this.boxManager.updateBoxSizeAndPosition(
+        selectedBox.box.id,
+        newDimensions.x,
+        newDimensions.y,
+        newDimensions.w,
+        newDimensions.h,
+        false
+      );
+      selectedBox.box = resizedBox;
+      this.lastValidBoxState = { x: newDimensions.x, y: newDimensions.y, w: newDimensions.w, h: newDimensions.h };
+    } else if (this.lastValidBoxState) {
+      // Collision - revenir à la dernière taille/position valide
+      this.boxManager.updateBoxSizeAndPosition(
+        selectedBox.box.id,
+        this.lastValidBoxState.x,
+        this.lastValidBoxState.y,
+        this.lastValidBoxState.w,
+        this.lastValidBoxState.h,
+        true
+      );
+    }
+
     this.dragDropHandler.showResizePreview(newDimensions.x, newDimensions.y, newDimensions.w, newDimensions.h);
-    selectedBox.box = resizedBox;
   }
 
   /**
@@ -371,8 +401,22 @@ export class LayoutEditor extends Modal {
     const selectedBox = this.selectionManager.getSelectedBox();
     if (!selectedBox) return;
 
+    // Vérifier les collisions avant de finaliser
+    const collisionResult = this.validator.wouldCollide(selectedBox.box, this.layout.boxes, selectedBox.box.id);
+
+    if (collisionResult.hasCollisions && this.lastValidBoxState) {
+      // Restaurer la dernière position valide
+      selectedBox.box = {
+        ...selectedBox.box,
+        x: this.lastValidBoxState.x,
+        y: this.lastValidBoxState.y
+      };
+      this.boxManager.updateBoxPosition(selectedBox.box.id, this.lastValidBoxState.x, this.lastValidBoxState.y, false);
+    }
+
     this.updateLayoutFromBox(selectedBox);
     selectedBox.isDragging = false;
+    this.lastValidBoxState = null; // Reset
   }
 
   private finishResizeDrag(): void {
@@ -380,26 +424,31 @@ export class LayoutEditor extends Modal {
     if (!selectedBox) return;
 
     const collisionResult = this.validator.wouldCollide(selectedBox.box, this.layout.boxes, selectedBox.box.id);
-    
-    if (collisionResult.hasCollisions) {
-      // Restaurer l'état original
-      const originalBox = this.dragDropHandler.getOriginalBoxState();
-      if (originalBox) {
-        selectedBox.box = originalBox;
-        this.boxManager.updateBoxSizeAndPosition(
-          selectedBox.box.id,
-          originalBox.x,
-          originalBox.y,
-          originalBox.w,
-          originalBox.h
-        );
-      }
+
+    if (collisionResult.hasCollisions && this.lastValidBoxState) {
+      // Restaurer la dernière taille/position valide
+      selectedBox.box = {
+        ...selectedBox.box,
+        x: this.lastValidBoxState.x,
+        y: this.lastValidBoxState.y,
+        w: this.lastValidBoxState.w,
+        h: this.lastValidBoxState.h
+      };
+      this.boxManager.updateBoxSizeAndPosition(
+        selectedBox.box.id,
+        this.lastValidBoxState.x,
+        this.lastValidBoxState.y,
+        this.lastValidBoxState.w,
+        this.lastValidBoxState.h,
+        false
+      );
     } else {
       this.updateLayoutFromBox(selectedBox);
     }
 
     this.dragDropHandler.hideResizePreview();
     selectedBox.isResizing = false;
+    this.lastValidBoxState = null; // Reset
   }
 
   /**
