@@ -323,7 +323,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
     }
   }
 
-  private async deleteLayout(layout: LayoutFile): Promise<void> {
+  private deleteLayout(layout: LayoutFile): void {
     const modal = new ConfirmationModal(
       this.app,
       t('settings.modal.delete.title'),
@@ -346,7 +346,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
         })();
       }
     );
-    
+
     modal.open();
   }
 
