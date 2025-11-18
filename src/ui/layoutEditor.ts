@@ -16,7 +16,7 @@ import { Sidebar } from "../components/editor/Sidebar";
  * Interface pour les interactions avec l'éditeur
  */
 export interface LayoutEditorCallbacks {
-  onSave: (layout: LayoutFile) => void;
+  onSave: (layout: LayoutFile) => void | Promise<void>;
   onCancel: () => void;
 }
 
@@ -554,16 +554,16 @@ export class LayoutEditor extends Modal {
   /**
    * Sauvegarde du layout.
    */
-  private saveLayout(): void {
+  private async saveLayout(): Promise<void> {
     const validation = this.validator.validateLayout(this.layout);
-    
+
     if (!validation.isValid) {
       const errorMessage = validation.errors.join('\n');
       new Notice(t('error.validationError', { errors: errorMessage }), 5000);
       return;
     }
 
-    this.callbacks.onSave(this.layout);
+    await this.callbacks.onSave(this.layout);
     this.close();
   }
 
