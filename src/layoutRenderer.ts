@@ -252,11 +252,11 @@ export class LayoutRenderer implements ILayoutRenderer {
    * @param container Container principal
    * @param renderPlan Plan de rendu avec les erreurs
    */
-  private async renderErrorState(
+  private renderErrorState(
     view: MarkdownView,
     container: HTMLElement,
     renderPlan: RenderPlan
-  ): Promise<void> {
+  ): void {
     
     const errorOverlay = this.createErrorOverlay(
       view,
@@ -402,11 +402,11 @@ export class LayoutRenderer implements ILayoutRenderer {
    * @param sectionInfo Informations de la section
    * @returns Élément contenu
    */
-  private async createBlockContent(
+  private createBlockContent(
     view: MarkdownView,
     block: LayoutBlock,
     sectionInfo?: SectionInfo
-  ): Promise<HTMLElement> {
+  ): HTMLElement {
     const contentContainer = document.createElement('div');
     
     if (sectionInfo) {
