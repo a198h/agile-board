@@ -69,6 +69,7 @@ export class DragDropHandler {
 
     this.dragState = {
       isActive: true,
+      isPending: false,
       startX: e.clientX,
       startY: e.clientY,
       gridStartX: gridPos.x,
@@ -116,6 +117,7 @@ export class DragDropHandler {
 
     this.dragState = {
       isActive: true,
+      isPending: false,
       startX: e.clientX,
       startY: e.clientY,
       gridStartX: gridPos.x,

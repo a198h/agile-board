@@ -78,7 +78,11 @@ export class LayoutEditor extends Modal {
     // Instanciation des composants avec injection
     this.gridCanvas = new GridCanvas(this.config);
     this.boxManager = new BoxManager(this.config, events);
-    this.dragDropHandler = new DragDropHandler(this.config, events);
+    this.dragDropHandler = new DragDropHandler(
+      this.config,
+      events,
+      () => this.boxManager.getBoxes()
+    );
     this.selectionManager = new SelectionManager(events);
     this.sidebar = new Sidebar(events);
   }

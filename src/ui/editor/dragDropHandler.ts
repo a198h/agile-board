@@ -2,6 +2,8 @@
 
 import { GRID_CONSTANTS } from "../../core/constants";
 import { DragState, EditorConfig, EditorEvents, EventHandler } from "./types";
+import { LayoutValidator24 } from "../../core/layout/layoutValidator24";
+import { LayoutBox } from "../../core/layout/layoutFileRepo";
 
 /**
  * Gestionnaire des interactions drag & drop pour l'éditeur.
@@ -12,11 +14,13 @@ export class DragDropHandler implements EventHandler {
   private dragState: DragState = this.createInitialDragState();
   private container: HTMLElement | null = null;
   private readonly cellSize = GRID_CONSTANTS.CELL_SIZE_PX;
-  
+  private readonly validator = new LayoutValidator24();
+
   // Éléments temporaires pour feedback visuel
   private previewBox: HTMLElement | null = null;
   private resizePreview: HTMLElement | null = null;
-  private originalBoxState: { element: HTMLElement; style: string } | null = null;
+  private originalBoxState: { element: HTMLElement; style: string; box: LayoutBox } | null = null;
+  private lastValidPosition: { x: number; y: number; w: number; h: number } | null = null;
 
   // Event listeners (pour le nettoyage)
   private readonly boundHandlers = {
@@ -27,7 +31,8 @@ export class DragDropHandler implements EventHandler {
 
   constructor(
     private readonly config: EditorConfig,
-    private readonly events: EditorEvents
+    private readonly events: EditorEvents,
+    private readonly getAllBoxes: () => readonly LayoutBox[]
   ) {}
 
   /**
@@ -160,9 +165,9 @@ export class DragDropHandler implements EventHandler {
     const rect = boxElement.getBoundingClientRect();
     const containerRect = this.container!.getBoundingClientRect();
 
-    // Calculer la position relative dans la grille
-    const relativeX = event.clientX - rect.left;
-    const relativeY = event.clientY - rect.top;
+    // Trouver la box correspondante
+    const currentBox = this.getAllBoxes().find(b => b.id === boxId);
+    if (!currentBox) return;
 
     this.dragState = {
       ...this.createInitialDragState(),
@@ -182,7 +187,16 @@ export class DragDropHandler implements EventHandler {
     // Sauvegarder l'état original et créer le feedback visuel
     this.originalBoxState = {
       element: boxElement,
-      style: boxElement.style.cssText
+      style: boxElement.style.cssText,
+      box: currentBox
+    };
+
+    // Sauvegarder la position valide initiale
+    this.lastValidPosition = {
+      x: currentBox.x,
+      y: currentBox.y,
+      w: currentBox.w,
+      h: currentBox.h
     };
 
     boxElement.style.opacity = '0.7';
@@ -198,6 +212,10 @@ export class DragDropHandler implements EventHandler {
     const boxId = boxElement.dataset.boxId!;
     const rect = boxElement.getBoundingClientRect();
     const containerRect = this.container!.getBoundingClientRect();
+
+    // Trouver la box correspondante
+    const currentBox = this.getAllBoxes().find(b => b.id === boxId);
+    if (!currentBox) return;
 
     this.dragState = {
       ...this.createInitialDragState(),
@@ -217,7 +235,16 @@ export class DragDropHandler implements EventHandler {
 
     this.originalBoxState = {
       element: boxElement,
-      style: boxElement.style.cssText
+      style: boxElement.style.cssText,
+      box: currentBox
+    };
+
+    // Sauvegarder la taille/position valide initiale
+    this.lastValidPosition = {
+      x: currentBox.x,
+      y: currentBox.y,
+      w: currentBox.w,
+      h: currentBox.h
     };
 
     this.events.onDragStart(boxId, 'resize');
@@ -252,19 +279,51 @@ export class DragDropHandler implements EventHandler {
   private updateDragPreview(): void {
     if (!this.originalBoxState) return;
 
+    const originalBox = this.originalBoxState.box;
     const deltaGridX = this.dragState.currentGridX - this.dragState.startGridX;
     const deltaGridY = this.dragState.currentGridY - this.dragState.startGridY;
-    
-    const newX = this.dragState.startGridX + deltaGridX;
-    const newY = this.dragState.startGridY + deltaGridY;
 
-    // Contraintes de grille
-    const clampedX = Math.max(0, Math.min(newX, this.config.gridSize - 1));
-    const clampedY = Math.max(0, Math.min(newY, this.config.gridSize - 1));
+    const newX = originalBox.x + deltaGridX;
+    const newY = originalBox.y + deltaGridY;
+
+    // Contraintes de grille (empêcher débordement)
+    const boxWidth = originalBox.w;
+    const boxHeight = originalBox.h;
+    const clampedX = Math.max(0, Math.min(newX, this.config.gridSize - boxWidth));
+    const clampedY = Math.max(0, Math.min(newY, this.config.gridSize - boxHeight));
+
+    // Créer la box hypothétique pour validation
+    const hypotheticalBox: LayoutBox = {
+      ...originalBox,
+      x: clampedX,
+      y: clampedY
+    };
+
+    // Vérifier les collisions avec les autres boxes
+    const otherBoxes = this.getAllBoxes().filter(b => b.id !== originalBox.id);
+    const collisionResult = this.validator.wouldCollide(hypotheticalBox, otherBoxes);
 
     const element = this.originalBoxState.element;
-    element.style.setProperty('left', `${clampedX * this.cellSize}px`);
-    element.style.setProperty('top', `${clampedY * this.cellSize}px`);
+
+    // Si collision, bloquer le mouvement et indiquer visuellement
+    if (collisionResult.hasCollisions) {
+      // Rester à la dernière position valide
+      if (this.lastValidPosition) {
+        element.style.setProperty('left', `${this.lastValidPosition.x * this.cellSize}px`);
+        element.style.setProperty('top', `${this.lastValidPosition.y * this.cellSize}px`);
+      }
+      element.style.borderColor = 'var(--text-error)';
+      element.style.backgroundColor = 'var(--background-modifier-error)';
+    } else {
+      // Mouvement valide - appliquer la nouvelle position et sauvegarder
+      element.style.setProperty('left', `${clampedX * this.cellSize}px`);
+      element.style.setProperty('top', `${clampedY * this.cellSize}px`);
+      element.style.borderColor = 'var(--interactive-accent)';
+      element.style.backgroundColor = '';
+
+      // Sauvegarder cette position comme dernière position valide
+      this.lastValidPosition = { x: clampedX, y: clampedY, w: originalBox.w, h: originalBox.h };
+    }
   }
 
   /**
@@ -273,54 +332,91 @@ export class DragDropHandler implements EventHandler {
   private updateResizePreview(): void {
     if (!this.originalBoxState || !this.dragState.handle) return;
 
+    const originalBox = this.originalBoxState.box;
     const deltaGridX = this.dragState.currentGridX - this.dragState.startGridX;
     const deltaGridY = this.dragState.currentGridY - this.dragState.startGridY;
 
-    const element = this.originalBoxState.element;
-    const currentRect = element.getBoundingClientRect();
-    const containerRect = this.container!.getBoundingClientRect();
-
-    let newX = Math.floor((currentRect.left - containerRect.left) / this.cellSize);
-    let newY = Math.floor((currentRect.top - containerRect.top) / this.cellSize);
-    let newW = Math.floor(currentRect.width / this.cellSize);
-    let newH = Math.floor(currentRect.height / this.cellSize);
+    let newX = originalBox.x;
+    let newY = originalBox.y;
+    let newW = originalBox.w;
+    let newH = originalBox.h;
 
     // Appliquer le resize selon le handle
     switch (this.dragState.handle) {
       case 'se': { // Sud-Est
-        newW = Math.max(this.config.minBoxSize, newW + deltaGridX);
-        newH = Math.max(this.config.minBoxSize, newH + deltaGridY);
+        newW = Math.max(this.config.minBoxSize, originalBox.w + deltaGridX);
+        newH = Math.max(this.config.minBoxSize, originalBox.h + deltaGridY);
         break;
       }
       case 'sw': { // Sud-Ouest
-        newW = Math.max(this.config.minBoxSize, newW - deltaGridX);
-        newH = Math.max(this.config.minBoxSize, newH + deltaGridY);
-        newX = Math.max(0, newX + deltaGridX);
+        const deltaW = -deltaGridX;
+        newW = Math.max(this.config.minBoxSize, originalBox.w + deltaW);
+        newH = Math.max(this.config.minBoxSize, originalBox.h + deltaGridY);
+        newX = originalBox.x + originalBox.w - newW;
         break;
       }
       case 'ne': { // Nord-Est
-        newW = Math.max(this.config.minBoxSize, newW + deltaGridX);
-        newH = Math.max(this.config.minBoxSize, newH - deltaGridY);
-        newY = Math.max(0, newY + deltaGridY);
+        const deltaH = -deltaGridY;
+        newW = Math.max(this.config.minBoxSize, originalBox.w + deltaGridX);
+        newH = Math.max(this.config.minBoxSize, originalBox.h + deltaH);
+        newY = originalBox.y + originalBox.h - newH;
         break;
       }
       case 'nw': { // Nord-Ouest
-        newW = Math.max(this.config.minBoxSize, newW - deltaGridX);
-        newH = Math.max(this.config.minBoxSize, newH - deltaGridY);
-        newX = Math.max(0, newX + deltaGridX);
-        newY = Math.max(0, newY + deltaGridY);
+        const deltaW = -deltaGridX;
+        const deltaH = -deltaGridY;
+        newW = Math.max(this.config.minBoxSize, originalBox.w + deltaW);
+        newH = Math.max(this.config.minBoxSize, originalBox.h + deltaH);
+        newX = originalBox.x + originalBox.w - newW;
+        newY = originalBox.y + originalBox.h - newH;
         break;
       }
     }
 
-    // Contraintes de grille
+    // Contraintes de grille (empêcher débordement)
+    newX = Math.max(0, newX);
+    newY = Math.max(0, newY);
     newW = Math.min(newW, this.config.gridSize - newX);
     newH = Math.min(newH, this.config.gridSize - newY);
 
-    element.style.setProperty('left', `${newX * this.cellSize}px`);
-    element.style.setProperty('top', `${newY * this.cellSize}px`);
-    element.style.setProperty('width', `${newW * this.cellSize}px`);
-    element.style.setProperty('height', `${newH * this.cellSize}px`);
+    // Créer la box hypothétique pour validation
+    const hypotheticalBox: LayoutBox = {
+      ...originalBox,
+      x: newX,
+      y: newY,
+      w: newW,
+      h: newH
+    };
+
+    // Vérifier les collisions avec les autres boxes
+    const otherBoxes = this.getAllBoxes().filter(b => b.id !== originalBox.id);
+    const collisionResult = this.validator.wouldCollide(hypotheticalBox, otherBoxes);
+
+    const element = this.originalBoxState.element;
+
+    // Si collision, bloquer le resize et indiquer visuellement
+    if (collisionResult.hasCollisions) {
+      // Rester à la dernière taille/position valide
+      if (this.lastValidPosition) {
+        element.style.setProperty('left', `${this.lastValidPosition.x * this.cellSize}px`);
+        element.style.setProperty('top', `${this.lastValidPosition.y * this.cellSize}px`);
+        element.style.setProperty('width', `${this.lastValidPosition.w * this.cellSize}px`);
+        element.style.setProperty('height', `${this.lastValidPosition.h * this.cellSize}px`);
+      }
+      element.style.borderColor = 'var(--text-error)';
+      element.style.backgroundColor = 'var(--background-modifier-error)';
+    } else {
+      // Resize valide - appliquer les nouvelles dimensions et sauvegarder
+      element.style.setProperty('left', `${newX * this.cellSize}px`);
+      element.style.setProperty('top', `${newY * this.cellSize}px`);
+      element.style.setProperty('width', `${newW * this.cellSize}px`);
+      element.style.setProperty('height', `${newH * this.cellSize}px`);
+      element.style.borderColor = 'var(--interactive-accent)';
+      element.style.backgroundColor = '';
+
+      // Sauvegarder cette configuration comme dernière valide
+      this.lastValidPosition = { x: newX, y: newY, w: newW, h: newH };
+    }
   }
 
   /**
@@ -337,14 +433,31 @@ export class DragDropHandler implements EventHandler {
     const width = Math.max(this.config.minBoxSize, endX - startX + 1);
     const height = Math.max(this.config.minBoxSize, endY - startY + 1);
 
+    // Créer la box hypothétique pour validation
+    const hypotheticalBox: LayoutBox = {
+      id: 'temp-preview',
+      title: 'Preview',
+      x: startX,
+      y: startY,
+      w: width,
+      h: height
+    };
+
+    // Vérifier les collisions avec toutes les boxes existantes
+    const collisionResult = this.validator.wouldCollide(hypotheticalBox, this.getAllBoxes());
+
+    // Déterminer la couleur selon la collision
+    const borderColor = collisionResult.hasCollisions ? 'var(--text-error)' : 'var(--interactive-accent)';
+    const bgColor = collisionResult.hasCollisions ? 'var(--background-modifier-error)' : 'var(--interactive-accent)';
+
     this.previewBox.style.cssText = `
       position: absolute;
       left: ${startX * this.cellSize}px;
       top: ${startY * this.cellSize}px;
       width: ${width * this.cellSize}px;
       height: ${height * this.cellSize}px;
-      border: 2px dashed var(--interactive-accent);
-      background: var(--interactive-accent);
+      border: 2px dashed ${borderColor};
+      background: ${bgColor};
       opacity: 0.2;
       pointer-events: none;
       z-index: 998;
@@ -355,38 +468,27 @@ export class DragDropHandler implements EventHandler {
    * Finalise le drag
    */
   private finishDrag(): void {
-    if (!this.originalBoxState || !this.dragState.boxId) return;
+    if (!this.originalBoxState || !this.dragState.boxId || !this.lastValidPosition) return;
 
-    const element = this.originalBoxState.element;
-    const rect = element.getBoundingClientRect();
-    const containerRect = this.container!.getBoundingClientRect();
-
-    const newX = Math.floor((rect.left - containerRect.left) / this.cellSize);
-    const newY = Math.floor((rect.top - containerRect.top) / this.cellSize);
-
-    this.events.onBoxUpdate(this.dragState.boxId, { x: newX, y: newY });
+    // Utiliser la dernière position valide (celle qui n'avait pas de collision)
+    this.events.onBoxUpdate(this.dragState.boxId, {
+      x: this.lastValidPosition.x,
+      y: this.lastValidPosition.y
+    });
   }
 
   /**
    * Finalise le resize
    */
   private finishResize(): void {
-    if (!this.originalBoxState || !this.dragState.boxId) return;
+    if (!this.originalBoxState || !this.dragState.boxId || !this.lastValidPosition) return;
 
-    const element = this.originalBoxState.element;
-    const rect = element.getBoundingClientRect();
-    const containerRect = this.container!.getBoundingClientRect();
-
-    const newX = Math.floor((rect.left - containerRect.left) / this.cellSize);
-    const newY = Math.floor((rect.top - containerRect.top) / this.cellSize);
-    const newW = Math.floor(rect.width / this.cellSize);
-    const newH = Math.floor(rect.height / this.cellSize);
-
+    // Utiliser la dernière taille/position valide (celle qui n'avait pas de collision)
     this.events.onBoxUpdate(this.dragState.boxId, {
-      x: newX,
-      y: newY,
-      w: newW,
-      h: newH
+      x: this.lastValidPosition.x,
+      y: this.lastValidPosition.y,
+      w: this.lastValidPosition.w,
+      h: this.lastValidPosition.h
     });
   }
 
@@ -449,6 +551,7 @@ export class DragDropHandler implements EventHandler {
       this.originalBoxState = null;
     }
 
+    this.lastValidPosition = null;
     this.dragState = this.createInitialDragState();
   }
 
