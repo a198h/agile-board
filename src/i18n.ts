@@ -101,11 +101,11 @@ class I18n {
 
     // Navigation dans l'objet avec notation pointée
     const keys = key.split('.');
-    let current: any = translations;
+    let current: unknown = translations;
 
     for (const k of keys) {
       if (current && typeof current === 'object' && k in current) {
-        current = current[k];
+        current = (current as Record<string, unknown>)[k];
       } else {
         return null;
       }

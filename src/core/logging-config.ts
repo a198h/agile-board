@@ -163,8 +163,8 @@ export class LoggingConfig {
             .join(', ')}`,
           stats.oldestEntry ? `Période: ${stats.oldestEntry.toLocaleString()} - ${stats.newestEntry?.toLocaleString()}` : ''
         ].filter(Boolean).join('\n');
-        
-        new (window as any).Notice(`📊 Statistiques de logging:\n${summary}`, 10000);
+
+        new (window as unknown as { Notice: new (message: string, duration: number) => unknown }).Notice(`📊 Statistiques de logging:\n${summary}`, 10000);
       }
     });
 
@@ -186,8 +186,8 @@ export class LoggingConfig {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        
-        new (window as any).Notice('📄 Historique des logs exporté', 3000);
+
+        new (window as unknown as { Notice: new (message: string, duration: number) => unknown }).Notice('📄 Historique des logs exporté', 3000);
       }
     });
   }

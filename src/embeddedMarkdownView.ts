@@ -101,7 +101,7 @@ export class EmbeddedMarkdownView {
         // Forcer le mode Live Preview
         const view = this.tempLeaf.view;
         if (view && 'setState' in view) {
-          await (view as any).setState({
+          await (view as unknown as { setState: (state: unknown, result: unknown) => Promise<void> }).setState({
             mode: 'source',
             source: false // Live Preview
           }, {});
