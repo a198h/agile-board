@@ -166,7 +166,7 @@ export class EmbedRenderer {
   private static attachClickHandler(embedEl: HTMLElement, config: EmbedConfig): void {
     embedEl.addEventListener('click', (e) => {
       e.preventDefault();
-      config.app.workspace.openLinkText(config.fileName, config.sourcePath);
+      void config.app.workspace.openLinkText(config.fileName, config.sourcePath);
     });
   }
 

@@ -14,6 +14,7 @@ import { parseHeadingsInFile, formatPluginError } from "../parsers/sectionParser
 import { MarkdownBox } from "../../components/markdown/markdownBox";
 import { createContextLogger } from "../logger";
 import { ErrorHandler, ErrorSeverity } from "../errorHandler";
+import { ConfirmModal } from "../../ui/confirmModal";
 import {
   applyContainerLayoutStyles,
   applyFrameLayoutStyles,
@@ -123,9 +124,9 @@ export class LayoutRenderer implements ILayoutRenderer {
         
         // Étape 4: Rendu conditionnel selon l'état
         if (renderPlan.hasMissingSections) {
-          await this.renderErrorState(view, container, renderPlan);
+          this.renderErrorState(view, container, renderPlan);
         } else {
-          await this.renderSuccessState(view, container, renderPlan);
+          this.renderSuccessState(view, container, renderPlan);
         }
         
         return { success: true, data: undefined };
@@ -278,24 +279,24 @@ export class LayoutRenderer implements ILayoutRenderer {
    * @param container Container principal
    * @param renderPlan Plan de rendu validé
    */
-  private async renderSuccessState(
+  private renderSuccessState(
     view: MarkdownView,
     container: HTMLElement,
     renderPlan: RenderPlan
-  ): Promise<void> {
-    
+  ): void {
+
     const grid = this.createGrid(renderPlan.blocks);
-    
+
     // Ajouter tous les blocs à la grille
     for (const block of renderPlan.blocks) {
-      const blockElement = await this.createBlockElement(
+      const blockElement = this.createBlockElement(
         view,
         block,
         renderPlan.sections[block.title]
       );
       grid.appendChild(blockElement);
     }
-    
+
     container.appendChild(grid);
   }
 
@@ -365,11 +366,11 @@ export class LayoutRenderer implements ILayoutRenderer {
    * @param sectionInfo Informations de la section (optionnel)
    * @returns Élément DOM du bloc
    */
-  private async createBlockElement(
+  private createBlockElement(
     view: MarkdownView,
     block: LayoutBlock,
     sectionInfo?: SectionInfo
-  ): Promise<HTMLElement> {
+  ): HTMLElement {
     const blockElement = document.createElement('section');
     blockElement.className = PLUGIN_CONSTANTS.CSS_CLASSES.FRAME;
 
@@ -381,7 +382,7 @@ export class LayoutRenderer implements ILayoutRenderer {
     blockElement.appendChild(titleElement);
 
     // Ajouter le contenu
-    const contentElement = await this.createBlockContent(
+    const contentElement = this.createBlockContent(
       view,
       block,
       sectionInfo
@@ -564,10 +565,15 @@ export class LayoutRenderer implements ILayoutRenderer {
       return;
     }
 
-    const confirmed = window.confirm(
-      'Tout le contenu (hors frontmatter) sera remplacé par les titres du modèle. Continuer ?'
+    const modal = new ConfirmModal(
+      this.app,
+      'Réinitialisation du contenu',
+      'Tout le contenu (hors frontmatter) sera remplacé par les titres du modèle. Continuer ?',
+      'Continuer',
+      'Annuler'
     );
-    
+
+    const confirmed = await modal.confirm();
     if (!confirmed) {
       return;
     }

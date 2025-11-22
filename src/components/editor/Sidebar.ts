@@ -17,7 +17,7 @@ export class Sidebar {
     private callbacks: {
       onAddBox: () => void;
       onDeleteBox: () => void;
-      onClearAll: () => void;
+      onClearAll: () => void | Promise<void>;
     }
   ) {
     this.sidebar = this.createSidebar(container);
@@ -219,7 +219,9 @@ export class Sidebar {
       clearAllButton.style.backgroundColor = '#dc2626';
     });
     
-    clearAllButton.addEventListener('click', this.callbacks.onClearAll);
+    clearAllButton.addEventListener('click', () => {
+      void this.callbacks.onClearAll();
+    });
   }
 
   /**

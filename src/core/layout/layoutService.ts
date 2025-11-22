@@ -60,13 +60,13 @@ export class LayoutService {
     }
 
     // Démarrer la surveillance seulement si des layouts sont actifs
-    await this.startFileWatchingIfNeeded();
+    this.startFileWatchingIfNeeded();
   }
 
   /**
    * Démarre la surveillance des fichiers de layout pour le hot-reload
    */
-  private async startFileWatching(): Promise<void> {
+  private startFileWatching(): void {
     try {
       this.fileRepo.startWatching(() => {
         void this.reload();
@@ -80,9 +80,9 @@ export class LayoutService {
   /**
    * Démarre la surveillance conditionnelle des fichiers
    */
-  private async startFileWatchingIfNeeded(): Promise<void> {
+  private startFileWatchingIfNeeded(): void {
     if (this.hasActiveLayouts && !this.isWatching) {
-      await this.startFileWatching();
+      this.startFileWatching();
     }
   }
 
@@ -112,10 +112,10 @@ export class LayoutService {
 
     // Chargement lazy des layouts
     await this.ensureLayoutsLoaded();
-    
+
     // Marquer qu'on a un layout actif
     this.hasActiveLayouts = true;
-    await this.startFileWatchingIfNeeded();
+    this.startFileWatchingIfNeeded();
 
     const model = this.models!.get(name);
     if (!model) {

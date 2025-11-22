@@ -36,7 +36,7 @@ export class MarkdownPreview extends BaseUIComponent {
     super(container, app);
     this.component = new Component();
     this.currentContent = config.content;
-    this.debouncedOnChange = debounce((content: string) => {
+    this.debouncedOnChange = debounce((content: string): void => {
       void config.onContentChange(content);
     }, 1000);
 
