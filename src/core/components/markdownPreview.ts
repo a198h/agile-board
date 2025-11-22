@@ -2,7 +2,7 @@
 import { App, TFile, Component, MarkdownRenderer } from "obsidian";
 import { BaseUIComponent } from "../baseComponent";
 import { MarkdownProcessor } from "../business/markdownProcessor";
-import { ElementFactory, MediaElementFactory, setHtmlContent } from "../dom";
+import { ElementFactory, MediaElementFactory, setHtmlContent, applyPreviewContainerLayoutStyles } from "../dom";
 import { EmbedRenderer } from "./embedRenderer";
 import { TaskManager } from "./taskManager";
 import { ErrorHandler, ErrorSeverity } from "../errorHandler";
@@ -55,6 +55,9 @@ export class MarkdownPreview extends BaseUIComponent {
 
     this.containerEl.empty();
     this.containerEl.className = "agile-board-preview";
+
+    // Apply layout-critical styles
+    applyPreviewContainerLayoutStyles(this.containerEl);
 
     void this.renderContent();
     this.setupClickHandler();

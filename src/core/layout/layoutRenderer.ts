@@ -14,7 +14,12 @@ import { parseHeadingsInFile, formatPluginError } from "../parsers/sectionParser
 import { MarkdownBox } from "../../components/markdown/markdownBox";
 import { createContextLogger } from "../logger";
 import { ErrorHandler, ErrorSeverity } from "../errorHandler";
-import { setGridPosition } from "../dom";
+import {
+  applyContainerLayoutStyles,
+  applyFrameLayoutStyles,
+  applyFrameTitleLayoutStyles,
+  applyFrameContentLayoutStyles
+} from "../dom";
 
 /**
  * Plan de rendu structuré pour un layout.
@@ -322,6 +327,9 @@ export class LayoutRenderer implements ILayoutRenderer {
       PLUGIN_CONSTANTS.CSS_CLASSES.CONTAINER
     );
 
+    // Apply layout-critical styles
+    applyContainerLayoutStyles(container);
+
     this.activeContainers.add(container);
     return container;
   }
@@ -365,8 +373,8 @@ export class LayoutRenderer implements ILayoutRenderer {
     const blockElement = document.createElement('section');
     blockElement.className = PLUGIN_CONSTANTS.CSS_CLASSES.FRAME;
 
-    // Set grid position using CSS custom properties
-    setGridPosition(blockElement, block.x, block.y, block.w, block.h);
+    // Apply layout-critical styles with grid positioning
+    applyFrameLayoutStyles(blockElement, block.x, block.y, block.w, block.h);
 
     // Ajouter le titre
     const titleElement = this.createBlockTitle(block.title);
@@ -392,6 +400,10 @@ export class LayoutRenderer implements ILayoutRenderer {
     const titleElement = document.createElement('strong');
     titleElement.className = 'agile-board-frame-title';
     titleElement.textContent = title;
+
+    // Apply layout-critical styles
+    applyFrameTitleLayoutStyles(titleElement);
+
     return titleElement;
   }
 
@@ -409,6 +421,9 @@ export class LayoutRenderer implements ILayoutRenderer {
   ): HTMLElement {
     const contentContainer = document.createElement('div');
     contentContainer.className = 'agile-board-frame-content';
+
+    // Apply layout-critical styles
+    applyFrameContentLayoutStyles(contentContainer);
 
     if (sectionInfo) {
       // Contenu éditable avec MarkdownBox

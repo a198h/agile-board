@@ -3,6 +3,11 @@ import { App, MarkdownRenderer } from "obsidian";
 import { createContextLogger } from "../../core/logger";
 import { ErrorHandler, ErrorSeverity } from "../../core/errorHandler";
 import { PluginError, Result } from "../../types";
+import {
+  applyMarkdownBoxLayoutStyles,
+  applyMarkdownPreviewLayoutStyles,
+  applyMarkdownEditorLayoutStyles
+} from "../../core/dom";
 
 /**
  * Composant d'édition inline de contenu Markdown avec prévisualisation.
@@ -77,6 +82,10 @@ export class MarkdownBox {
    */
   private createMainContainer(parent: HTMLElement): HTMLElement {
     const container = parent.createDiv("markdown-box");
+
+    // Apply layout-critical styles
+    applyMarkdownBoxLayoutStyles(container);
+
     return container;
   }
 
@@ -86,6 +95,10 @@ export class MarkdownBox {
    */
   private createPreviewElement(): HTMLElement {
     const preview = this.boxEl.createDiv("markdown-preview");
+
+    // Apply layout-critical styles
+    applyMarkdownPreviewLayoutStyles(preview);
+
     return preview;
   }
 
@@ -99,6 +112,9 @@ export class MarkdownBox {
     // Configuration Obsidian
     // @ts-ignore - accès aux paramètres internes d'Obsidian
     editor.spellcheck = this.app.vault.config?.spellcheck ?? false;
+
+    // Apply layout-critical styles
+    applyMarkdownEditorLayoutStyles(editor);
 
     return editor;
   }
