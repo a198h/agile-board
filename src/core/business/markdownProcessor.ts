@@ -283,10 +283,10 @@ export class MarkdownProcessor {
       }
       
       // Classes spéciales d'Obsidian
-      if (current.classList.contains('internal-link') || 
+      // Note: markdown-embed et file-embed sont exclus pour permettre le clic sur le container d'embed
+      if (current.classList.contains('internal-link') ||
           current.classList.contains('external-link') ||
           current.classList.contains('image-embed') ||
-          current.classList.contains('file-embed') ||
           current.classList.contains('tag') ||
           current.classList.contains('math') ||
           current.classList.contains('frontmatter')) {
@@ -294,7 +294,8 @@ export class MarkdownProcessor {
       }
       
       // Attributs interactifs
-      if (current.hasAttribute('href') || 
+      // Note: data-file est exclu pour permettre le clic sur les embeds
+      if (current.hasAttribute('href') ||
           current.hasAttribute('src') ||
           current.hasAttribute('data-href') ||
           current.hasAttribute('data-path') ||

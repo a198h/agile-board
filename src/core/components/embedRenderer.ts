@@ -162,11 +162,17 @@ export class EmbedRenderer {
 
   /**
    * Attache le gestionnaire de clic pour ouvrir le fichier.
+   * Utilise Ctrl+clic pour ne pas interférer avec le mode édition.
    */
   private static attachClickHandler(embedEl: HTMLElement, config: EmbedConfig): void {
     embedEl.addEventListener('click', (e) => {
-      e.preventDefault();
-      void config.app.workspace.openLinkText(config.fileName, config.sourcePath);
+      // Seulement ouvrir le fichier avec Ctrl/Cmd + clic
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        void config.app.workspace.openLinkText(config.fileName, config.sourcePath);
+      }
+      // Sinon, laisser le clic se propager pour activer l'édition
     });
   }
 

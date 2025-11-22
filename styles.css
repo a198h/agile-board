@@ -126,6 +126,14 @@
 .agile-board-preview {
   padding: 0.5rem;
   cursor: text;
+  /* Bordure temporaire pour visualiser la zone cliquable - À SUPPRIMER */
+  outline: 2px dashed rgba(100, 150, 255, 0.5);
+  outline-offset: -2px;
+}
+
+.agile-board-preview:hover {
+  outline-color: rgba(100, 200, 100, 0.8);
+  background: rgba(100, 200, 100, 0.03);
 }
 
 /* Layout properties (width, height, display, box-sizing, position) are applied via JavaScript in layoutStyles.ts */
@@ -251,12 +259,18 @@
 
 /* === Embed Styles === */
 .agile-board-embed {
-  border: 1px solid var(--background-modifier-border);
+  border: 2px dashed var(--interactive-accent);
   border-radius: 4px;
   padding: 1rem;
   margin: 0.5rem 0;
   background: var(--background-primary-alt);
   cursor: pointer;
+  box-shadow: 0 0 0 4px rgba(var(--interactive-accent-rgb), 0.1);
+}
+
+.agile-board-embed:hover {
+  background: var(--background-secondary);
+  border-color: var(--interactive-accent-hover);
 }
 
 .agile-board-embed-title {
