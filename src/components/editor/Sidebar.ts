@@ -176,9 +176,14 @@ export class Sidebar {
     const createHelpItem = (text: string, isLast: boolean = false) => {
       const p = helpText.createEl('p');
       p.addClass(isLast ? 'agile-help-item-last' : 'agile-help-item');
+      p.style.fontSize = '12px';
+      p.style.marginBottom = isLast ? '0' : '8px';
+      p.style.lineHeight = '1.4';
+      p.style.color = 'var(--text-normal)';
       const [label, description] = text.split(':');
       const strong = p.createEl('strong');
       strong.textContent = label + ':';
+      strong.style.color = 'var(--text-accent)';
       p.appendText(' ' + description);
     };
 
