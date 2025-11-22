@@ -1,44 +1,29 @@
 /* style.css */
 
-/* === CSS Variables for dynamic values === */
+/* === CSS Variables for visual customization === */
 :root {
-  --ab-grid-cols: 24;
   --ab-gap: 0.5rem;
   --ab-padding: 1rem;
 }
 
 /* === Container === */
-.agile-board-container {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  overflow: auto;
-}
+/* Layout properties (position, width, min-height, overflow) are applied via JavaScript in layoutStyles.ts */
+/* No visual properties to customize */
 
 /* === Grille === */
+/* Layout properties (display, grid-template-*, height) are applied via JavaScript in layoutStyles.ts */
 .agile-board-grid {
-  display: grid;
-  grid-template-columns: repeat(var(--ab-grid-cols, 24), 1fr);
-  grid-template-rows: repeat(24, minmax(0, 1fr));
   gap: var(--ab-gap, 0.5rem);
   padding: var(--ab-padding, 1rem);
-  height: 90vh;
 }
 
-/* Frame positioning via CSS variables */
+/* === Frame === */
+/* Layout properties (grid-column, grid-row, display, flex-direction, overflow, box-sizing, align-self, justify-self) are applied via JavaScript in layoutStyles.ts */
 .agile-board-frame {
-  grid-column: var(--ab-col-start) / span var(--ab-col-span);
-  grid-row: var(--ab-row-start) / span var(--ab-row-span);
   border: 1px solid var(--background-modifier-border);
   padding: 0.5rem;
   background-color: var(--background-primary);
   border-radius: 0.5rem;
-  overflow: hidden;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-self: stretch;
-  justify-self: stretch;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   transition: all 0.2s ease;
 }
@@ -50,9 +35,9 @@
 }
 
 /* === Frame Title === */
+/* Layout properties (display, flex-shrink) are applied via JavaScript in layoutStyles.ts */
 .agile-board-frame > strong,
 .agile-board-frame-title {
-  display: block;
   font-size: 1.1rem;
   padding: 0.5em 0.75em;
   margin-bottom: 0.5em;
@@ -61,44 +46,26 @@
   border-bottom: 1px solid var(--background-modifier-border);
   border-radius: 6px 6px 0 0;
   background: var(--background-secondary);
-  flex-shrink: 0;
 }
 
 /* === Frame Content === */
-.agile-board-frame-content {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
+/* Layout properties (flex, min-height, overflow, display, flex-direction) are applied via JavaScript in layoutStyles.ts */
+/* No visual properties to customize */
 
 /* === MarkdownBox Components === */
+/* Layout properties (display, flex-direction, overflow, flex, min-height, box-sizing) are applied via JavaScript in layoutStyles.ts */
 .markdown-box {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  flex: 1;
-  min-height: 0;
-  box-sizing: border-box;
   padding: 0.25rem;
 }
 
+/* Layout properties (flex, overflow) are applied via JavaScript in layoutStyles.ts */
 .markdown-preview {
-  flex: 1;
-  overflow: auto;
   cursor: text;
   white-space: pre-wrap;
 }
 
+/* Layout properties (width, flex, min-height, box-sizing, resize, overflow, display) are applied via JavaScript in layoutStyles.ts */
 .markdown-editor {
-  width: 100%;
-  flex: 1;
-  min-height: 0;
-  box-sizing: border-box;
-  resize: none;
-  overflow: auto;
-  display: none;
   border: none;
   outline: none;
   background-color: transparent;
@@ -126,9 +93,8 @@
   font-size: 1.1rem;
 }
 
+/* Layout properties (flex, overflow) are applied via JavaScript in layoutStyles.ts */
 .frame-content {
-  flex: 1;
-  overflow: auto;
   padding: 0.75rem;
   background: var(--background-primary);
 }
@@ -156,31 +122,16 @@
 }
 
 /* === Editor Components === */
+/* Layout properties (width, height, overflow, box-sizing) are applied via JavaScript in layoutStyles.ts */
 .agile-board-preview {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
   padding: 0.5rem;
   cursor: text;
-  box-sizing: border-box;
 }
 
-.agile-board-editor {
-  width: 100%;
-  height: 100%;
-  display: none;
-  box-sizing: border-box;
-  position: relative;
-}
+/* Layout properties (width, height, display, box-sizing, position) are applied via JavaScript in layoutStyles.ts */
+/* .agile-board-editor has no visual properties to customize */
 
-.agile-board-editor-toolbar {
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  z-index: 10;
-  display: flex;
-  gap: 0.25rem;
-}
+/* .agile-board-editor-toolbar is not used in current codebase - removed */
 
 .agile-board-close-btn {
   background: var(--background-primary);
@@ -197,34 +148,21 @@
   color: var(--text-normal);
 }
 
+/* Layout properties (position, top, left, width, height, border, outline, resize, box-sizing) are applied via JavaScript in layoutStyles.ts */
 .agile-board-textarea {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  outline: none;
-  resize: none;
   font-family: var(--font-text);
   font-size: var(--font-size-normal);
   background: transparent;
   color: var(--text-normal);
   padding: 0.5rem;
-  box-sizing: border-box;
   line-height: 1.6;
 }
 
+/* Layout properties (display, align-items, justify-content, height, min-height, user-select) are applied via JavaScript in layoutStyles.ts */
 .agile-board-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  min-height: 80px;
   color: var(--text-muted);
   font-style: italic;
   cursor: text;
-  user-select: none;
 }
 
 /* === Media Components === */
@@ -250,26 +188,7 @@
 }
 
 /* === Layout Editor Sidebar === */
-.layout-editor-sidebar {
-  width: 250px;
-  padding: 20px;
-  background: var(--background-primary);
-  border-left: 1px solid var(--background-modifier-border);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.layout-editor-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.layout-editor-section--hidden {
-  display: none;
-}
+/* .layout-editor-sidebar, .layout-editor-section, .layout-editor-section--hidden are not used in current codebase - removed */
 
 .layout-editor-section-title {
   margin: 0 0 12px 0;

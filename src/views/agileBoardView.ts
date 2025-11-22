@@ -5,6 +5,7 @@ import { SectionInfo, parseHeadingsInFile } from "../core/parsers/sectionParser"
 import { SimpleMarkdownFrame } from "./simpleMarkdownFrame";
 import { t } from "../i18n";
 import AgileBoardPlugin from "../main";
+import { applyFrameContentVisualLayoutStyles, applyGridLayoutStyles } from "../core/dom/layoutStyles";
 
 export const AGILE_BOARD_VIEW_TYPE = "agile-board-view";
 
@@ -87,14 +88,7 @@ export class AgileBoardView extends FileView {
 
   private createGrid(): void {
     this.gridContainer = this.contentEl.createDiv("agile-board-grid");
-    this.gridContainer.style.cssText = `
-      display: grid;
-      grid-template-columns: repeat(24, 1fr);
-      gap: 0.5rem;
-      padding: 1rem;
-      height: 100%;
-      overflow: auto;
-    `;
+    applyGridLayoutStyles(this.gridContainer);
   }
 
   private createFrames(sections: Record<string, SectionInfo>): void {
@@ -133,11 +127,12 @@ export class AgileBoardView extends FileView {
 
       // Contenu du cadre
       const contentEl = frameContainer.createDiv("frame-content");
-      contentEl.style.cssText = `
-        flex: 1;
-        overflow: auto;
-        padding: 0.5rem;
-      `;
+
+      // Apply layout-critical styles
+      applyFrameContentVisualLayoutStyles(contentEl);
+
+      // Apply visual styles
+      contentEl.style.padding = '0.5rem';
 
       // Créer la vue markdown simple
       const simpleMarkdownFrame = new SimpleMarkdownFrame(

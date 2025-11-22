@@ -1,6 +1,7 @@
 // src/core/dom/elementFactory.ts
 import { LayoutBlock } from "../../types";
 import { setGridPosition } from "./cssHelper";
+import { applyGridLayoutStyles, applyTextareaLayoutStyles, applyEditorContainerLayoutStyles } from "./layoutStyles";
 
 /**
  * Configuration pour la création d'éléments.
@@ -24,6 +25,10 @@ export class ElementFactory {
   public static createGridContainer(): HTMLElement {
     const grid = document.createElement("div");
     grid.className = "agile-board-grid";
+
+    // Apply layout-critical styles
+    applyGridLayoutStyles(grid);
+
     return grid;
   }
 
@@ -130,6 +135,10 @@ export class ElementFactory {
   public static createEditorContainer(): HTMLElement {
     const editor = document.createElement("div");
     editor.className = "agile-board-editor";
+
+    // Apply layout-critical styles
+    applyEditorContainerLayoutStyles(editor);
+
     return editor;
   }
 
@@ -142,6 +151,10 @@ export class ElementFactory {
     const textArea = document.createElement("textarea");
     textArea.className = "agile-board-textarea";
     textArea.spellcheck = spellcheck;
+
+    // Apply layout-critical styles
+    applyTextareaLayoutStyles(textArea);
+
     return textArea;
   }
 
