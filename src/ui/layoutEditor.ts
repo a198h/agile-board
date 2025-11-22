@@ -4,6 +4,7 @@ import { LayoutBox, LayoutFile } from "../core/layout/layoutFileRepo";
 import { LayoutValidator24 } from "../core/layout/layoutValidator24";
 import { UI_CONSTANTS } from "../core/constants";
 import { t } from "../i18n";
+import { ConfirmModal } from "./confirmModal";
 
 // Composants modulaires
 import { GridCanvas } from "../components/editor/GridCanvas";
@@ -488,13 +489,18 @@ export class LayoutEditor extends Modal {
     this.sidebar.updateBoxCount(this.layout.boxes.length);
   }
 
-  private clearAllBoxes(): void {
+  private async clearAllBoxes(): Promise<void> {
     if (this.layout.boxes.length === 0) return;
 
-    const confirmed = window.confirm(
-      t('editor.sidebar.actions.clearConfirm', { count: this.layout.boxes.length })
+    const modal = new ConfirmModal(
+      this.app,
+      t('editor.sidebar.actions.clear'),
+      t('editor.sidebar.actions.clearConfirm', { count: this.layout.boxes.length }),
+      t('editor.sidebar.actions.clear'),
+      t('common.cancel')
     );
-    
+
+    const confirmed = await modal.confirm();
     if (!confirmed) return;
 
     this.boxManager.clearAllBoxes();

@@ -76,12 +76,17 @@ class I18n {
         const placeholder = `{${paramKey}}`;
         result = result!.replace(new RegExp(placeholder, 'g'), String(value));
       });
-      
+
       // Gérer les pluriels
       if (typeof params.count === 'number') {
         const pluralSuffix = params.count > 1 ? 's' : '';
         result = result!.replace(/{plural}/g, pluralSuffix);
       }
+    }
+
+    // Convertir les séquences d'échappement (\\n → saut de ligne)
+    if (result) {
+      result = result.replace(/\\n/g, '\n');
     }
 
     return result;

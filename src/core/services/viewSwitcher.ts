@@ -18,7 +18,7 @@ export class ViewSwitcher {
   }
 
   async switchToBoardView(file: TFile): Promise<void> {
-    const leaf = this.plugin.app.workspace.activeLeaf;
+    const leaf = this.plugin.app.workspace.getLeaf(false);
     if (!leaf) return;
 
     await leaf.setViewState({
@@ -28,7 +28,7 @@ export class ViewSwitcher {
   }
 
   async switchToMarkdownView(file: TFile): Promise<void> {
-    const leaf = this.plugin.app.workspace.activeLeaf;
+    const leaf = this.plugin.app.workspace.getLeaf(false);
     if (!leaf) return;
 
     await leaf.setViewState({
@@ -38,12 +38,12 @@ export class ViewSwitcher {
   }
 
   async switchToSourceMode(file: TFile): Promise<void> {
-    const leaf = this.plugin.app.workspace.activeLeaf;
+    const leaf = this.plugin.app.workspace.getLeaf(false);
     if (!leaf) return;
 
     await leaf.setViewState({
       type: "markdown",
-      state: { 
+      state: {
         file: file.path,
         mode: "source",
         source: true
@@ -178,7 +178,7 @@ export class ViewSwitcher {
     const boardLeaves = this.plugin.app.workspace.getLeavesOfType(AGILE_BOARD_VIEW_TYPE);
     
     // Si aucune vue Board n'est active, supprimer le bouton de mode de la barre d'état
-    const activeLeaf = this.plugin.app.workspace.activeLeaf;
+    const activeLeaf = this.plugin.app.workspace.getLeaf(false);
     const isBoardViewActive = activeLeaf && activeLeaf.view.getViewType() === AGILE_BOARD_VIEW_TYPE;
     
     if (!isBoardViewActive) {
@@ -221,7 +221,7 @@ export class ViewSwitcher {
     try {
       const button = markdownView.addAction(
         "layout-grid",
-        "Mode Board",
+        "Mode board",
         () => {
           if (markdownView.file) {
             this.markAsManualChange(markdownView.file);
@@ -267,7 +267,7 @@ export class ViewSwitcher {
       // Bouton pour mode Live Preview dans la toolbar
       const livePreviewButton = (boardView as unknown as { addAction: (icon: string, title: string, callback: () => void) => HTMLElement }).addAction(
         "document",
-        "Mode Live Preview",
+        "Mode live preview",
         () => {
           if (boardView.file) {
             this.markAsManualChange(boardView.file);
@@ -328,8 +328,8 @@ export class ViewSwitcher {
     svg.appendChild(path2);
 
     modeButton.appendChild(svg);
-    modeButton.setAttribute('aria-label', 'Passer en mode Source');
-    modeButton.setAttribute('title', 'Passer en mode Source');
+    modeButton.setAttribute('aria-label', 'Passer en mode source');
+    modeButton.setAttribute('title', 'Passer en mode source');
     
     // Gestionnaire de clic pour basculer vers le mode Source
     modeButton.addEventListener('click', () => {

@@ -10,13 +10,34 @@ export class UIErrorHandler {
     private static readonly logger = createContextLogger('UIErrorHandler');
 
     /**
+     * Convertit une erreur unknown en message lisible
+     */
+    private static getErrorMessage(error: unknown): string {
+        if (error instanceof Error) {
+            return error.message;
+        }
+        if (typeof error === 'string') {
+            return error;
+        }
+        if (error && typeof error === 'object' && 'message' in error) {
+            return String((error as { message: unknown }).message);
+        }
+        // Dernier recours: JSON.stringify pour les objets
+        try {
+            return JSON.stringify(error);
+        } catch {
+            return 'Unknown error';
+        }
+    }
+
+    /**
      * Affiche une erreur à l'utilisateur et la log
      */
     static showError(message: string, error?: unknown, duration: number = TIMING_CONSTANTS.IMPORT_TIMEOUT_MS): void {
         new Notice(`❌ ${message}`, duration);
-        
+
         if (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = this.getErrorMessage(error);
             this.logger.error(`${message}: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
         } else {
             this.logger.error(message);
