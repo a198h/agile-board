@@ -1,6 +1,6 @@
 // src/types.ts
 
-import { TFile, Plugin, MarkdownView } from "obsidian";
+import { TFile, MarkdownView } from "obsidian";
 
 /**
  * Configuration d'un bloc dans une grille de layout.

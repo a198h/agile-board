@@ -5,7 +5,7 @@ import * as fs from "fs/promises";
 import * as fsSync from "fs";
 import * as path from "path";
 import { createContextLogger } from "../logger";
-import { TIMING_CONSTANTS, GRID_CONSTANTS, FILE_CONSTANTS } from "../constants";
+import { TIMING_CONSTANTS, FILE_CONSTANTS } from "../constants";
 import { ErrorHandler, ErrorSeverity } from "../errorHandler";
 import type { LayoutBlock } from "../../types";
 
@@ -15,10 +15,10 @@ import type { LayoutBlock } from "../../types";
 export interface LayoutBox {
   readonly id: string;
   readonly title: string;
-  readonly x: number;  // 0-${GRID_CONSTANTS.MAX_INDEX}
-  readonly y: number;  // 0-${GRID_CONSTANTS.MAX_INDEX}  
-  readonly w: number;  // ${GRID_CONSTANTS.MIN_SIZE}-${GRID_CONSTANTS.SIZE}
-  readonly h: number;  // ${GRID_CONSTANTS.MIN_SIZE}-${GRID_CONSTANTS.SIZE}
+  readonly x: number;  // 0-23
+  readonly y: number;  // 0-23
+  readonly w: number;  // 1-24
+  readonly h: number;  // 1-24
 }
 
 /**
@@ -262,7 +262,7 @@ export class LayoutFileRepo {
         await fs.writeFile(filePath, content, 'utf-8');
         // Layout créé silencieusement
 
-      } catch (error) {
+      } catch (_error) {
         // Erreur silencieuse - layout existe peut-être déjà
       }
     }

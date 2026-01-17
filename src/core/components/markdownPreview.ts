@@ -36,9 +36,10 @@ export class MarkdownPreview extends BaseUIComponent {
     super(container, app);
     this.component = new Component();
     this.currentContent = config.content;
-    this.debouncedOnChange = debounce((content: string): void => {
+    const wrappedOnChange = (content: string): void => {
       void config.onContentChange(content);
-    }, 1000);
+    };
+    this.debouncedOnChange = debounce(wrappedOnChange, 1000);
 
     this.registerDisposable({
       dispose: () => this.component.unload()
@@ -127,13 +128,13 @@ export class MarkdownPreview extends BaseUIComponent {
   /**
    * Post-traitement des éléments après rendu Obsidian.
    */
-  private postProcessElements(replacements: readonly unknown[]): void {
+  private postProcessElements(_replacements: readonly unknown[]): void {
     // Traiter les images
     this.processImagePlaceholders();
-    
+
     // Traiter les embeds
     this.processEmbedPlaceholders();
-    
+
     // Configurer les éléments interactifs
     this.setupInteractiveElements();
   }

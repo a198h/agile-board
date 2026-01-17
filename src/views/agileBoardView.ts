@@ -37,7 +37,7 @@ export class AgileBoardView extends FileView {
     await this.renderBoardLayout();
   }
 
-  async onUnloadFile(file: TFile): Promise<void> {
+  onUnloadFile(file: TFile): void {
     this.cleanup();
   }
 

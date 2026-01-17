@@ -1,5 +1,5 @@
 // src/core/lifecycle.ts
-import { Component, EventRef, App } from "obsidian";
+import { EventRef, App } from "obsidian";
 import { ErrorHandler, ErrorSeverity } from "./errorHandler";
 import { PluginError } from "../types";
 

@@ -7,8 +7,7 @@ import {
   ModelDetector as IModelDetector,
   FileDetectionState,
   PLUGIN_CONSTANTS,
-  Result,
-  PluginError
+  Result
 } from "../../types";
 import { createContextLogger } from "../logger";
 import { ErrorHandler, ErrorSeverity } from "../errorHandler";
@@ -325,9 +324,9 @@ export class ModelDetector implements IModelDetector {
       if (typeof modelName === 'string' && modelName.trim().length > 0) {
         return modelName.trim();
       }
-      
+
       return null;
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }

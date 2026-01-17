@@ -1,8 +1,6 @@
 // src/markdownBox.ts
 import { App, MarkdownRenderer } from "obsidian";
 import { createContextLogger } from "../../core/logger";
-import { ErrorHandler, ErrorSeverity } from "../../core/errorHandler";
-import { PluginError, Result } from "../../types";
 import {
   applyMarkdownBoxLayoutStyles,
   applyMarkdownPreviewLayoutStyles,

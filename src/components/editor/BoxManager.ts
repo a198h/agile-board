@@ -3,7 +3,6 @@ import { LayoutBox, LayoutFile } from "../../core/layout/layoutFileRepo";
 import { LayoutValidator24 } from "../../core/layout/layoutValidator24";
 import { COLOR_CONSTANTS } from "../../core/constants";
 import { DOMHelper } from "../../ui/utils/DOMHelper";
-import { t } from "../../i18n";
 
 /**
  * État d'un cadre pendant l'édition
