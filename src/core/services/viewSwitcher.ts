@@ -18,7 +18,8 @@ export class ViewSwitcher {
   }
 
   async switchToBoardView(file: TFile): Promise<void> {
-    const leaf = this.plugin.app.workspace.getLeaf(false);
+    // Utiliser activeLeaf au lieu de getLeaf() pour éviter le bug d'Obsidian avec les onglets épinglés
+    const leaf = this.plugin.app.workspace.activeLeaf;
     if (!leaf) return;
 
     await leaf.setViewState({
@@ -28,7 +29,8 @@ export class ViewSwitcher {
   }
 
   async switchToMarkdownView(file: TFile): Promise<void> {
-    const leaf = this.plugin.app.workspace.getLeaf(false);
+    // Utiliser activeLeaf au lieu de getLeaf() pour éviter le bug d'Obsidian avec les onglets épinglés
+    const leaf = this.plugin.app.workspace.activeLeaf;
     if (!leaf) return;
 
     await leaf.setViewState({
@@ -38,7 +40,8 @@ export class ViewSwitcher {
   }
 
   async switchToSourceMode(file: TFile): Promise<void> {
-    const leaf = this.plugin.app.workspace.getLeaf(false);
+    // Utiliser activeLeaf au lieu de getLeaf() pour éviter le bug d'Obsidian avec les onglets épinglés
+    const leaf = this.plugin.app.workspace.activeLeaf;
     if (!leaf) return;
 
     await leaf.setViewState({
@@ -176,9 +179,9 @@ export class ViewSwitcher {
   private checkAllViews(): void {
     const markdownLeaves = this.plugin.app.workspace.getLeavesOfType("markdown");
     const boardLeaves = this.plugin.app.workspace.getLeavesOfType(AGILE_BOARD_VIEW_TYPE);
-    
+
     // Si aucune vue Board n'est active, supprimer le bouton de mode de la barre d'état
-    const activeLeaf = this.plugin.app.workspace.getLeaf(false);
+    const activeLeaf = this.plugin.app.workspace.activeLeaf;
     const isBoardViewActive = activeLeaf && activeLeaf.view.getViewType() === AGILE_BOARD_VIEW_TYPE;
     
     if (!isBoardViewActive) {
