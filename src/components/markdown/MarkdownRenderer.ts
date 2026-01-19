@@ -226,7 +226,11 @@ export class MarkdownRenderer extends BaseUIComponent {
    */
   private setupPreviewStyles(): void {
     if (!this.containerEl) return;
-    
+
+    // Ajouter les classes standard d'Obsidian pour hériter des styles de police et de thème
+    // Ces classes sont essentielles pour que Dataview/Tasks respectent les styles du système
+    this.containerEl.classList.add('markdown-preview-view', 'markdown-rendered');
+
     this.containerEl.style.cssText = `
       width: 100%;
       height: 100%;
