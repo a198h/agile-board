@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.8.0-blue)
+![version](https://img.shields.io/badge/version-0.8.8-blue)
 
 🌍 用其他语言阅读:
 [English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [Русский](README.ru.md)
@@ -73,25 +73,20 @@
 
 ## 🚀 安装
 
-### 选项 1 – 完整 Vault（推荐）
+### 选项 1 – BRAT（推荐）
 
-1. 下载 `Agile-Board-v0.7.7.zip` （包含插件和示例的 Obsidian Vault）  
-2. 解压并直接在 Obsidian 中打开该文件夹  
-
-### 选项 2 – 仅插件
-
-1. 从 [GitHub releases](https://github.com/a198h/agile-board/releases) 下载  
-2. 将 `agile-board` 文件夹复制到 `.obsidian/plugins/`  
-3. 重启 Obsidian 并启用插件  
-4. **插件已内置 5 个默认布局**  
-
-### 选项 3 – BRAT (Beta Testing)
-
-通过 [BRAT](https://github.com/TfTHacker/obsidian42-brat) 安装以获取最新更新：
+通过 [BRAT](https://github.com/TfTHacker/obsidian42-brat) 安装以获取自动更新：
 
 1. 安装并启用 BRAT 插件  
 2. 添加 `a198h/agile-board` 作为 Beta 插件  
-3. BRAT 会自动更新插件  
+3. BRAT 会自动安装和更新插件
+
+### 选项 2 – 手动安装
+
+1. 从 [GitHub releases](https://github.com/a198h/agile-board/releases) 下载 `main.js`、`manifest.json` 和 `styles.css`  
+2. 将它们复制到 `.obsidian/plugins/agile-board/`  
+3. 重启 Obsidian 并启用插件  
+4. **插件已内置 5 个默认布局**  
 
 ---
 

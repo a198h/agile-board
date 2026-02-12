@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.8.0-blue)
+![version](https://img.shields.io/badge/version-0.8.8-blue)
 
 🌍 Lies dies in anderen Sprachen:
 [English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
@@ -73,25 +73,20 @@ Wechsel zwischen den Modi über die Symbolleisten-Icons.
 
 ## 🚀 Installation
 
-### Option 1 – Komplettes Vault (empfohlen)
+### Option 1 – BRAT (Empfohlen)
 
-1. Lade `Agile-Board-v0.7.7.zip` herunter (Obsidian-Vault mit Plugin und Beispielen)  
-2. Entpacken und den Ordner direkt in Obsidian öffnen  
-
-### Option 2 – Nur Plugin
-
-1. Von [GitHub Releases](https://github.com/a198h/agile-board/releases) herunterladen  
-2. Den Ordner `agile-board` nach `.obsidian/plugins/` kopieren  
-3. Obsidian neu starten und Plugin aktivieren  
-4. **5 Standard-Dispositionen sind enthalten**  
-
-### Option 3 – BRAT (Beta Testing)
-
-Installation über [BRAT](https://github.com/TfTHacker/obsidian42-brat), um die neuesten Updates zu erhalten:
+Installation über [BRAT](https://github.com/TfTHacker/obsidian42-brat) für automatische Updates:
 
 1. BRAT-Plugin installieren und aktivieren  
 2. `a198h/agile-board` als Beta-Plugin hinzufügen  
-3. BRAT aktualisiert das Plugin automatisch  
+3. BRAT installiert und aktualisiert das Plugin automatisch
+
+### Option 2 – Manuelle Installation
+
+1. `main.js`, `manifest.json` und `styles.css` von [GitHub Releases](https://github.com/a198h/agile-board/releases) herunterladen  
+2. In `.obsidian/plugins/agile-board/` kopieren  
+3. Obsidian neu starten und Plugin aktivieren  
+4. **5 Standard-Dispositionen sind enthalten**  
 
 ---
 

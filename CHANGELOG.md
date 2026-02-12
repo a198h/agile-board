@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.8] - 2026-02-12
+
+### 🐛 Bug Fixes
+
+- **Pinned tabs duplication**: Fixed critical bug where clicking on pinned tabs created duplicate empty tabs when the plugin was active. Replaced all `workspace.getLeaf(false)` calls with `workspace.activeLeaf` to work around a known Obsidian API issue.
+- **Dataview/Tasks font styling**: Queries from Dataview and Tasks plugins now properly inherit system font settings (font-family, font-size). Added standard Obsidian CSS classes (`markdown-preview-view`, `markdown-rendered`) to the preview container.
+- **Board viewport height**: The board now fits exactly within Obsidian's available viewport, eliminating unwanted global scrolling. Individual frames retain their scroll capability when content overflows.
+- **Embed-only frames**: Fixed frames containing only embeds being unclickable/inactive.
+- **TypeScript compliance**: Fixed `onUnloadFile()` signature to properly return `Promise<void>`.
+
+### 📝 Documentation
+
+- Updated all 7 README files with version 0.8.8
+- Reorganized installation options: BRAT first (recommended), manual installation second
+- Removed obsolete "Complete Vault" installation option
+
 ## [0.8.0] - 2025-10-30
 
 ### ✨ Major Features
@@ -216,7 +232,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 0.7.5
+- **Current Version**: 0.8.8
 - **Minimum Obsidian Version**: 0.15.0
 - **Platform Support**: Desktop only (`isDesktopOnly: true`)
 - **License**: GPL-3.0
