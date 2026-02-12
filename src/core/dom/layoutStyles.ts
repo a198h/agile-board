@@ -28,8 +28,8 @@ export function applyContainerLayoutStyles(element: HTMLElement): void {
   Object.assign(element.style, {
     position: 'relative',
     width: '100%',
-    minHeight: '100vh',
-    overflow: 'auto'
+    height: '100%',
+    overflow: 'hidden'
   });
 }
 
@@ -44,7 +44,7 @@ export function applyGridLayoutStyles(element: HTMLElement): void {
     display: 'grid',
     gridTemplateColumns: 'repeat(24, 1fr)',
     gridTemplateRows: 'repeat(24, minmax(0, 1fr))',
-    height: '90vh'
+    height: '100%'
   });
 }
 
