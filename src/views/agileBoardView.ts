@@ -1,6 +1,6 @@
 // src/agileBoardView.ts
-import { FileView, MarkdownView, TFile, WorkspaceLeaf } from "obsidian";
-import { LayoutModel } from "../types";
+import { FileView, MarkdownView, TFile, WorkspaceLeaf, setIcon } from "obsidian";
+import { LayoutModel, LayoutBlock } from "../types";
 import { SectionInfo, parseHeadingsInFile } from "../core/parsers/sectionParser";
 import { SimpleMarkdownFrame } from "./simpleMarkdownFrame";
 import { t } from "../i18n";
@@ -118,12 +118,8 @@ export class AgileBoardView extends FileView {
         flex-direction: column;
       `;
 
-      // Titre du cadre
-      const titleEl = frameContainer.createDiv("frame-title");
-      titleEl.style.cssText = `
-        flex-shrink: 0;
-      `;
-      titleEl.textContent = block.title;
+      // Titre du cadre avec bouton lock
+      this.createFrameTitle(frameContainer, block);
 
       // Contenu du cadre
       const contentEl = frameContainer.createDiv("frame-content");
@@ -134,7 +130,7 @@ export class AgileBoardView extends FileView {
       // Apply visual styles
       contentEl.style.padding = '0.5rem';
 
-      // Créer la vue markdown simple
+      // Créer la vue markdown simple avec callback de verrouillage
       const simpleMarkdownFrame = new SimpleMarkdownFrame(
         contentEl,
         this.app,
@@ -142,7 +138,8 @@ export class AgileBoardView extends FileView {
         section,
         (newContent) => {
           void this.onFrameContentChanged(block.title, newContent);
-        }
+        },
+        () => this.isFrameLocked(block.title)
       );
 
       this.frames.set(block.title, simpleMarkdownFrame);
@@ -283,6 +280,73 @@ export class AgileBoardView extends FileView {
     
     // Recharger la vue
     await this.renderBoardLayout();
+  }
+
+  /**
+   * Crée la barre de titre d'un cadre avec le bouton lock.
+   */
+  private createFrameTitle(container: HTMLElement, block: LayoutBlock): void {
+    const titleEl = container.createDiv("frame-title");
+    titleEl.style.cssText = 'flex-shrink: 0; display: flex; align-items: center; gap: 0.5em;';
+
+    const titleText = titleEl.createSpan({ cls: 'agile-board-frame-title-text' });
+    titleText.textContent = block.title;
+    titleText.style.flex = '1';
+
+    const lockBtn = titleEl.createEl('button', { cls: 'agile-board-lock-btn clickable-icon' });
+    lockBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      void this.toggleFrameLock(block.title, lockBtn);
+    });
+    this.updateLockIcon(lockBtn, this.isFrameLocked(block.title));
+  }
+
+  /**
+   * Vérifie si un cadre est verrouillé.
+   */
+  private isFrameLocked(sectionTitle: string): boolean {
+    const filePath = this.file?.path;
+    if (!filePath) return false;
+    return this.plugin.settings.lockedFrames[filePath]?.includes(sectionTitle) ?? false;
+  }
+
+  /**
+   * Bascule l'état de verrouillage d'un cadre.
+   */
+  private async toggleFrameLock(sectionTitle: string, lockBtn: HTMLElement): Promise<void> {
+    const filePath = this.file?.path;
+    if (!filePath) return;
+
+    const currentLocked = { ...this.plugin.settings.lockedFrames };
+    const fileLocks = [...(currentLocked[filePath] ?? [])];
+    const index = fileLocks.indexOf(sectionTitle);
+
+    if (index >= 0) {
+      fileLocks.splice(index, 1);
+    } else {
+      fileLocks.push(sectionTitle);
+    }
+
+    if (fileLocks.length === 0) {
+      delete currentLocked[filePath];
+    } else {
+      currentLocked[filePath] = fileLocks;
+    }
+
+    this.plugin.settings = { ...this.plugin.settings, lockedFrames: currentLocked };
+    await this.plugin.saveSettings();
+    this.updateLockIcon(lockBtn, index < 0);
+  }
+
+  /**
+   * Met à jour l'icône du bouton lock.
+   */
+  private updateLockIcon(btn: HTMLElement, locked: boolean): void {
+    btn.empty();
+    setIcon(btn, locked ? 'lock' : 'lock-open');
+    btn.setAttribute('aria-label',
+      locked ? t('settings.lock.unlockTooltip') : t('settings.lock.lockTooltip')
+    );
   }
 
   // Méthode pour basculer vers le mode normal

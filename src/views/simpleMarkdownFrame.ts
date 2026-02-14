@@ -32,7 +32,8 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
     private app: App,
     private file: TFile,
     private section: SectionInfo,
-    private onChange: (content: string) => void
+    private onChange: (content: string) => void,
+    private isLocked: () => boolean = () => false
   ) {
     super(container, app);
     this.markdownContent = this.section.lines.join('\n');
@@ -122,12 +123,17 @@ export class SimpleMarkdownFrame extends BaseUIComponent {
     
     this.containerEl.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
-      
-      // Vérifier si c'est un élément interactif
+
+      // Les éléments interactifs restent cliquables (liens, embeds, checkboxes)
       if (this.linkHandler.isInteractiveElement(target)) {
         return;
       }
-      
+
+      // Cadre verrouillé : pas d'édition
+      if (this.isLocked()) {
+        return;
+      }
+
       this.enterEditMode();
     });
   }

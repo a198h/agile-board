@@ -60,6 +60,20 @@
       "createError": "Error al crear el tablero",
       "exportError": "Error al exportar el tablero",
       "deleteError": "Error al eliminar el tablero"
+    },
+    "appearance": {
+      "header": "Apariencia",
+      "fontSize": {
+        "title": "Tamaño de fuente de los marcos",
+        "description": "Factor de escala del texto en los marcos (por defecto: 1.0)"
+      }
+    },
+    "library": {
+      "header": "Biblioteca de tableros"
+    },
+    "lock": {
+      "lockTooltip": "Bloquear marco (desactivar edición)",
+      "unlockTooltip": "Desbloquear marco (activar edición)"
     }
   },
   "editor": {

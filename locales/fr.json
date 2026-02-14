@@ -60,6 +60,20 @@
       "createError": "Erreur lors de la création du tableau",
       "exportError": "Erreur lors de l'export du tableau",
       "deleteError": "Erreur lors de la suppression du tableau"
+    },
+    "appearance": {
+      "header": "Apparence",
+      "fontSize": {
+        "title": "Taille de police des cadres",
+        "description": "Facteur d'échelle du texte dans les cadres (par défaut : 1.0)"
+      }
+    },
+    "library": {
+      "header": "Bibliothèque de tableaux"
+    },
+    "lock": {
+      "lockTooltip": "Verrouiller le cadre (désactiver l'édition)",
+      "unlockTooltip": "Déverrouiller le cadre (activer l'édition)"
     }
   },
   "editor": {

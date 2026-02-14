@@ -60,6 +60,20 @@
       "createError": "Erro ao criar o quadro",
       "exportError": "Erro ao exportar o quadro",
       "deleteError": "Erro ao excluir o quadro"
+    },
+    "appearance": {
+      "header": "Aparência",
+      "fontSize": {
+        "title": "Tamanho da fonte dos quadros",
+        "description": "Fator de escala do texto nos quadros (padrão: 1.0)"
+      }
+    },
+    "library": {
+      "header": "Biblioteca de quadros"
+    },
+    "lock": {
+      "lockTooltip": "Bloquear quadro (desativar edição)",
+      "unlockTooltip": "Desbloquear quadro (ativar edição)"
     }
   },
   "editor": {

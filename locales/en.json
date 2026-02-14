@@ -60,6 +60,20 @@
       "createError": "Error creating layout",
       "exportError": "Error exporting layout",
       "deleteError": "Error deleting layout"
+    },
+    "appearance": {
+      "header": "Appearance",
+      "fontSize": {
+        "title": "Frame font size",
+        "description": "Scale factor for text in board frames (default: 1.0)"
+      }
+    },
+    "library": {
+      "header": "Layout Library"
+    },
+    "lock": {
+      "lockTooltip": "Lock frame (disable editing)",
+      "unlockTooltip": "Unlock frame (enable editing)"
     }
   },
   "editor": {

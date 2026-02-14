@@ -60,6 +60,20 @@
       "createError": "Fehler beim Erstellen des Boards",
       "exportError": "Fehler beim Exportieren des Boards",
       "deleteError": "Fehler beim Löschen des Boards"
+    },
+    "appearance": {
+      "header": "Erscheinungsbild",
+      "fontSize": {
+        "title": "Schriftgröße der Rahmen",
+        "description": "Skalierungsfaktor für Text in Board-Rahmen (Standard: 1.0)"
+      }
+    },
+    "library": {
+      "header": "Board-Bibliothek"
+    },
+    "lock": {
+      "lockTooltip": "Rahmen sperren (Bearbeitung deaktivieren)",
+      "unlockTooltip": "Rahmen entsperren (Bearbeitung aktivieren)"
     }
   },
   "editor": {

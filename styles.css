@@ -6,6 +6,14 @@
   --ab-padding: 1rem;
 }
 
+/* === Frame Content Font Scale === */
+.agile-board-frame .frame-content,
+.agile-board-frame .agile-board-frame-content,
+.agile-board-frame .markdown-box,
+.agile-board-frame .markdown-preview {
+  font-size: calc(1em * var(--ab-frame-font-scale, 1));
+}
+
 /* === Container === */
 /* Layout properties (position, width, min-height, overflow) are applied via JavaScript in layoutStyles.ts */
 /* No visual properties to customize */
@@ -91,6 +99,31 @@
   border-radius: 6px 6px 0 0;
   background: var(--background-secondary);
   font-size: 1.1rem;
+}
+
+/* === Lock Button === */
+.agile-board-lock-btn {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: var(--text-muted);
+  opacity: 0.5;
+  transition: opacity 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agile-board-lock-btn:hover {
+  opacity: 1;
+  color: var(--text-normal);
+}
+
+.agile-board-lock-btn .svg-icon {
+  width: 14px;
+  height: 14px;
 }
 
 /* Layout properties (flex, overflow) are applied via JavaScript in layoutStyles.ts */
