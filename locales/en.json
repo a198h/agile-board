@@ -60,6 +60,20 @@
       "createError": "Error creating layout",
       "exportError": "Error exporting layout",
       "deleteError": "Error deleting layout"
+    },
+    "appearance": {
+      "header": "Appearance",
+      "fontSize": {
+        "title": "Frame font size",
+        "description": "Scale factor for text in board frames (default: 1.0)"
+      }
+    },
+    "library": {
+      "header": "Layout Library"
+    },
+    "lock": {
+      "lockTooltip": "Lock frame (disable editing)",
+      "unlockTooltip": "Unlock frame (enable editing)"
     }
   },
   "editor": {
@@ -96,6 +110,20 @@
         "select": "Select: Click on a frame"
       }
     }
+  },
+  "menu": {
+    "livePreview": "Live preview mode",
+    "sourceMode": "Source mode",
+    "splitRight": "Split right",
+    "splitDown": "Split down",
+    "openNewWindow": "Open in new window",
+    "rename": "Rename...",
+    "moveTo": "Move file to...",
+    "bookmark": "Bookmark...",
+    "printBoard": "Print board",
+    "copyPath": "Copy file path",
+    "revealExplorer": "Reveal in file explorer",
+    "deleteFile": "Delete file"
   },
   "view": {
     "noLayout": "This note has no agile-board layout configured",

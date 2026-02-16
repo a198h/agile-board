@@ -1,12 +1,12 @@
 // src/main.ts
-import { Plugin } from "obsidian";
+import { Plugin, TFile } from "obsidian";
 import { LayoutService } from "./core/layout/layoutService";
 import { ModelDetector } from "./core/services/modelDetector";
 import { AgileBoardView, AGILE_BOARD_VIEW_TYPE } from "./views/agileBoardView";
 import { ViewSwitcher } from "./core/services/viewSwitcher";
 import { FileSynchronizer } from "./core/services/fileSynchronizer";
 import { ErrorHandler, ErrorSeverity, LifecycleManager, LifecycleAware, createContextLogger, LoggingConfig } from "./core";
-import { PluginError } from "./types";
+import { PluginError, PluginSettings, DEFAULT_PLUGIN_SETTINGS } from "./types";
 import { LayoutSettingsTab } from "./ui/layoutSettingsTab";
 import { initializeI18n, setLanguage } from "./i18n";
 
@@ -19,6 +19,7 @@ export default class AgileBoardPlugin extends Plugin {
   public layoutService: LayoutService;
   public fileSynchronizer: FileSynchronizer;
   public viewSwitcher: ViewSwitcher;
+  public settings: PluginSettings = DEFAULT_PLUGIN_SETTINGS;
   private modelDetector: ModelDetector;
   private lifecycleManager: LifecycleManager;
   private logger = createContextLogger('AgileBoardPlugin');
@@ -34,10 +35,15 @@ export default class AgileBoardPlugin extends Plugin {
     await initializeI18n();
     setLanguage(window.localStorage.getItem('language') || 'en');
     
+    // Charger les paramètres persistants
+    await this.loadSettings();
+    this.applyFontScale();
+
     this.lifecycleManager = new LifecycleManager(this.app);
-    
+
     try {
       await this.initializeServices();
+      this.registerFileEvents();
       this.startMonitoring();
       await this.lifecycleManager.initializeComponents();
       
@@ -139,6 +145,8 @@ export default class AgileBoardPlugin extends Plugin {
    * Nettoie toutes les ressources et arrête les services.
    */
   private cleanup(): void {
+    document.documentElement.style.removeProperty('--ab-frame-font-scale');
+
     // Les services implémentant LifecycleAware seront nettoyés automatiquement
     // par le LifecycleManager. Garde le nettoyage manuel pour compatibilité.
     if (this.modelDetector) {
@@ -155,5 +163,57 @@ export default class AgileBoardPlugin extends Plugin {
     }
   }
 
+  /**
+   * Charge les paramètres depuis le stockage Obsidian.
+   */
+  public async loadSettings(): Promise<void> {
+    const data = await this.loadData();
+    this.settings = { ...DEFAULT_PLUGIN_SETTINGS, ...(data ?? {}) };
+  }
+
+  /**
+   * Sauvegarde les paramètres dans le stockage Obsidian.
+   */
+  public async saveSettings(): Promise<void> {
+    await this.saveData(this.settings);
+  }
+
+  /**
+   * Applique le facteur d'échelle de police via CSS custom property.
+   */
+  public applyFontScale(): void {
+    document.documentElement.style.setProperty(
+      '--ab-frame-font-scale',
+      String(this.settings.frameFontScale)
+    );
+  }
+
+  /**
+   * Enregistre les événements fichier pour nettoyer les lockedFrames.
+   */
+  private registerFileEvents(): void {
+    this.registerEvent(
+      this.app.vault.on('rename', (file, oldPath) => {
+        if (file instanceof TFile && this.settings.lockedFrames[oldPath]) {
+          const updated = { ...this.settings.lockedFrames };
+          updated[file.path] = updated[oldPath];
+          delete updated[oldPath];
+          this.settings = { ...this.settings, lockedFrames: updated };
+          void this.saveSettings();
+        }
+      })
+    );
+
+    this.registerEvent(
+      this.app.vault.on('delete', (file) => {
+        if (file instanceof TFile && this.settings.lockedFrames[file.path]) {
+          const updated = { ...this.settings.lockedFrames };
+          delete updated[file.path];
+          this.settings = { ...this.settings, lockedFrames: updated };
+          void this.saveSettings();
+        }
+      })
+    );
+  }
 }
 

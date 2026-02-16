@@ -6,6 +6,14 @@
   --ab-padding: 1rem;
 }
 
+/* === Frame Content Font Scale === */
+.agile-board-frame .frame-content,
+.agile-board-frame .agile-board-frame-content,
+.agile-board-frame .markdown-box,
+.agile-board-frame .markdown-preview {
+  font-size: calc(1em * var(--ab-frame-font-scale, 1));
+}
+
 /* === Container === */
 /* Layout properties (position, width, min-height, overflow) are applied via JavaScript in layoutStyles.ts */
 /* No visual properties to customize */
@@ -91,6 +99,31 @@
   border-radius: 6px 6px 0 0;
   background: var(--background-secondary);
   font-size: 1.1rem;
+}
+
+/* === Lock Button === */
+.agile-board-lock-btn {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: var(--text-muted);
+  opacity: 0.5;
+  transition: opacity 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agile-board-lock-btn:hover {
+  opacity: 1;
+  color: var(--text-normal);
+}
+
+.agile-board-lock-btn .svg-icon {
+  width: 14px;
+  height: 14px;
 }
 
 /* Layout properties (flex, overflow) are applied via JavaScript in layoutStyles.ts */
@@ -283,4 +316,68 @@
 .agile-board-embed-content {
   color: var(--text-muted);
   font-style: italic;
+}
+
+/* === Print Styles === */
+@media print {
+  /* Hide Obsidian chrome */
+  .workspace-ribbon,
+  .sidebar-toggle-button,
+  .workspace-tab-header-container,
+  .view-header,
+  .status-bar,
+  .titlebar,
+  .workspace-split.mod-left-split,
+  .workspace-split.mod-right-split,
+  .modal-container {
+    display: none !important;
+  }
+
+  /* Reset layout constraints so the board fills the page */
+  body,
+  .app-container,
+  .horizontal-main-container,
+  .workspace,
+  .workspace-split.mod-root,
+  .workspace-tabs,
+  .workspace-tab-container,
+  .workspace-leaf,
+  .workspace-leaf-content,
+  .view-content {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* Board grid: fill page and allow page breaks */
+  .agile-board-grid {
+    height: auto !important;
+    overflow: visible !important;
+    page-break-inside: auto;
+  }
+
+  /* Frames: visible with borders for print */
+  .agile-board-frame {
+    overflow: visible !important;
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+
+  .agile-board-frame:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Frame content: visible overflow for printing */
+  .frame-content {
+    overflow: visible !important;
+  }
+
+  /* Hide lock buttons */
+  .agile-board-lock-btn {
+    display: none !important;
+  }
 }

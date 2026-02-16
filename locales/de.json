@@ -60,6 +60,20 @@
       "createError": "Fehler beim Erstellen des Boards",
       "exportError": "Fehler beim Exportieren des Boards",
       "deleteError": "Fehler beim Löschen des Boards"
+    },
+    "appearance": {
+      "header": "Erscheinungsbild",
+      "fontSize": {
+        "title": "Schriftgröße der Rahmen",
+        "description": "Skalierungsfaktor für Text in Board-Rahmen (Standard: 1.0)"
+      }
+    },
+    "library": {
+      "header": "Board-Bibliothek"
+    },
+    "lock": {
+      "lockTooltip": "Rahmen sperren (Bearbeitung deaktivieren)",
+      "unlockTooltip": "Rahmen entsperren (Bearbeitung aktivieren)"
     }
   },
   "editor": {
@@ -96,6 +110,20 @@
         "select": "Auswählen: Auf einen Rahmen klicken"
       }
     }
+  },
+  "menu": {
+    "livePreview": "Live-Vorschau-Modus",
+    "sourceMode": "Quellmodus",
+    "splitRight": "Nach rechts teilen",
+    "splitDown": "Nach unten teilen",
+    "openNewWindow": "In neuem Fenster öffnen",
+    "rename": "Umbenennen...",
+    "moveTo": "Datei verschieben nach...",
+    "bookmark": "Lesezeichen...",
+    "printBoard": "Board drucken",
+    "copyPath": "Dateipfad kopieren",
+    "revealExplorer": "Im Datei-Explorer anzeigen",
+    "deleteFile": "Datei löschen"
   },
   "view": {
     "noLayout": "Diese Notiz hat kein agile-board Layout konfiguriert",

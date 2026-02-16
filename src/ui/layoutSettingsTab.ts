@@ -32,18 +32,55 @@ export class LayoutSettingsTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
+    // === Section Apparence ===
+    this.createAppearanceSection(containerEl);
+
+    // === Section Bibliothèque ===
     new Setting(containerEl)
-      .setName(t('settings.header'))
+      .setName(t('settings.library.header'))
       .setHeading();
 
+    const librarySection = containerEl.createDiv('agile-board-library-section');
+    librarySection.style.cssText = `
+      border-radius: 8px;
+      padding: 12px;
+      background: var(--background-secondary);
+    `;
+
     // Boutons principaux
-    this.createMainButtons(containerEl);
-    
+    this.createMainButtons(librarySection);
+
     // Liste des layouts
-    this.layoutListContainer = containerEl.createDiv('layout-list-container');
-    this.layoutListContainer.style.marginTop = '20px';
+    this.layoutListContainer = librarySection.createDiv('layout-list-container');
+    this.layoutListContainer.style.marginTop = '12px';
 
     void this.refreshLayoutList();
+  }
+
+  /**
+   * Crée la section Apparence avec le slider de taille de police.
+   */
+  private createAppearanceSection(container: HTMLElement): void {
+    new Setting(container)
+      .setName(t('settings.appearance.header'))
+      .setHeading();
+
+    new Setting(container)
+      .setName(t('settings.appearance.fontSize.title'))
+      .setDesc(t('settings.appearance.fontSize.description'))
+      .addSlider(slider => slider
+        .setLimits(0.8, 1.5, 0.05)
+        .setValue(this.plugin.settings.frameFontScale)
+        .setDynamicTooltip()
+        .onChange(async (value) => {
+          this.plugin.settings = {
+            ...this.plugin.settings,
+            frameFontScale: value
+          };
+          await this.plugin.saveSettings();
+          this.plugin.applyFontScale();
+        })
+      );
   }
 
   private createMainButtons(container: HTMLElement): void {

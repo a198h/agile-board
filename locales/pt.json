@@ -60,6 +60,20 @@
       "createError": "Erro ao criar o quadro",
       "exportError": "Erro ao exportar o quadro",
       "deleteError": "Erro ao excluir o quadro"
+    },
+    "appearance": {
+      "header": "Aparência",
+      "fontSize": {
+        "title": "Tamanho da fonte dos quadros",
+        "description": "Fator de escala do texto nos quadros (padrão: 1.0)"
+      }
+    },
+    "library": {
+      "header": "Biblioteca de quadros"
+    },
+    "lock": {
+      "lockTooltip": "Bloquear quadro (desativar edição)",
+      "unlockTooltip": "Desbloquear quadro (ativar edição)"
     }
   },
   "editor": {
@@ -96,6 +110,20 @@
         "select": "Selecionar: Clique em uma moldura"
       }
     }
+  },
+  "menu": {
+    "livePreview": "Modo visualização ao vivo",
+    "sourceMode": "Modo fonte",
+    "splitRight": "Dividir para a direita",
+    "splitDown": "Dividir para baixo",
+    "openNewWindow": "Abrir em nova janela",
+    "rename": "Renomear...",
+    "moveTo": "Mover arquivo para...",
+    "bookmark": "Favoritar...",
+    "printBoard": "Imprimir quadro",
+    "copyPath": "Copiar caminho do arquivo",
+    "revealExplorer": "Mostrar no explorador de arquivos",
+    "deleteFile": "Excluir arquivo"
   },
   "view": {
     "noLayout": "Esta nota não tem um layout agile-board configurado",

@@ -536,6 +536,27 @@ export const PLUGIN_CONSTANTS = {
   }
 } as const;
 
+// === Plugin Settings ===
+
+/**
+ * Paramètres persistants du plugin, sauvegardés via Obsidian loadData/saveData.
+ * Structure immutable pour la configuration utilisateur.
+ */
+export interface PluginSettings {
+  /** Facteur d'échelle de la taille de police des cadres (0.8 - 1.5) */
+  readonly frameFontScale: number;
+  /** Cadres verrouillés par fichier: { filePath: [sectionTitle1, sectionTitle2] } */
+  readonly lockedFrames: Readonly<Record<string, readonly string[]>>;
+}
+
+/**
+ * Valeurs par défaut pour les paramètres du plugin.
+ */
+export const DEFAULT_PLUGIN_SETTINGS: PluginSettings = {
+  frameFontScale: 1.0,
+  lockedFrames: {}
+};
+
 // === Type Utilities ===
 
 /**

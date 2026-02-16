@@ -1,6 +1,6 @@
 // src/agileBoardView.ts
-import { FileView, MarkdownView, TFile, WorkspaceLeaf } from "obsidian";
-import { LayoutModel } from "../types";
+import { FileView, MarkdownView, Menu, Modal, TFile, WorkspaceLeaf, setIcon } from "obsidian";
+import { LayoutModel, LayoutBlock } from "../types";
 import { SectionInfo, parseHeadingsInFile } from "../core/parsers/sectionParser";
 import { SimpleMarkdownFrame } from "./simpleMarkdownFrame";
 import { t } from "../i18n";
@@ -118,12 +118,8 @@ export class AgileBoardView extends FileView {
         flex-direction: column;
       `;
 
-      // Titre du cadre
-      const titleEl = frameContainer.createDiv("frame-title");
-      titleEl.style.cssText = `
-        flex-shrink: 0;
-      `;
-      titleEl.textContent = block.title;
+      // Titre du cadre avec bouton lock
+      this.createFrameTitle(frameContainer, block);
 
       // Contenu du cadre
       const contentEl = frameContainer.createDiv("frame-content");
@@ -134,7 +130,7 @@ export class AgileBoardView extends FileView {
       // Apply visual styles
       contentEl.style.padding = '0.5rem';
 
-      // Créer la vue markdown simple
+      // Créer la vue markdown simple avec callback de verrouillage
       const simpleMarkdownFrame = new SimpleMarkdownFrame(
         contentEl,
         this.app,
@@ -142,7 +138,8 @@ export class AgileBoardView extends FileView {
         section,
         (newContent) => {
           void this.onFrameContentChanged(block.title, newContent);
-        }
+        },
+        () => this.isFrameLocked(block.title)
       );
 
       this.frames.set(block.title, simpleMarkdownFrame);
@@ -283,6 +280,290 @@ export class AgileBoardView extends FileView {
     
     // Recharger la vue
     await this.renderBoardLayout();
+  }
+
+  /**
+   * Crée la barre de titre d'un cadre avec le bouton lock.
+   */
+  private createFrameTitle(container: HTMLElement, block: LayoutBlock): void {
+    const titleEl = container.createDiv("frame-title");
+    titleEl.style.cssText = 'flex-shrink: 0; display: flex; align-items: center; gap: 0.5em;';
+
+    const titleText = titleEl.createSpan({ cls: 'agile-board-frame-title-text' });
+    titleText.textContent = block.title;
+    titleText.style.flex = '1';
+
+    const lockBtn = titleEl.createEl('button', { cls: 'agile-board-lock-btn clickable-icon' });
+    lockBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      void this.toggleFrameLock(block.title, lockBtn);
+    });
+    this.updateLockIcon(lockBtn, this.isFrameLocked(block.title));
+  }
+
+  /**
+   * Vérifie si un cadre est verrouillé.
+   */
+  private isFrameLocked(sectionTitle: string): boolean {
+    const filePath = this.file?.path;
+    if (!filePath) return false;
+    return this.plugin.settings.lockedFrames[filePath]?.includes(sectionTitle) ?? false;
+  }
+
+  /**
+   * Bascule l'état de verrouillage d'un cadre.
+   */
+  private async toggleFrameLock(sectionTitle: string, lockBtn: HTMLElement): Promise<void> {
+    const filePath = this.file?.path;
+    if (!filePath) return;
+
+    const currentLocked = { ...this.plugin.settings.lockedFrames };
+    const fileLocks = [...(currentLocked[filePath] ?? [])];
+    const index = fileLocks.indexOf(sectionTitle);
+
+    if (index >= 0) {
+      fileLocks.splice(index, 1);
+    } else {
+      fileLocks.push(sectionTitle);
+    }
+
+    if (fileLocks.length === 0) {
+      delete currentLocked[filePath];
+    } else {
+      currentLocked[filePath] = fileLocks;
+    }
+
+    this.plugin.settings = { ...this.plugin.settings, lockedFrames: currentLocked };
+    await this.plugin.saveSettings();
+    this.updateLockIcon(lockBtn, index < 0);
+  }
+
+  /**
+   * Met à jour l'icône du bouton lock.
+   */
+  private updateLockIcon(btn: HTMLElement, locked: boolean): void {
+    btn.empty();
+    setIcon(btn, locked ? 'lock' : 'lock-open');
+    btn.setAttribute('aria-label',
+      locked ? t('settings.lock.unlockTooltip') : t('settings.lock.lockTooltip')
+    );
+  }
+
+  /**
+   * Peuple le menu contextuel de la vue (menu "..." et clic droit sur l'onglet).
+   */
+  onPaneMenu(menu: Menu, source: string): void {
+    if (!this.file) {
+      super.onPaneMenu(menu, source);
+      return;
+    }
+
+    const file = this.file;
+
+    // === Mode de vue ===
+    menu.addItem(item => item
+      .setIcon('document')
+      .setTitle(t('menu.livePreview'))
+      .onClick(() => { void this.plugin.viewSwitcher.switchToMarkdownView(file); })
+    );
+
+    menu.addItem(item => item
+      .setIcon('code')
+      .setTitle(t('menu.sourceMode'))
+      .onClick(() => { void this.plugin.viewSwitcher.switchToSourceMode(file); })
+    );
+
+    menu.addSeparator();
+
+    // === Fractionner / Fenêtre ===
+    menu.addItem(item => item
+      .setIcon('separator-vertical')
+      .setTitle(t('menu.splitRight'))
+      .onClick(() => { void this.app.workspace.duplicateLeaf(this.leaf, 'vertical'); })
+    );
+
+    menu.addItem(item => item
+      .setIcon('separator-horizontal')
+      .setTitle(t('menu.splitDown'))
+      .onClick(() => { void this.app.workspace.duplicateLeaf(this.leaf, 'horizontal'); })
+    );
+
+    menu.addItem(item => item
+      .setIcon('arrow-up-right')
+      .setTitle(t('menu.openNewWindow'))
+      .onClick(() => { void this.app.workspace.duplicateLeaf(this.leaf, 'window'); })
+    );
+
+    menu.addSeparator();
+
+    // === Actions fichier ===
+    menu.addItem(item => item
+      .setIcon('pencil')
+      .setTitle(t('menu.rename'))
+      .onClick(() => {
+        this.promptRenameFile(file);
+      })
+    );
+
+    menu.addItem(item => item
+      .setIcon('folder-input')
+      .setTitle(t('menu.moveTo'))
+      .onClick(() => {
+        (this.app as unknown as { commands: { executeCommandById: (id: string) => void } })
+          .commands.executeCommandById('file-explorer:move-file');
+      })
+    );
+
+    menu.addItem(item => item
+      .setIcon('bookmark')
+      .setTitle(t('menu.bookmark'))
+      .onClick(() => {
+        (this.app as unknown as { commands: { executeCommandById: (id: string) => void } })
+          .commands.executeCommandById('bookmarks:bookmark-current-view');
+      })
+    );
+
+    menu.addSeparator();
+
+    // === Export ===
+    menu.addItem(item => item
+      .setIcon('printer')
+      .setTitle(t('menu.printBoard'))
+      .onClick(() => { this.printBoard(); })
+    );
+
+    menu.addSeparator();
+
+    // === Chemin et navigation ===
+    menu.addItem(item => item
+      .setIcon('copy')
+      .setTitle(t('menu.copyPath'))
+      .onClick(() => { void navigator.clipboard.writeText(file.path); })
+    );
+
+    menu.addItem(item => item
+      .setIcon('folder-open')
+      .setTitle(t('menu.revealExplorer'))
+      .onClick(() => {
+        (this.app as unknown as { commands: { executeCommandById: (id: string) => void } })
+          .commands.executeCommandById('file-explorer:reveal-active-file');
+      })
+    );
+
+    menu.addSeparator();
+
+    // === Suppression ===
+    menu.addItem(item => item
+      .setIcon('trash')
+      .setTitle(t('menu.deleteFile'))
+      .setWarning(true)
+      .onClick(() => { void this.app.fileManager.promptForDeletion(file); })
+    );
+
+    super.onPaneMenu(menu, source);
+  }
+
+  /**
+   * Imprime le board via un iframe caché injecté dans le DOM.
+   */
+  private printBoard(): void {
+    if (!this.gridContainer) return;
+
+    const gridEl = this.gridContainer;
+    const gridStyles = window.getComputedStyle(gridEl);
+
+    // Construire le HTML des frames
+    let framesHtml = '';
+    const frames = gridEl.querySelectorAll('.agile-board-frame');
+    frames.forEach((frame) => {
+      const el = frame as HTMLElement;
+      const titleEl = el.querySelector('.frame-title');
+      const contentEl = el.querySelector('.frame-content');
+      const titleText = titleEl?.textContent?.replace(/[\n\r]/g, '').trim() ?? '';
+      const contentHtml = contentEl?.innerHTML ?? '';
+      framesHtml +=
+        `<div class="frame" style="grid-column: ${el.style.gridColumn}; grid-row: ${el.style.gridRow};">` +
+        `<div class="frame-title">${titleText}</div>` +
+        `<div class="frame-body">${contentHtml}</div></div>`;
+    });
+
+    const html = `<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 1rem; }
+  .grid {
+    display: grid;
+    grid-template-columns: ${gridStyles.gridTemplateColumns};
+    grid-template-rows: ${gridStyles.gridTemplateRows};
+    gap: ${gridStyles.gap};
+    width: 100%;
+    min-height: 90vh;
+  }
+  .frame { border: 1px solid #ccc; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
+  .frame-title { padding: 0.4em 0.6em; font-weight: 600; font-size: 0.95rem; background: #f3f4f6; border-bottom: 1px solid #ccc; }
+  .frame-body { padding: 0.5em 0.6em; font-size: 0.85rem; line-height: 1.5; }
+  h1, h2, h3 { margin: 0.3em 0; }
+  ul, ol { padding-left: 1.2em; }
+</style></head><body><div class="grid">${framesHtml}</div></body></html>`;
+
+    // Créer un iframe caché
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position: fixed; top: -10000px; left: -10000px; width: 1px; height: 1px;';
+    document.body.appendChild(iframe);
+
+    const iframeDoc = iframe.contentDocument ?? iframe.contentWindow?.document;
+    if (!iframeDoc) {
+      iframe.remove();
+      return;
+    }
+
+    iframeDoc.open();
+    iframeDoc.write(html);
+    iframeDoc.close();
+
+    // Attendre le rendu puis imprimer
+    setTimeout(() => {
+      iframe.contentWindow?.print();
+      // Nettoyer après impression
+      setTimeout(() => iframe.remove(), 1000);
+    }, 250);
+  }
+
+  /**
+   * Ouvre un prompt pour renommer le fichier.
+   */
+  private promptRenameFile(file: TFile): void {
+    const modal = new Modal(this.app);
+    modal.titleEl.setText(t('menu.rename'));
+
+    const input = modal.contentEl.createEl('input', { type: 'text' });
+    input.value = file.basename;
+    input.style.width = '100%';
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        doRename();
+      }
+    });
+
+    const doRename = (): void => {
+      const newName = input.value.trim();
+      if (newName && newName !== file.basename) {
+        const newPath = file.parent ? `${file.parent.path}/${newName}.${file.extension}` : `${newName}.${file.extension}`;
+        void this.app.fileManager.renameFile(file, newPath);
+      }
+      modal.close();
+    };
+
+    modal.contentEl.createEl('button', { text: t('common.save'), cls: 'mod-cta' }, (btn) => {
+      btn.style.marginTop = '12px';
+      btn.addEventListener('click', doRename);
+    });
+
+    modal.open();
+    input.focus();
+    input.select();
   }
 
   // Méthode pour basculer vers le mode normal
