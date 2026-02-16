@@ -21,6 +21,11 @@ Transforme vos notes en tableaux de bord visuels avec des cadres éditables. Cha
 - **Édition intelligente** : listes auto-continuées, cases à cocher cliquables
 - **Plugins compatibles** : Dataview, Tasks, etc.
 - **Live Preview** : rendu proche d'Obsidian avec quelques limitations
+- **Verrouillage de cadre** : Verrouillez n'importe quel cadre pour éviter les modifications accidentelles — les liens, embeds et checkboxes restent fonctionnels
+- **Taille de police** : Ajustez la taille du texte de tous les cadres (0.8× à 1.5×) depuis les paramètres
+
+![Agile Board – Verrouillage de cadre](./Agile-Board-Lock-frame_c.gif)
+![Agile Board – Taille de police](./Agile-Board-Font-Size-in-Board_c.gif)
 
 ## 🌍 Support multilingue
 
@@ -65,6 +70,13 @@ Cela garantit que la vue spécifiée est toujours affichée au chargement de la 
 Basculez entre les modes via les icônes dans la toolbar.
 
 ![Agile Board – Exemple Eisenhower](./agile-board-eisenhower.gif)
+
+### 📋 Menu contextuel & Impression
+
+Clic droit sur l'onglet du board pour accéder à toutes les options standard d'Obsidian (fractionner, renommer, déplacer, marquer, etc.) et imprimer votre board directement.
+
+![Agile Board – Menu contextuel](./Agile-Board-Menu_c.gif)
+![Agile Board – Impression du board](./Agile-Board-Print-Board_c.gif)
 
 ---
 

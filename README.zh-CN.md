@@ -20,10 +20,15 @@
 将笔记转换为带有可编辑框的可视化仪表板。  
 每个框表示一个部分（一级标题），支持：
 
-- **丰富的 Markdown**: `[[链接]]`, `- [ ] 任务`, 格式化  
-- **智能编辑**: 自动延续列表，可点击的复选框  
-- **插件兼容性**: Dataview, Tasks 等  
-- **实时预览**: 与 Obsidian 接近的渲染效果（有少量限制）  
+- **丰富的 Markdown**: `[[链接]]`, `- [ ] 任务`, 格式化
+- **智能编辑**: 自动延续列表，可点击的复选框
+- **插件兼容性**: Dataview, Tasks 等
+- **实时预览**: 与 Obsidian 接近的渲染效果（有少量限制）
+- **框架锁定**: 锁定任何框架以防止意外编辑 — 链接、嵌入和复选框在锁定时仍可使用
+- **字体大小**: 在插件设置中调整所有框架的文字大小（0.8× 到 1.5×）
+
+![Agile Board – 框架锁定](./Agile-Board-Lock-frame_c.gif)
+![Agile Board – 字体大小](./Agile-Board-Font-Size-in-Board_c.gif)
 
 ## 🌍 多语言支持
 
@@ -68,6 +73,13 @@
 通过工具栏图标在两种模式之间切换。
 
 ![Agile Board – Eisenhower Example](./agile-board-eisenhower.gif)
+
+### 📋 右键菜单与打印
+
+右键点击看板标签页，即可访问所有 Obsidian 标准选项（拆分、重命名、移动、书签等），并可直接打印看板。
+
+![Agile Board – 右键菜单](./Agile-Board-Menu_c.gif)
+![Agile Board – 打印看板](./Agile-Board-Print-Board_c.gif)
 
 ---
 

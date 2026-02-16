@@ -21,6 +21,11 @@ Transform your notes into visual dashboards with editable frames. Each frame rep
 - **Smart editing**: auto-continued lists, callouts, clickable checkboxes
 - **Plugin compatibility**: Dataview, Tasks (with proper icon handling), etc.
 - **Live Preview**: rendering close to Obsidian with enhanced markdown support
+- **Frame lock**: Lock any frame to prevent accidental edits — links, embeds and checkboxes still work when locked
+- **Font size**: Adjust text size across all frames (0.8× to 1.5×) from plugin settings
+
+![Agile Board – Lock Frame](./Agile-Board-Lock-frame_c.gif)
+![Agile Board – Font Size](./Agile-Board-Font-Size-in-Board_c.gif)
 
 ## 🌍 Multilingual Support
 
@@ -65,6 +70,13 @@ This ensures the specified view is always displayed when the note loads.
 Switch between modes via the toolbar icons.
 
 ![Agile Board – Eisenhower Example](./agile-board-eisenhower.gif)
+
+### 📋 Context Menu & Print
+
+Right-click the board tab for all standard Obsidian options (split, rename, move, bookmark, etc.) and print your board layout directly.
+
+![Agile Board – Context Menu](./Agile-Board-Menu_c.gif)
+![Agile Board – Print Board](./Agile-Board-Print-Board_c.gif)
 
 ---
 

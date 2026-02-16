@@ -20,10 +20,15 @@ As seções aparecem como quadros editáveis ("boxes"): você pode escrever, ins
 Transforme suas notas em painéis visuais com quadros editáveis.  
 Cada quadro representa uma seção (título de nível 1) com suporte para:
 
-- **Markdown avançado**: `[[links]]`, `- [ ] tarefas`, formatação  
-- **Edição inteligente**: listas automáticas, caixas de seleção clicáveis  
-- **Compatibilidade com plugins**: Dataview, Tasks, etc.  
-- **Visualização ao vivo**: renderização próxima ao Obsidian, com algumas limitações  
+- **Markdown avançado**: `[[links]]`, `- [ ] tarefas`, formatação
+- **Edição inteligente**: listas automáticas, caixas de seleção clicáveis
+- **Compatibilidade com plugins**: Dataview, Tasks, etc.
+- **Visualização ao vivo**: renderização próxima ao Obsidian, com algumas limitações
+- **Bloqueio de quadro**: Bloqueie qualquer quadro para evitar edições acidentais — links, embeds e caixas de seleção continuam funcionando
+- **Tamanho da fonte**: Ajuste o tamanho do texto em todos os quadros (0,8× a 1,5×) nas configurações
+
+![Agile Board – Bloqueio de quadro](./Agile-Board-Lock-frame_c.gif)
+![Agile Board – Tamanho da fonte](./Agile-Board-Font-Size-in-Board_c.gif)
 
 ## 🌍 Suporte multilíngue
 
@@ -68,6 +73,13 @@ Isso garante que a visualização especificada seja sempre exibida ao carregar a
 Alterne entre os modos pelos ícones da barra de ferramentas.
 
 ![Agile Board – Eisenhower Example](./agile-board-eisenhower.gif)
+
+### 📋 Menu contextual e impressão
+
+Clique com o botão direito na aba do quadro para acessar todas as opções padrão do Obsidian (dividir, renomear, mover, marcar, etc.) e imprimir o seu quadro diretamente.
+
+![Agile Board – Menu contextual](./Agile-Board-Menu_c.gif)
+![Agile Board – Imprimir quadro](./Agile-Board-Print-Board_c.gif)
 
 ---
 

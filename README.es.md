@@ -20,10 +20,15 @@ Las secciones aparecen como marcos editables ("boxes"): puedes escribir, inserta
 Transforma tus notas en paneles visuales con marcos editables.  
 Cada marco representa una sección (encabezado de nivel 1) con soporte para:
 
-- **Markdown enriquecido**: `[[enlaces]]`, `- [ ] tareas`, formato  
-- **Edición inteligente**: listas auto-continuadas, casillas de verificación clicables  
-- **Compatibilidad con plugins**: Dataview, Tasks, etc.  
-- **Vista previa en vivo**: renderizado cercano a Obsidian con algunas limitaciones  
+- **Markdown enriquecido**: `[[enlaces]]`, `- [ ] tareas`, formato
+- **Edición inteligente**: listas auto-continuadas, casillas de verificación clicables
+- **Compatibilidad con plugins**: Dataview, Tasks, etc.
+- **Vista previa en vivo**: renderizado cercano a Obsidian con algunas limitaciones
+- **Bloqueo de marco**: Bloquea cualquier marco para evitar ediciones accidentales — los enlaces, embeds y casillas de verificación siguen funcionando
+- **Tamaño de fuente**: Ajusta el tamaño del texto en todos los marcos (0.8× a 1.5×) desde los ajustes
+
+![Agile Board – Bloqueo de marco](./Agile-Board-Lock-frame_c.gif)
+![Agile Board – Tamaño de fuente](./Agile-Board-Font-Size-in-Board_c.gif)
 
 ## 🌍 Soporte multilingüe
 
@@ -68,6 +73,13 @@ Esto asegura que la vista especificada se muestre siempre al cargar la nota.
 Cambia entre modos usando los íconos de la barra de herramientas.
 
 ![Agile Board – Eisenhower Example](./agile-board-eisenhower.gif)
+
+### 📋 Menú contextual e impresión
+
+Haz clic derecho en la pestaña del tablero para acceder a todas las opciones estándar de Obsidian (dividir, renombrar, mover, marcar, etc.) e imprimir tu tablero directamente.
+
+![Agile Board – Menú contextual](./Agile-Board-Menu_c.gif)
+![Agile Board – Imprimir tablero](./Agile-Board-Print-Board_c.gif)
 
 ---
 

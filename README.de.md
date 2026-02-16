@@ -20,10 +20,15 @@ Abschnitte erscheinen als editierbare Rahmen („Boxes“): du kannst schreiben,
 Verwandle deine Notizen in visuelle Dashboards mit editierbaren Rahmen.  
 Jeder Rahmen entspricht einem Abschnitt (Überschrift der Ebene 1) mit Unterstützung für:
 
-- **Rich Markdown**: `[[Links]]`, `- [ ] Aufgaben`, Formatierungen  
-- **Smart Editing**: automatisch fortgesetzte Listen, anklickbare Checkboxen  
-- **Plugin-Kompatibilität**: Dataview, Tasks usw.  
-- **Live Preview**: Darstellung ähnlich wie in Obsidian mit einigen Einschränkungen  
+- **Rich Markdown**: `[[Links]]`, `- [ ] Aufgaben`, Formatierungen
+- **Smart Editing**: automatisch fortgesetzte Listen, anklickbare Checkboxen
+- **Plugin-Kompatibilität**: Dataview, Tasks usw.
+- **Live Preview**: Darstellung ähnlich wie in Obsidian mit einigen Einschränkungen
+- **Rahmensperre**: Sperre einen Rahmen, um versehentliche Bearbeitungen zu verhindern — Links, Embeds und Checkboxen bleiben funktionsfähig
+- **Schriftgröße**: Passe die Textgröße aller Rahmen (0,8× bis 1,5×) in den Einstellungen an
+
+![Agile Board – Rahmensperre](./Agile-Board-Lock-frame_c.gif)
+![Agile Board – Schriftgröße](./Agile-Board-Font-Size-in-Board_c.gif)
 
 ## 🌍 Mehrsprachige Unterstützung
 
@@ -68,6 +73,13 @@ Dies stellt sicher, dass die angegebene Ansicht beim Laden der Notiz immer angez
 Wechsel zwischen den Modi über die Symbolleisten-Icons.
 
 ![Agile Board – Eisenhower Example](./agile-board-eisenhower.gif)
+
+### 📋 Kontextmenü & Drucken
+
+Rechtsklick auf den Board-Tab für alle Standard-Obsidian-Optionen (teilen, umbenennen, verschieben, Lesezeichen, etc.) und drucke dein Board direkt aus.
+
+![Agile Board – Kontextmenü](./Agile-Board-Menu_c.gif)
+![Agile Board – Board drucken](./Agile-Board-Print-Board_c.gif)
 
 ---
 
