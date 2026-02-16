@@ -111,6 +111,20 @@
       }
     }
   },
+  "menu": {
+    "livePreview": "Modo visualização ao vivo",
+    "sourceMode": "Modo fonte",
+    "splitRight": "Dividir para a direita",
+    "splitDown": "Dividir para baixo",
+    "openNewWindow": "Abrir em nova janela",
+    "rename": "Renomear...",
+    "moveTo": "Mover arquivo para...",
+    "bookmark": "Favoritar...",
+    "printBoard": "Imprimir quadro",
+    "copyPath": "Copiar caminho do arquivo",
+    "revealExplorer": "Mostrar no explorador de arquivos",
+    "deleteFile": "Excluir arquivo"
+  },
   "view": {
     "noLayout": "Esta nota não tem um layout agile-board configurado",
     "layoutNotFound": "Quadro \"{name}\" não encontrado",

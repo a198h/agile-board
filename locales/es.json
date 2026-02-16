@@ -111,6 +111,20 @@
       }
     }
   },
+  "menu": {
+    "livePreview": "Modo vista previa en vivo",
+    "sourceMode": "Modo fuente",
+    "splitRight": "Dividir a la derecha",
+    "splitDown": "Dividir hacia abajo",
+    "openNewWindow": "Abrir en nueva ventana",
+    "rename": "Renombrar...",
+    "moveTo": "Mover archivo a...",
+    "bookmark": "Marcar...",
+    "printBoard": "Imprimir tablero",
+    "copyPath": "Copiar ruta del archivo",
+    "revealExplorer": "Mostrar en el explorador de archivos",
+    "deleteFile": "Eliminar archivo"
+  },
   "view": {
     "noLayout": "Esta nota no tiene un tablero agile-board configurado",
     "layoutNotFound": "Tablero \"{name}\" no encontrado",

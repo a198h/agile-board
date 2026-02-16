@@ -111,6 +111,20 @@
       }
     }
   },
+  "menu": {
+    "livePreview": "Live preview mode",
+    "sourceMode": "Source mode",
+    "splitRight": "Split right",
+    "splitDown": "Split down",
+    "openNewWindow": "Open in new window",
+    "rename": "Rename...",
+    "moveTo": "Move file to...",
+    "bookmark": "Bookmark...",
+    "printBoard": "Print board",
+    "copyPath": "Copy file path",
+    "revealExplorer": "Reveal in file explorer",
+    "deleteFile": "Delete file"
+  },
   "view": {
     "noLayout": "This note has no agile-board layout configured",
     "layoutNotFound": "Layout \"{name}\" not found",

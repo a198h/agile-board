@@ -111,6 +111,20 @@
       }
     }
   },
+  "menu": {
+    "livePreview": "Mode live preview",
+    "sourceMode": "Mode source",
+    "splitRight": "Fractionner vers la droite",
+    "splitDown": "Fractionner vers le bas",
+    "openNewWindow": "Ouvrir dans une nouvelle fenêtre",
+    "rename": "Renommer...",
+    "moveTo": "Déplacer le fichier vers...",
+    "bookmark": "Marquer...",
+    "printBoard": "Imprimer le board",
+    "copyPath": "Copier le chemin du fichier",
+    "revealExplorer": "Afficher dans l'explorateur de fichiers",
+    "deleteFile": "Supprimer le fichier"
+  },
   "view": {
     "noLayout": "Cette note n'a pas de tableau agile-board configuré",
     "layoutNotFound": "Tableau \"{name}\" introuvable",

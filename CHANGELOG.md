@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ✨ New Features
+
+- **Frame lock button**: Lock/unlock button on each frame's title bar to prevent accidental editing. Links, embeds, and checkboxes remain interactive when locked. Lock state persists across sessions and follows file renames/deletions.
+- **Font size slider**: Global font size setting (0.8x–1.5x scale) in plugin settings, applied live to all board frames via CSS custom property.
+- **Board context menu**: Full context menu (`onPaneMenu`) for the Board view with all standard Obsidian options — switch to Live Preview/Source mode, split right/down, open in new window, rename, move, bookmark, print board, copy path, reveal in explorer, delete file.
+
+### 🔧 Improvements
+
+- **Settings reorganization**: Plugin settings tab reorganized into two sections — Appearance (font size) and Library (layout management).
+- **Settings persistence**: New plugin settings infrastructure using Obsidian's `loadData`/`saveData`.
+- **i18n**: Added translation keys for lock and appearance settings in all 7 locales (EN, FR, ES, DE, PT, ZH-CN, RU).
+
 ## [0.8.8] - 2026-02-12
 
 ### 🐛 Bug Fixes

@@ -111,6 +111,20 @@
       }
     }
   },
+  "menu": {
+    "livePreview": "实时预览模式",
+    "sourceMode": "源码模式",
+    "splitRight": "向右拆分",
+    "splitDown": "向下拆分",
+    "openNewWindow": "在新窗口中打开",
+    "rename": "重命名...",
+    "moveTo": "移动文件到...",
+    "bookmark": "添加书签...",
+    "printBoard": "打印看板",
+    "copyPath": "复制文件路径",
+    "revealExplorer": "在文件管理器中显示",
+    "deleteFile": "删除文件"
+  },
   "view": {
     "noLayout": "此笔记未配置敏捷看板布局",
     "layoutNotFound": "未找到布局\"{name}\"",
