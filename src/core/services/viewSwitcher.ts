@@ -9,6 +9,37 @@ export class ViewSwitcher {
   
   constructor(private plugin: AgileBoardPlugin) {}
 
+  private resolveLeafForFile(file: TFile, preferredViewTypes: readonly string[]): WorkspaceLeaf | null {
+    const activeLeaf = this.plugin.app.workspace.activeLeaf;
+    const isPreferredType = (viewType: string): boolean => preferredViewTypes.includes(viewType);
+    const leafFilePath = (leaf: WorkspaceLeaf): string | undefined =>
+      (leaf.view as unknown as { file?: TFile }).file?.path;
+
+    if (
+      activeLeaf &&
+      isPreferredType(activeLeaf.view.getViewType()) &&
+      leafFilePath(activeLeaf) === file.path
+    ) {
+      return activeLeaf;
+    }
+
+    for (const viewType of preferredViewTypes) {
+      const matchingLeaf = this.plugin.app.workspace
+        .getLeavesOfType(viewType)
+        .find((leaf) => leafFilePath(leaf) === file.path);
+
+      if (matchingLeaf) {
+        return matchingLeaf;
+      }
+    }
+
+    if (activeLeaf && leafFilePath(activeLeaf) === file.path) {
+      return activeLeaf;
+    }
+
+    return activeLeaf ?? null;
+  }
+
   private markAsManualChange(file: TFile): void {
     // Notifier le ModelDetector qu'un changement manuel a eu lieu
     const plugin = this.plugin as unknown as { modelDetector?: { markUserManualChange: (path: string) => void } };
@@ -18,8 +49,7 @@ export class ViewSwitcher {
   }
 
   async switchToBoardView(file: TFile): Promise<void> {
-    // Utiliser activeLeaf au lieu de getLeaf() pour éviter le bug d'Obsidian avec les onglets épinglés
-    const leaf = this.plugin.app.workspace.activeLeaf;
+    const leaf = this.resolveLeafForFile(file, ["markdown", AGILE_BOARD_VIEW_TYPE]);
     if (!leaf) return;
 
     await leaf.setViewState({
@@ -29,8 +59,7 @@ export class ViewSwitcher {
   }
 
   async switchToMarkdownView(file: TFile): Promise<void> {
-    // Utiliser activeLeaf au lieu de getLeaf() pour éviter le bug d'Obsidian avec les onglets épinglés
-    const leaf = this.plugin.app.workspace.activeLeaf;
+    const leaf = this.resolveLeafForFile(file, [AGILE_BOARD_VIEW_TYPE, "markdown"]);
     if (!leaf) return;
 
     await leaf.setViewState({
@@ -40,8 +69,7 @@ export class ViewSwitcher {
   }
 
   async switchToSourceMode(file: TFile): Promise<void> {
-    // Utiliser activeLeaf au lieu de getLeaf() pour éviter le bug d'Obsidian avec les onglets épinglés
-    const leaf = this.plugin.app.workspace.activeLeaf;
+    const leaf = this.resolveLeafForFile(file, [AGILE_BOARD_VIEW_TYPE, "markdown"]);
     if (!leaf) return;
 
     await leaf.setViewState({

@@ -160,10 +160,15 @@ export class AgileBoardView extends FileView {
       return;
     }
 
-    // Tenter d'utiliser l'API Editor si une vue Markdown active existe
-    const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+    // Utiliser l'éditeur uniquement si la feuille active est réellement une vue Markdown
+    const activeLeaf = this.app.workspace.activeLeaf;
+    const activeView = activeLeaf?.view;
 
-    if (activeView && activeView.file?.path === this.file.path && activeView.editor) {
+    if (
+      activeView instanceof MarkdownView &&
+      activeView.file?.path === this.file.path &&
+      activeView.editor
+    ) {
       // MÉTHODE OPTIMALE: Utiliser editor.replaceRange() pour modifier seulement la section
       const editor = activeView.editor;
 
