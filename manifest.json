@@ -1,11 +1,1 @@
-{
-	"id": "agile-board",
-	"name": "Agile Board",
-	"version": "0.8.9",
-	"minAppVersion": "0.15.0",
-	"description": "Transform your markdown notes into visual boards with customizable layouts (Eisenhower matrix, SWOT analysis, Cornell notes, etc.). Organize content in editable frames synchronized with your notes.",
-	"author": "a198h",
-	"authorUrl": "https://github.com/a198h",
-	"fundingUrl": "https://ko-fi.com/a198h",
-	"isDesktopOnly": true
-}
+{"id":"agile-board","name":"Agile Board","version":"0.8.9","minAppVersion":"0.15.0","description":"Transform your markdown notes into visual boards with customizable layouts (Eisenhower matrix, SWOT analysis, Cornell notes, etc.). Organize content in editable frames synchronized with your notes.","author":"a198h","authorUrl":"https://github.com/a198h","fundingUrl":"https://ko-fi.com/a198h","isDesktopOnly":true}
