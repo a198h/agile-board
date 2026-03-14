@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.8.9-blue)
+![version](https://img.shields.io/badge/version-0.9.0-blue)
 
 🌍 Читать на других языках:
 [English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md)
@@ -29,7 +29,7 @@
 
 ## 🌍 Мультиязычная поддержка
 
-**НОВОЕ в v0.7.8**: Улучшенное форматирование markdown и интеграция с плагином Tasks!
+**НОВОЕ в v0.9.0**: Всплывающий редактор — дважды щёлкните по заголовку рамки, чтобы редактировать в отдельном окне!
 
 - 🇺🇸 **English** - базовый язык
 - 🇫🇷 **Français** - полный перевод

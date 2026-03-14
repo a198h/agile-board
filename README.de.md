@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.8.9-blue)
+![version](https://img.shields.io/badge/version-0.9.0-blue)
 
 🌍 Lies dies in anderen Sprachen:
 [English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
@@ -32,7 +32,7 @@ Jeder Rahmen entspricht einem Abschnitt (Überschrift der Ebene 1) mit Unterstü
 
 ## 🌍 Mehrsprachige Unterstützung
 
-**NEU in v0.7.7**: Vollständige Internationalisierung mit **automatischer Spracherkennung**!
+**NEU in v0.9.0**: Popout-Editor — Doppelklicken Sie auf einen Rahmentitel, um in einem separaten Fenster zu bearbeiten!
 
 - 🇺🇸 **English** – Referenzsprache  
 - 🇫🇷 **Français** – vollständige Übersetzung  
