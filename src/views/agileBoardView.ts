@@ -150,6 +150,9 @@ export class AgileBoardView extends FileView {
   private async onFrameContentChanged(title: string, newContent: string): Promise<void> {
     if (!this.file) return;
 
+    // Empêcher l'auto-switch pendant l'édition (fix #20)
+    this.plugin.modelDetector.markUserManualChange(this.file.path);
+
     // Notifier le synchroniseur que le changement vient de cette vue
     this.plugin.fileSynchronizer.notifyBoardViewChange(this.file);
 
