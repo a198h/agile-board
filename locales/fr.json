@@ -125,6 +125,9 @@
     "revealExplorer": "Afficher dans l'explorateur de fichiers",
     "deleteFile": "Supprimer le fichier"
   },
+  "popout": {
+    "alreadyOpen": "La section \"{title}\" est déjà ouverte dans une fenêtre"
+  },
   "view": {
     "noLayout": "Cette note n'a pas de tableau agile-board configuré",
     "layoutNotFound": "Tableau \"{name}\" introuvable",

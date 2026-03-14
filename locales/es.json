@@ -125,6 +125,9 @@
     "revealExplorer": "Mostrar en el explorador de archivos",
     "deleteFile": "Eliminar archivo"
   },
+  "popout": {
+    "alreadyOpen": "La sección \"{title}\" ya está abierta en una ventana emergente"
+  },
   "view": {
     "noLayout": "Esta nota no tiene un tablero agile-board configurado",
     "layoutNotFound": "Tablero \"{name}\" no encontrado",

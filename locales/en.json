@@ -125,6 +125,9 @@
     "revealExplorer": "Reveal in file explorer",
     "deleteFile": "Delete file"
   },
+  "popout": {
+    "alreadyOpen": "Section \"{title}\" is already open in a popout window"
+  },
   "view": {
     "noLayout": "This note has no agile-board layout configured",
     "layoutNotFound": "Layout \"{name}\" not found",

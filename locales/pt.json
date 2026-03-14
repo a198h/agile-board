@@ -125,6 +125,9 @@
     "revealExplorer": "Mostrar no explorador de arquivos",
     "deleteFile": "Excluir arquivo"
   },
+  "popout": {
+    "alreadyOpen": "A seção \"{title}\" já está aberta em uma janela pop-up"
+  },
   "view": {
     "noLayout": "Esta nota não tem um layout agile-board configurado",
     "layoutNotFound": "Quadro \"{name}\" não encontrado",
