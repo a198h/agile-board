@@ -69,7 +69,7 @@ export class LayoutSettingsTab extends PluginSettingTab {
       .setName(t('settings.appearance.fontSize.title'))
       .setDesc(t('settings.appearance.fontSize.description'))
       .addSlider(slider => slider
-        .setLimits(0.8, 1.5, 0.05)
+        .setLimits(0.7, 1.5, 0.05)
         .setValue(this.plugin.settings.frameFontScale)
         .setDynamicTooltip()
         .onChange(async (value) => {
