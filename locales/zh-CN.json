@@ -125,6 +125,9 @@
     "revealExplorer": "在文件管理器中显示",
     "deleteFile": "删除文件"
   },
+  "popout": {
+    "alreadyOpen": "部分 \"{title}\" 已在弹出窗口中打开"
+  },
   "view": {
     "noLayout": "此笔记未配置敏捷看板布局",
     "layoutNotFound": "未找到布局\"{name}\"",

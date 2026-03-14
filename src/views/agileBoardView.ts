@@ -1,5 +1,5 @@
 // src/agileBoardView.ts
-import { FileView, MarkdownView, Menu, Modal, TFile, WorkspaceLeaf, setIcon } from "obsidian";
+import { FileView, MarkdownView, Menu, Modal, Notice, TFile, WorkspaceLeaf, setIcon } from "obsidian";
 import { LayoutModel, LayoutBlock } from "../types";
 import { SectionInfo, parseHeadingsInFile } from "../core/parsers/sectionParser";
 import { SimpleMarkdownFrame } from "./simpleMarkdownFrame";
@@ -13,6 +13,7 @@ export class AgileBoardView extends FileView {
   private frames: Map<string, SimpleMarkdownFrame> = new Map();
   private layoutBlocks: LayoutModel = [];
   private gridContainer: HTMLElement | null = null;
+  private activePopouts: Map<string, TFile> = new Map();
 
   constructor(
     leaf: WorkspaceLeaf,
@@ -148,6 +149,9 @@ export class AgileBoardView extends FileView {
 
   private async onFrameContentChanged(title: string, newContent: string): Promise<void> {
     if (!this.file) return;
+
+    // Empêcher l'auto-switch pendant l'édition (fix #20)
+    this.plugin.modelDetector.markUserManualChange(this.file.path);
 
     // Notifier le synchroniseur que le changement vient de cette vue
     this.plugin.fileSynchronizer.notifyBoardViewChange(this.file);
@@ -292,6 +296,15 @@ export class AgileBoardView extends FileView {
     const titleText = titleEl.createSpan({ cls: 'agile-board-frame-title-text' });
     titleText.textContent = block.title;
     titleText.style.flex = '1';
+    titleText.style.cursor = 'pointer';
+
+    // Double-clic sur le titre → ouvrir en fenêtre popout (sauf si verrouillé)
+    titleText.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (this.isFrameLocked(block.title)) return;
+      void this.openSectionInPopout(block.title);
+    });
 
     const lockBtn = titleEl.createEl('button', { cls: 'agile-board-lock-btn clickable-icon' });
     lockBtn.addEventListener('click', (e) => {
@@ -564,6 +577,73 @@ export class AgileBoardView extends FileView {
     modal.open();
     input.focus();
     input.select();
+  }
+
+  /**
+   * Ouvre le contenu d'une section dans une fenêtre popout via un fichier temporaire.
+   */
+  private async openSectionInPopout(sectionTitle: string): Promise<void> {
+    if (!this.file) return;
+
+    // Empêcher l'ouverture de plusieurs popouts pour la même section
+    if (this.activePopouts.has(sectionTitle)) {
+      new Notice(t('popout.alreadyOpen', { title: sectionTitle }));
+      return;
+    }
+
+    // Récupérer le contenu de la section
+    const sections = await parseHeadingsInFile(this.app, this.file);
+    const section = sections[sectionTitle];
+    if (!section) return;
+
+    const sectionContent = section.lines.join('\n');
+
+    // Créer le fichier temporaire à la racine du vault
+    const timestamp = Date.now();
+    const tempFileName = `_ab-tmp-${timestamp}.md`;
+    const tempFile = await this.app.vault.create(tempFileName, sectionContent);
+
+    this.activePopouts.set(sectionTitle, tempFile);
+
+    // Ouvrir dans une fenêtre popout
+    const newLeaf = this.app.workspace.openPopoutLeaf();
+    await newLeaf.openFile(tempFile, { state: { mode: 'source', source: false } });
+
+    // Surveiller la fermeture du leaf
+    const onClose = this.app.workspace.on('layout-change', async () => {
+      // Vérifier si le leaf est toujours attaché
+      if (newLeaf.parent) return;
+
+      // Le leaf a été fermé — resync le contenu
+      this.app.workspace.offref(onClose);
+      await this.syncPopoutBack(sectionTitle, tempFile);
+    });
+  }
+
+  /**
+   * Synchronise le contenu du fichier temporaire vers la section originale, puis supprime le temp.
+   */
+  private async syncPopoutBack(sectionTitle: string, tempFile: TFile): Promise<void> {
+    if (!this.file) return;
+
+    try {
+      // Lire le contenu édité
+      const editedContent = await this.app.vault.read(tempFile);
+
+      // Mettre à jour la section dans le fichier original
+      await this.onFrameContentChanged(sectionTitle, editedContent);
+
+      // Supprimer le fichier temporaire
+      await this.app.vault.delete(tempFile);
+
+      // Rafraîchir le frame
+      const frame = this.frames.get(sectionTitle);
+      if (frame) {
+        await frame.updateContent(editedContent);
+      }
+    } finally {
+      this.activePopouts.delete(sectionTitle);
+    }
   }
 
   // Méthode pour basculer vers le mode normal

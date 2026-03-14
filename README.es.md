@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.8.9-blue)
+![version](https://img.shields.io/badge/version-0.9.0-blue)
 
 🌍 Lee esto en otros idiomas:
 [English](README.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
@@ -32,7 +32,7 @@ Cada marco representa una sección (encabezado de nivel 1) con soporte para:
 
 ## 🌍 Soporte multilingüe
 
-**NUEVO en v0.7.7**: Internacionalización completa con **detección automática de idioma**.
+**NUEVO en v0.9.0**: Editor popout — ¡haz doble clic en el título de un marco para editar en una ventana separada!
 
 - 🇺🇸 **English** – idioma de referencia  
 - 🇫🇷 **Français** – traducción completa  

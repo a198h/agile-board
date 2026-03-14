@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.8.9-blue)
+![version](https://img.shields.io/badge/version-0.9.0-blue)
 
 🌍 用其他语言阅读:
 [English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [Русский](README.ru.md)
@@ -32,7 +32,7 @@
 
 ## 🌍 多语言支持
 
-**v0.7.7 新功能**: 完整国际化，支持 **自动语言检测**！
+**v0.9.0 新功能**: 弹出编辑器 — 双击框架标题即可在单独窗口中编辑！
 
 - 🇺🇸 **English** – 参考语言  
 - 🇫🇷 **Français** – 完整翻译  

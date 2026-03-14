@@ -125,6 +125,9 @@
     "revealExplorer": "Показать в файловом менеджере",
     "deleteFile": "Удалить файл"
   },
+  "popout": {
+    "alreadyOpen": "Раздел \"{title}\" уже открыт во всплывающем окне"
+  },
   "view": {
     "noLayout": "Для этой заметки не настроен макет agile-board",
     "layoutNotFound": "Макет \"{name}\" не найден",

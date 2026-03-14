@@ -20,7 +20,7 @@ export default class AgileBoardPlugin extends Plugin {
   public fileSynchronizer: FileSynchronizer;
   public viewSwitcher: ViewSwitcher;
   public settings: PluginSettings = DEFAULT_PLUGIN_SETTINGS;
-  private modelDetector: ModelDetector;
+  public modelDetector: ModelDetector;
   private lifecycleManager: LifecycleManager;
   private logger = createContextLogger('AgileBoardPlugin');
 

@@ -5,7 +5,19 @@ All notable changes to the Agile Board plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.9.0] - 2026-03-14
+
+### ✨ New Features
+
+- **Popout editor**: Double-click on a frame title to open its content in a separate window with full Live Preview editing. Content is synced back to the original note when the window is closed. Locked frames cannot be opened in popout.
+
+### 🔧 Improvements
+
+- **Font size slider**: Minimum font scale lowered from 0.8x to 0.7x for better readability in small frames.
+
+### 🐛 Bug Fixes
+
+- **Auto-switch during editing (fixes #20)**: Fixed issue where editing a frame in board view would automatically switch back to markdown view after a few seconds on some environments (Linux/KDE/Wayland). Thanks to @Reaper176 for reporting and contributing the fix.
 
 ## [0.8.9] - 2026-02-16
 
@@ -247,7 +259,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 0.8.9
+- **Current Version**: 0.9.0
 - **Minimum Obsidian Version**: 0.15.0
 - **Platform Support**: Desktop only (`isDesktopOnly: true`)
 - **License**: GPL-3.0

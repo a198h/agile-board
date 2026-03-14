@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.8.9-blue)
+![version](https://img.shields.io/badge/version-0.9.0-blue)
 
 🌍 Leia isto em outros idiomas:
 [English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
@@ -32,7 +32,7 @@ Cada quadro representa uma seção (título de nível 1) com suporte para:
 
 ## 🌍 Suporte multilíngue
 
-**NOVIDADE na v0.7.7**: Internacionalização completa com **detecção automática de idioma**!
+**NOVIDADE na v0.9.0**: Editor popout — clique duplo no título de um quadro para editar em uma janela separada!
 
 - 🇺🇸 **English** – idioma de referência  
 - 🇫🇷 **Français** – tradução completa  

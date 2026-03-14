@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.8.9-blue)
+![version](https://img.shields.io/badge/version-0.9.0-blue)
 
 🌍 Read this in other languages:
 [English](README.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
@@ -29,7 +29,7 @@ Transforme vos notes en tableaux de bord visuels avec des cadres éditables. Cha
 
 ## 🌍 Support multilingue
 
-**NOUVEAU dans v0.7.7** : Internationalisation complète avec **détection automatique de la langue** !
+**NOUVEAU dans v0.9.0** : Éditeur popout — double-cliquez sur le titre d'un cadre pour éditer dans une fenêtre séparée !
 
 - 🇺🇸 **English** - langue de référence
 - 🇫🇷 **Français** - traduction complète
