@@ -102,6 +102,12 @@ Instale via [BRAT](https://github.com/TfTHacker/obsidian42-brat) para receber at
 
 ---
 
+## 📱 Móvel
+
+Suas notas são exibidas normalmente no celular como markdown padrão. Agile Board é um plugin exclusivo para desktop — os layouts de board só estão disponíveis no desktop.
+
+---
+
 ## 📝 Uso
 
 ### Configuração
