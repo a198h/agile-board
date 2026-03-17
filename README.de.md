@@ -102,6 +102,12 @@ Installation über [BRAT](https://github.com/TfTHacker/obsidian42-brat) für aut
 
 ---
 
+## 📱 Mobil
+
+Ihre Notizen werden auf Mobilgeräten normal als Standard-Markdown angezeigt. Agile Board ist ein reines Desktop-Plugin — Board-Layouts sind nur auf dem Desktop verfügbar.
+
+---
+
 ## 📝 Verwendung
 
 ### Konfiguration

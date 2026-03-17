@@ -99,6 +99,12 @@ Install via [BRAT](https://github.com/TfTHacker/obsidian42-brat) to get automati
 
 ---
 
+## 📱 Mobile
+
+Your notes display normally on mobile as standard markdown. Agile Board is a desktop-only plugin — board layouts are only available on desktop.
+
+---
+
 ## 📝 Usage
 
 ### Configuration
