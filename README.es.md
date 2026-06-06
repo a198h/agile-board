@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.9.0-blue)
+![version](https://img.shields.io/badge/version-0.9.1-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/plataforma-escritorio-lightgrey)
 
 🌍 Lee esto en otros idiomas:
 [English](README.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
@@ -7,112 +7,93 @@
 
 # Agile Board
 
-**Agile Board** es un plugin para [Obsidian](https://obsidian.md) que transforma tus notas en tableros visuales.  
-Cada disposición se basa en una plantilla (como la matriz Eisenhower) definida en una cuadrícula de 24×24.  
-Las secciones aparecen como marcos editables ("boxes"): puedes escribir, insertar tareas, consultas de Dataview/Tasks, etc.
+**Agile Board** transforma tus notas de Obsidian en tableros visuales interactivos. Tus secciones se convierten en marcos editables dispuestos en una cuadrícula — mientras siguen siendo Markdown válido y portable bajo el capó.
 
-**Nota**: El contenido siempre se guarda en Markdown clásico bajo encabezados `#`, lo que garantiza la compatibilidad con todas tus notas.
+![Agile Board – Ejemplo Eisenhower](./agile-board-eisenhower.gif)
 
 ---
 
-## 🎯 Funciones
+## 🆕 Novedades
 
-Transforma tus notas en paneles visuales con marcos editables.  
-Cada marco representa una sección (encabezado de nivel 1) con soporte para:
+### v0.9.1 — Parche de compatibilidad para Obsidian 1.13.0
+Los controladores de redimensionamiento del editor de layouts dejaron de funcionar tras la actualización de Chromium de Obsidian en v1.13.0. Este parche restaura completamente el editor visual en todas las versiones compatibles.
 
-- **Markdown enriquecido**: `[[enlaces]]`, `- [ ] tareas`, formato
-- **Edición inteligente**: listas auto-continuadas, casillas de verificación clicables
-- **Compatibilidad con plugins**: Dataview, Tasks, etc.
-- **Vista previa en vivo**: renderizado cercano a Obsidian con algunas limitaciones
-- **Bloqueo de marco**: Bloquea cualquier marco para evitar ediciones accidentales — los enlaces, embeds y casillas de verificación siguen funcionando
-- **Tamaño de fuente**: Ajusta el tamaño del texto en todos los marcos (0.8× a 1.5×) desde los ajustes
+### v0.9.0 — Editor popout
+
+> Antes, editar un marco requería cambiar toda la nota al modo de edición, lo que dificultaba escribir mientras se mantenía el tablero visible.
+
+**Ahora puedes hacer doble clic en el título de cualquier marco para abrirlo en una ventana dedicada**, con el Live Preview completo de Obsidian. El contenido se sincroniza automáticamente al cerrar la ventana. Los marcos bloqueados no se pueden abrir en popout.
+
+![Agile Board – Tablero a Markdown](./Agile-Board-Board-to-Markdown_c.gif)
+
+---
+
+## 🎯 Funcionalidades
+
+### Tablero y Edición
+- **Dos modos de visualización**: cambia libremente entre el tablero visual (🏢) y la edición Markdown clásica (📄)
+- **Marcos editables**: haz clic en cualquier marco para entrar en el modo de edición con CodeMirror 6
+- **Editor popout**: doble clic en el título de un marco para editarlo en una ventana separada — mantén el tablero visible mientras escribes
+- **Edición inteligente**: listas y callouts auto-continuados, casillas de verificación clicables con sincronización instantánea
+- **Markdown enriquecido**: `[[enlaces]]`, `- [ ] tareas`, formato, bloques de código, reglas horizontales
+
+### Personalización de marcos
+- **Bloqueo de marco**: bloquea un marco para evitar ediciones accidentales — los enlaces, embeds y casillas de verificación siguen funcionando
+- **Tamaño de fuente**: ajusta la escala del texto en todos los marcos (0,7× a 1,5×) desde la configuración del plugin
+- **Colores personalizados**: asigna un color a cualquier marco — barra de título tintada y borde de color en la vista del tablero
 
 ![Agile Board – Bloqueo de marco](./Agile-Board-Lock-frame_c.gif)
 ![Agile Board – Tamaño de fuente](./Agile-Board-Font-Size-in-Board_c.gif)
 
-## 🌍 Soporte multilingüe
-
-**NUEVO en v0.9.0**: Editor popout — ¡haz doble clic en el título de un marco para editar en una ventana separada!
-
-- 🇺🇸 **English** – idioma de referencia  
-- 🇫🇷 **Français** – traducción completa  
-- 🇪🇸 **Español** – traducción completa  
-- 🇩🇪 **Deutsch** – traducción completa  
-- 🇵🇹 **Português** – traducción completa  
-- 🇨🇳 **中文 (简体)** – 完整翻译  
-
-La interfaz se adapta automáticamente al idioma configurado en Obsidian.  
-Todos los elementos de la interfaz, configuraciones, mensajes y tooltips están traducidos con **96 claves de traducción** en todos los idiomas.
-
-## ⚠️ Limitaciones actuales
-
-El modo tablero usa CodeMirror 6 para la edición pero no incluye todas las funciones avanzadas de edición de Obsidian:
-
-- **Sugerencias de enlaces**: Al escribir `[[`, el editor no sugiere tus notas (aunque aún puedes escribir el enlace completo manualmente)
-- **Llamadas a plugins en línea**: Las consultas en línea de Dataview (`= this.file.name`) o comandos de Templater (`<% tp.date.now() %>`) no se ejecutan en los marcos
-
-### 📎 Soporte para Embeds
-
-**NUEVO**: ¡La vista previa de embeds ahora es compatible en el modo tablero!
-
-- **Imágenes**: `![[image.png]]` se muestra correctamente en el modo de vista previa
-- **Notas**: `![[otra-nota.md]]` renderiza el contenido de la nota
-- **Obsidian Bases**: `![[table.base]]` muestra vistas de base de datos interactivas
-
-**Selección de vista persistente para Bases**: Para que la selección de vista en una base sea persistente, usa la sintaxis con fragmento:
-```markdown
-![[table.base#NombreDeLaVista]]
-```
-Esto asegura que la vista especificada se muestre siempre al cargar la nota.
-
-## 🔄 Dos modos de visualización
-
-**🏢 Modo Tablero**: Cuadrícula de marcos editables con funciones de vista previa en vivo  
-**📄 Modo Normal**: Edición clásica de Markdown en Obsidian  
-
-Cambia entre modos usando los íconos de la barra de herramientas.
-
-![Agile Board – Eisenhower Example](./agile-board-eisenhower.gif)
-
-### 📋 Menú contextual e impresión
-
-Haz clic derecho en la pestaña del tablero para acceder a todas las opciones estándar de Obsidian (dividir, renombrar, mover, marcar, etc.) e imprimir tu tablero directamente.
+### Embeds y Compatibilidad con plugins
+- **Imágenes**: `![[imagen.png]]` se muestra correctamente en la vista previa del tablero
+- **Notas**: `![[otra-nota.md]]` incrusta el contenido de la nota directamente en el marco
+- **Obsidian Bases**: `![[tabla.base]]` muestra vistas de base de datos interactivas; usa `![[tabla.base#NombreVista]]` para recordar la vista seleccionada
+- **Dataview & Tasks**: las consultas se calculan y actualizan normalmente dentro de los marcos
+- **Menú contextual e impresión**: clic derecho en la pestaña del tablero para todas las opciones estándar de Obsidian, más impresión directa del tablero
 
 ![Agile Board – Menú contextual](./Agile-Board-Menu_c.gif)
 ![Agile Board – Imprimir tablero](./Agile-Board-Print-Board_c.gif)
 
 ---
 
+## ⚠️ Limitaciones conocidas
+
+El editor de marcos usa CodeMirror 6 pero no replica todas las funciones de edición de Obsidian:
+
+- **Sugerencias de enlaces**: escribir `[[` no sugiere tus notas — escribe el enlace completo manualmente
+- **Llamadas inline de plugins**: las consultas Dataview inline (`= this.file.name`) y los comandos Templater (`<% tp.date.now() %>`) no se ejecutan dentro de los marcos
+- **Solo escritorio**: los tableros no están disponibles en móvil — tus notas siguen siendo legibles como Markdown estándar en móvil
+
+---
+
 ## 🚀 Instalación
 
-### Opción 1 – BRAT (Recomendado)
+**Requisitos**: Obsidian desktop ≥ 0.15.0. Compatible con Obsidian 1.13.0 (Catalyst) y versiones posteriores.
 
-Instala vía [BRAT](https://github.com/TfTHacker/obsidian42-brat) para obtener actualizaciones automáticas:
+### Opción 1 — BRAT (Recomendado)
 
-1. Instala y habilita el plugin BRAT  
-2. Añade `a198h/agile-board` como plugin beta  
-3. BRAT instalará y actualizará el plugin automáticamente
+[BRAT](https://github.com/TfTHacker/obsidian42-brat) gestiona las actualizaciones automáticas:
 
-### Opción 2 – Instalación manual
+1. Instala y activa el plugin comunitario **BRAT**
+2. En la configuración de BRAT, añade `a198h/agile-board`
+3. BRAT instala el plugin y lo mantiene actualizado automáticamente
 
-1. Descarga `main.js`, `manifest.json` y `styles.css` desde [GitHub releases](https://github.com/a198h/agile-board/releases)  
-2. Cópialos en `.obsidian/plugins/agile-board/`  
-3. Reinicia Obsidian y habilita el plugin  
-4. **5 disposiciones predeterminadas incluidas**  
+### Opción 2 — Instalación manual
 
----
+1. Descarga `main.js`, `manifest.json` y `styles.css` desde la [última release de GitHub](https://github.com/a198h/agile-board/releases/latest)
+2. Copia los tres archivos en `.obsidian/plugins/agile-board/`
+3. Reinicia Obsidian y activa **Agile Board** en Configuración → Plugins de la comunidad
 
-## 📱 Móvil
-
-Tus notas se muestran normalmente en móvil como markdown estándar. Agile Board es un plugin exclusivo para escritorio — los layouts de board solo están disponibles en escritorio.
+> **5 layouts predeterminados están incluidos** en el plugin — no se requiere descarga adicional.
 
 ---
 
-## 📝 Uso
+## 📝 Inicio rápido
 
-### Configuración
+### 1. Activar un layout en una nota
 
-Para habilitar una disposición en una nota, agrega esta línea a las propiedades (frontmatter):
+Añade la propiedad `agile-board` en el frontmatter de la nota:
 
 ```yaml
 ---
@@ -120,76 +101,87 @@ agile-board: eisenhower
 ---
 ```
 
-**Disposiciones disponibles** (incluidas por defecto):
+Haz clic en el icono 🏢 en la barra de herramientas para cambiar al modo Tablero.
 
-- `eisenhower`: matriz de 4 cuadrantes importante/urgente  
-- `swot`: analiza una situación  
-- `moscow`: prioriza características o necesidades (Must/Should/Could/Won’t)  
-- `effort_impact`: decide qué acciones tomar según efectividad  
-- `cornell`: método Cornell para tomar notas activamente  
+### 2. Layouts disponibles
 
-El ícono 🏢 aparece en la barra de herramientas. Haz clic para cambiar al modo tablero.
+| Layout | Descripción |
+|---|---|
+| `eisenhower` | Matriz de 4 cuadrantes Importante / Urgente |
+| `swot` | Fortalezas, Debilidades, Oportunidades, Amenazas |
+| `moscow` | Priorización Must / Should / Could / Won't |
+| `effort_impact` | Priorización de acciones por efectividad |
+| `cornell` | Sistema activo de toma de notas |
 
-### Edición
+### 3. Editar un marco
 
-- **Haz clic en un marco** → Modo edición  
-- **Listas inteligentes**: listas con viñetas y numeradas  
-- **Casillas de verificación**: clic para marcar/desmarcar, sincronización automática  
-- **Consultas**: Query, Dataview, Tasks  
+- **Clic simple** → modo de edición
+- **Doble clic en el título** → abrir en ventana popout
+- Los cambios se guardan automáticamente en el archivo Markdown
 
 ---
 
 ## ⚙️ Configuración del plugin
 
-Desde **Configuración → Plugins de la comunidad → Agile Board** puedes gestionar tus disposiciones directamente en Obsidian.
+Abre **Configuración → Plugins de la comunidad → Agile Board** para gestionar layouts y apariencia.
 
-![Agile Board – Config](./agile-board-customize-board.png)
+![Agile Board – Configuración](./agile-board-customize-board.png)
 
-### 📋 Gestión de disposiciones
+### Gestión de layouts
 
-La lista de disposiciones disponibles aparece automáticamente en la configuración.  
-Cada disposición corresponde a un archivo `.json` guardado en la carpeta `layouts` del plugin (los usuarios no necesitan manipular esta carpeta).
+Cada layout es un archivo `.json` en la carpeta `layouts/` del plugin. Desde el panel de configuración:
 
-- **Crear una disposición**: botón ➕, introduce un nombre  
-- **Editar una disposición**: ícono ✏️ abre el editor visual  
-- **Duplicar una disposición**: ícono 📑  
-- **Exportar / Importar**: íconos ⬆️ y ⬇️ para compartir o cargar configuraciones  
-- **Eliminar una disposición**: ícono 🗑️  
+| Acción | Control |
+|---|---|
+| Crear | botón ➕ — introducir un nombre |
+| Editar | icono ✏️ — abre el editor visual |
+| Duplicar | icono 📑 |
+| Exportar / Importar | iconos ⬆️ / ⬇️ — compartir o cargar configuraciones |
+| Eliminar | icono 🗑️ |
 
-### 🎨 Editor visual
+### Editor visual de layouts
 
-El editor de disposiciones muestra una **cuadrícula de 24×24**, donde puedes colocar **marcos**:
+El editor muestra una **cuadrícula 24×24** donde colocas y redimensionas **boxes** (marcos):
 
-- **Crear**: haz clic y arrastra en la cuadrícula  
-- **Mover**: arrastra un marco  
-- **Redimensionar**: usa los controladores circulares  
-- **Renombrar**: modifica el título en el panel lateral  
-- **Eliminar**: botón rojo "🗑️"  
-- **Eliminar todo**: botón rojo "🗑️ Clear all boxes" debajo de la sección de ayuda  
+- **Crear**: hacer clic y arrastrar sobre un área vacía
+- **Mover**: arrastrar una box para reposicionarla
+- **Redimensionar**: arrastrar los controladores circulares en las esquinas y bordes de la box
+- **Renombrar**: editar el título en el panel lateral
+- **Color**: elegir un color personalizado en el panel lateral — clic en **Restablecer** para volver al color de la paleta
+- **Eliminar**: botón 🗑️ en el panel lateral
+- **Borrar todo**: elimina todas las boxes del layout (con confirmación)
 
-Cada marco corresponde a una **sección de nota**: un **encabezado de nivel 1** (`#`) seguido de su contenido.
+Cada box corresponde a un **encabezado de nivel 1** (`#`) en la nota y el contenido que le sigue.
 
 ---
 
-## ✨ Características
+## 🌍 Soporte multilingüe
 
-- **Sincronización automática**: los cambios en los marcos se guardan automáticamente en el archivo Markdown  
-- **Secciones automáticas**: creación asistida de secciones faltantes  
-- **Compatibilidad con plugins**: Dataview, Tasks y Templater funcionan normalmente (¡informa bugs!); otros plugins por verificar  
+La interfaz se adapta automáticamente al idioma de tu Obsidian. Todos los elementos UI, configuraciones, mensajes y tooltips están disponibles en **7 idiomas** (96 claves de traducción):
+
+| Idioma | Estado |
+|---|---|
+| 🇺🇸 English | referencia |
+| 🇫🇷 Français | completo |
+| 🇪🇸 Español | completo |
+| 🇩🇪 Deutsch | completo |
+| 🇵🇹 Português | completo |
+| 🇨🇳 中文 (简体) | completo |
+| 🇷🇺 Русский | completo |
 
 ---
 
 ## 💡 Inspiración
 
-Este plugin se inspira en [Obsidian-Templify](https://github.com/Quorafind/Obsidian-Templify) y amplía el concepto de transformar notas Markdown en disposiciones visuales.
+Este plugin está inspirado en [Obsidian-Templify](https://github.com/Quorafind/Obsidian-Templify) y se basa en la idea de transformar notas Markdown en layouts visuales.
 
 ---
 
-## 📂 ¡Tu contribución importa!
+## 📂 Contribución y Soporte
 
-- **Bugs/Issues**: [https://github.com/a198h/agile-board/issues](https://github.com/a198h/agile-board/issues)  
-- **Discusiones**: [https://github.com/a198h/agile-board/discussions/8](https://github.com/a198h/agile-board/discussions/8)  
+- **Informes de errores y solicitudes de funciones**: [GitHub Issues](https://github.com/a198h/agile-board/issues)
+- **Discusiones**: [GitHub Discussions](https://github.com/a198h/agile-board/discussions/8)
 
-## Apóyame
-Si encuentras útil mi trabajo, puedes apoyarme aquí:  
+Si este plugin te resulta útil, considera apoyar su desarrollo:
+
 [![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/a198h)

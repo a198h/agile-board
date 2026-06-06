@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.9.0-blue)
+![version](https://img.shields.io/badge/version-0.9.1-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/platform-desktop-lightgrey)
 
 🌍 Read this in other languages:
 [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
@@ -7,109 +7,93 @@
 
 # Agile Board
 
-**Agile Board** is a plugin for [Obsidian](https://obsidian.md) that transforms your notes into visual boards. Each layout is based on a template (like the Eisenhower matrix) defined on a 24x24 grid. Sections appear as editable frames ("boxes"): you can write, insert tasks, Dataview/Tasks queries, etc.
+**Agile Board** transforms your Obsidian notes into interactive visual boards. Your sections become editable frames arranged on a grid — while always remaining valid, portable Markdown under the hood.
 
-**Note**: Content is always saved in classic Markdown under # headings, which ensures compatibility with all your notes.
+![Agile Board – Eisenhower Example](./agile-board-eisenhower.gif)
+
+---
+
+## 🆕 What's New
+
+### v0.9.1 — Obsidian 1.13.0 compatibility fix
+Resize handles in the layout editor stopped working after Obsidian's Chromium upgrade in v1.13.0. This patch fully restores the visual editor on all supported versions.
+
+### v0.9.0 — Popout editor
+
+> Previously, editing a frame required switching the whole note to edit mode, making it difficult to write while keeping the board visible.
+
+**You can now double-click any frame title to open its content in a dedicated window**, with full Obsidian Live Preview. The content syncs back automatically when the window is closed. Locked frames cannot be opened in popout.
+
+![Agile Board – Board to Markdown](./Agile-Board-Board-to-Markdown_c.gif)
 
 ---
 
 ## 🎯 Features
 
-Transform your notes into visual dashboards with editable frames. Each frame represents a section (level 1 heading) with support for:
+### Board & Editing
+- **Two display modes**: switch freely between the visual board (🏢) and classic Markdown editing (📄)
+- **Editable frames**: click any frame to enter edit mode with CodeMirror 6
+- **Popout editor**: double-click a frame title to edit in a separate window — keep the board visible while writing
+- **Smart editing**: auto-continued lists and callouts, clickable checkboxes with instant sync
+- **Rich Markdown**: `[[links]]`, `- [ ] tasks`, formatting, code blocks, horizontal rules
 
-- **Rich Markdown**: `[[links]]`, `- [ ] tasks`, formatting, horizontal lines, code blocks
-- **Smart editing**: auto-continued lists, callouts, clickable checkboxes
-- **Plugin compatibility**: Dataview, Tasks (with proper icon handling), etc.
-- **Live Preview**: rendering close to Obsidian with enhanced markdown support
-- **Frame lock**: Lock any frame to prevent accidental edits — links, embeds and checkboxes still work when locked
-- **Font size**: Adjust text size across all frames (0.8× to 1.5×) from plugin settings
+### Frame Customization
+- **Frame lock**: lock a frame to prevent accidental edits — links, embeds and checkboxes still work when locked
+- **Font size**: adjust text scale across all frames (0.7× to 1.5×) from plugin settings
+- **Custom colors**: assign a color to any frame — tinted title bar and colored border in the board view
 
 ![Agile Board – Lock Frame](./Agile-Board-Lock-frame_c.gif)
 ![Agile Board – Font Size](./Agile-Board-Font-Size-in-Board_c.gif)
 
-## 🌍 Multilingual Support
-
-**NEW in v0.9.0**: Popout editor — double-click a frame title to edit in a separate window!
-
-- 🇺🇸 **English** - reference language
-- 🇫🇷 **Français** - traduction complète
-- 🇪🇸 **Español** - traducción completa  
-- 🇩🇪 **Deutsch** - vollständige Übersetzung
-- 🇵🇹 **Português** - tradução completa
-- 🇨🇳 **中文 (简体)** - 完整翻译
-
-The interface automatically adapts to your Obsidian language setting. All UI elements, settings, messages, and tooltips are professionally translated with **96 translation keys** across all languages.
-
-## ⚠️ Current Limitations
-
-The Board mode uses CodeMirror 6 for editing but doesn't include all of Obsidian's advanced editing features:
-
-- **Link suggestions**: When typing `[[`, the editor won't suggest your notes (you can still type the full link manually)
-- **Inline plugin calls**: Inline Dataview queries (`= this.file.name`) or Templater commands (`<% tp.date.now() %>`) don't execute in frames
-
-### 📎 Embed Support
-
-**NEW**: Embed preview is now supported in Board mode!
-
-- **Images**: `![[image.png]]` displays correctly in preview mode
-- **Notes**: `![[other-note.md]]` renders the note content
-- **Obsidian Bases**: `![[table.base]]` displays interactive database views
-
-**Persistent view selection for Bases**: To persist the view selection in a base, use the fragment syntax:
-```markdown
-![[table.base#ViewName]]
-```
-This ensures the specified view is always displayed when the note loads.
-
-
-## 🔄 Two display modes
-
-**🏢 Board Mode**: Grid of editable frames with Live Preview features  
-**📄 Normal Mode**: Classic Obsidian markdown editing
-
-Switch between modes via the toolbar icons.
-
-![Agile Board – Eisenhower Example](./agile-board-eisenhower.gif)
-
-### 📋 Context Menu & Print
-
-Right-click the board tab for all standard Obsidian options (split, rename, move, bookmark, etc.) and print your board layout directly.
+### Embeds & Plugin Compatibility
+- **Images**: `![[image.png]]` renders correctly in board preview
+- **Notes**: `![[other-note.md]]` embeds the note content directly in the frame
+- **Obsidian Bases**: `![[table.base]]` displays interactive database views; use `![[table.base#ViewName]]` to remember the selected view
+- **Dataview & Tasks**: queries render and update normally inside frames
+- **Context menu & print**: right-click the board tab for all standard Obsidian options, plus direct board printing
 
 ![Agile Board – Context Menu](./Agile-Board-Menu_c.gif)
 ![Agile Board – Print Board](./Agile-Board-Print-Board_c.gif)
 
 ---
 
+## ⚠️ Known Limitations
+
+The frame editor uses CodeMirror 6 but does not replicate every Obsidian editing feature:
+
+- **Link suggestions**: typing `[[` does not suggest your notes — type the full link manually
+- **Inline plugin calls**: inline Dataview queries (`= this.file.name`) and Templater commands (`<% tp.date.now() %>`) do not execute inside frames
+- **Desktop only**: boards are not available on mobile — your notes remain readable as standard Markdown on mobile
+
+---
+
 ## 🚀 Installation
 
-### Option 1 - BRAT (Recommended)
+**Requirements**: Obsidian desktop ≥ 0.15.0. Compatible with Obsidian 1.13.0 (Catalyst) and later.
 
-Install via [BRAT](https://github.com/TfTHacker/obsidian42-brat) to get automatic updates:
+### Option 1 — BRAT (Recommended)
 
-1. Install and enable the BRAT plugin
-2. Add `a198h/agile-board` as a beta plugin
-3. BRAT will automatically install and update the plugin
+[BRAT](https://github.com/TfTHacker/obsidian42-brat) handles automatic updates:
 
-### Option 2 - Manual Installation
+1. Install and enable the **BRAT** community plugin
+2. In BRAT settings, add `a198h/agile-board`
+3. BRAT installs the plugin and keeps it up to date automatically
 
-1. Download `main.js`, `manifest.json` and `styles.css` from [GitHub releases](https://github.com/a198h/agile-board/releases)
-2. Copy them to `.obsidian/plugins/agile-board/`
-3. Restart Obsidian and enable the plugin
-4. **5 default layouts are included** directly in the plugin
+### Option 2 — Manual Installation
 
----
+1. Download `main.js`, `manifest.json` and `styles.css` from the [latest GitHub release](https://github.com/a198h/agile-board/releases/latest)
+2. Copy the three files to `.obsidian/plugins/agile-board/`
+3. Restart Obsidian and enable **Agile Board** in Settings → Community plugins
 
-## 📱 Mobile
-
-Your notes display normally on mobile as standard markdown. Agile Board is a desktop-only plugin — board layouts are only available on desktop.
+> **5 default layouts are bundled** with the plugin — no additional download required.
 
 ---
 
-## 📝 Usage
+## 📝 Quick Start
 
-### Configuration
+### 1. Activate a layout on a note
 
-To enable a layout on a note, add this line to the properties (frontmatter):
+Add the `agile-board` property to the note's frontmatter:
 
 ```yaml
 ---
@@ -117,76 +101,87 @@ agile-board: eisenhower
 ---
 ```
 
-**Available layouts** (provided by default):
+Click the 🏢 icon in the toolbar to switch to Board mode.
 
-- `eisenhower`: 4-quadrant important/urgent matrix
-- `swot`: Analyze a situation
-- `moscow`: Prioritize features or needs (Must/Should/Could/Won't)
-- `effort_impact`: Decide which actions to take based on their effectiveness
-- `cornell`: Active note-taking
+### 2. Available layouts
 
-The 🏢 icon appears in the toolbar. Click to switch to Board mode.
+| Layout | Description |
+|---|---|
+| `eisenhower` | Important / Urgent 4-quadrant matrix |
+| `swot` | Strengths, Weaknesses, Opportunities, Threats |
+| `moscow` | Must / Should / Could / Won't prioritization |
+| `effort_impact` | Action prioritization by effectiveness |
+| `cornell` | Active note-taking system |
 
-### Editing
+### 3. Edit a frame
 
-- **Click on a frame** → Edit mode
-- **Smart lists**: Bullet lists and numbered lists
-- **Checkboxes**: Click to check/uncheck, automatic sync
-- **Queries**: Query, Dataview, Tasks
+- **Single click** → edit mode
+- **Double-click the title** → open in popout window
+- Changes are saved to the Markdown file automatically
 
 ---
 
 ## ⚙️ Plugin Settings
 
-From the **Settings → Community plugins → Agile Board** panel, you can manage your layouts directly from Obsidian.
+Open **Settings → Community plugins → Agile Board** to manage layouts and appearance.
 
 ![Agile Board – Config](./agile-board-customize-board.png)
 
-### 📋 Layout Management
+### Layout Management
 
-The list of available layouts appears automatically in the settings. Each layout corresponds to a `.json` file saved in the plugin's `layouts` folder (users don't need to manipulate this folder).
+Each layout is a `.json` file in the plugin's `layouts/` folder. From the settings panel:
 
-- **Create a layout**: ➕ button, enter a name.
-- **Edit a layout**: ✏️ icon opens the visual editor.
-- **Duplicate a layout**: 📑 icon.
-- **Export / Import**: ⬆️ and ⬇️ icons to share or load a configuration.
-- **Delete a layout**: 🗑️ icon.
+| Action | Control |
+|---|---|
+| Create | ➕ button — enter a name |
+| Edit | ✏️ icon — opens the visual editor |
+| Duplicate | 📑 icon |
+| Export / Import | ⬆️ / ⬇️ icons — share or load configurations |
+| Delete | 🗑️ icon |
 
-### 🎨 Visual Editor
+### Visual Layout Editor
 
-The layout editor displays a **24×24** grid on which you can place **boxes** (frames):
+The editor shows a **24×24 grid** where you place and resize **boxes** (frames):
 
-- **Create**: click and drag on the grid.
-- **Move**: drag a box.
-- **Resize**: use the circular handles.
-- **Rename**: modify the title in the side panel.
-- **Delete**: red "🗑️" button.
-- **Clear All**: red "🗑️ Clear all boxes" button below the help section.
+- **Create**: click and drag on an empty area
+- **Move**: drag a box to reposition it
+- **Resize**: drag the circular handles at the box corners and edges
+- **Rename**: edit the title in the side panel
+- **Color**: pick a custom color from the side panel — click **Reset** to revert to the palette color
+- **Delete**: 🗑️ button in the side panel
+- **Clear all**: removes all boxes from the layout (with confirmation)
 
-Each box corresponds to a **note section**: a **level 1** heading (line starting with `#`) followed by its content.
+Each box maps to a **level-1 heading** (`#`) in the note and the content that follows it.
 
 ---
 
-## ✨ Features
+## 🌍 Multilingual Support
 
-- **Automatic synchronization**: Changes in visual frames are automatically saved to the markdown file
-- **Automatic sections**: Assisted creation of missing sections
-- **Plugin compatibility**: Dataview, Tasks and Templater seem to work normally (report bugs!); other plugins to be verified.
+The interface automatically adapts to your Obsidian language. All UI elements, settings, messages and tooltips are available in **7 languages** (96 translation keys):
+
+| Language | Status |
+|---|---|
+| 🇺🇸 English | reference |
+| 🇫🇷 Français | complete |
+| 🇪🇸 Español | complete |
+| 🇩🇪 Deutsch | complete |
+| 🇵🇹 Português | complete |
+| 🇨🇳 中文 (简体) | complete |
+| 🇷🇺 Русский | complete |
 
 ---
 
 ## 💡 Inspiration
 
-This plugin is inspired by [Obsidian-Templify](https://github.com/Quorafind/Obsidian-Templify) and builds upon the concept of transforming markdown notes into visual layouts.
+This plugin is inspired by [Obsidian-Templify](https://github.com/Quorafind/Obsidian-Templify) and builds on the idea of transforming Markdown notes into visual layouts.
 
 ---
 
-## 📂 Your contribution matters!
+## 📂 Contributing & Support
 
-- **Bugs/Issues**: [https://github.com/a198h/agile-board/issues](https://github.com/a198h/agile-board/issues)
-- **Discussions**: [https://github.com/a198h/agile-board/discussions/8](https://github.com/a198h/agile-board/discussions/8)
+- **Bug reports & feature requests**: [GitHub Issues](https://github.com/a198h/agile-board/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/a198h/agile-board/discussions/8)
 
+If you find this plugin useful, consider supporting development:
 
-## Support me
-If you find my work useful, you can support me here: 
 [![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/a198h)

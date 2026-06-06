@@ -5,6 +5,14 @@ All notable changes to the Agile Board plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.1] - 2026-06-06
+
+### 🐛 Bug Fixes
+
+- **Resize handles in layout editor (Obsidian 1.13.0+ compatibility)**: Fixed frame resize handles becoming non-clickable after Obsidian's Chromium upgrade in v1.13.0. The fix moves text clipping to an inner `.box-content` wrapper, restoring correct pointer-event behavior for handles positioned outside the frame element (`overflow: hidden` was clipping pointer events per the CSS spec in the newer Chromium).
+- **Resize at grid edges**: Resize handles on frames positioned at the grid boundary no longer fail silently — coordinates are now clamped to valid grid bounds instead of returning `null` and aborting the operation.
+- **Event listener memory leak**: Fixed `DragDropHandler.cleanup()` which was not properly removing `mousemove`/`mouseup` listeners because `bind()` creates new function references that don't match the originals. Listeners are now stored as instance variables.
+
 ## [0.9.0] - 2026-03-14
 
 ### ✨ New Features
@@ -259,7 +267,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 0.9.0
+- **Current Version**: 0.9.1
 - **Minimum Obsidian Version**: 0.15.0
 - **Platform Support**: Desktop only (`isDesktopOnly: true`)
 - **License**: GPL-3.0

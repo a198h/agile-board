@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.9.0-blue)
+![version](https://img.shields.io/badge/version-0.9.1-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/Plattform-Desktop-lightgrey)
 
 🌍 Lies dies in anderen Sprachen:
 [English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
@@ -7,112 +7,93 @@
 
 # Agile Board
 
-**Agile Board** ist ein Plugin für [Obsidian](https://obsidian.md), das deine Notizen in visuelle Tafeln verwandelt.  
-Jede Disposition basiert auf einer Vorlage (z. B. der Eisenhower-Matrix), die auf einem 24×24-Raster definiert ist.  
-Abschnitte erscheinen als editierbare Rahmen („Boxes“): du kannst schreiben, Aufgaben einfügen, Dataview/Tasks-Abfragen, usw.
+**Agile Board** verwandelt deine Obsidian-Notizen in interaktive visuelle Boards. Deine Abschnitte werden zu editierbaren Rahmen auf einem Raster — während sie unter der Haube immer gültiges, portables Markdown bleiben.
 
-**Hinweis**: Inhalte werden immer im klassischen Markdown unter `#`-Überschriften gespeichert, was die volle Kompatibilität mit allen Notizen sicherstellt.
+![Agile Board – Eisenhower-Beispiel](./agile-board-eisenhower.gif)
+
+---
+
+## 🆕 Neuigkeiten
+
+### v0.9.1 — Kompatibilitätspatch für Obsidian 1.13.0
+Die Größenänderungs-Handles des Layout-Editors funktionierten nach Obsidians Chromium-Aktualisierung in v1.13.0 nicht mehr. Dieser Patch stellt den visuellen Editor auf allen unterstützten Versionen vollständig wieder her.
+
+### v0.9.0 — Popout-Editor
+
+> Bisher erforderte das Bearbeiten eines Rahmens das Umschalten der gesamten Notiz in den Bearbeitungsmodus, was es schwierig machte, zu schreiben und dabei das Board sichtbar zu halten.
+
+**Du kannst jetzt auf einen Rahmentitel doppelklicken, um den Inhalt in einem eigenen Fenster zu öffnen**, mit vollständiger Obsidian Live Preview. Der Inhalt wird beim Schließen des Fensters automatisch zurückgesynchronisiert. Gesperrte Rahmen können nicht im Popout geöffnet werden.
+
+![Agile Board – Board zu Markdown](./Agile-Board-Board-to-Markdown_c.gif)
 
 ---
 
 ## 🎯 Funktionen
 
-Verwandle deine Notizen in visuelle Dashboards mit editierbaren Rahmen.  
-Jeder Rahmen entspricht einem Abschnitt (Überschrift der Ebene 1) mit Unterstützung für:
+### Board & Bearbeitung
+- **Zwei Anzeigemodi**: wechsle frei zwischen dem visuellen Board (🏢) und der klassischen Markdown-Bearbeitung (📄)
+- **Editierbare Rahmen**: klicke auf einen Rahmen, um den Bearbeitungsmodus mit CodeMirror 6 zu öffnen
+- **Popout-Editor**: Doppelklick auf einen Rahmentitel öffnet ihn in einem separaten Fenster — halte das Board sichtbar während du schreibst
+- **Intelligente Bearbeitung**: automatisch fortgesetzte Listen und Callouts, anklickbare Checkboxen mit sofortiger Synchronisation
+- **Rich Markdown**: `[[Links]]`, `- [ ] Aufgaben`, Formatierung, Codeblöcke, horizontale Linien
 
-- **Rich Markdown**: `[[Links]]`, `- [ ] Aufgaben`, Formatierungen
-- **Smart Editing**: automatisch fortgesetzte Listen, anklickbare Checkboxen
-- **Plugin-Kompatibilität**: Dataview, Tasks usw.
-- **Live Preview**: Darstellung ähnlich wie in Obsidian mit einigen Einschränkungen
-- **Rahmensperre**: Sperre einen Rahmen, um versehentliche Bearbeitungen zu verhindern — Links, Embeds und Checkboxen bleiben funktionsfähig
-- **Schriftgröße**: Passe die Textgröße aller Rahmen (0,8× bis 1,5×) in den Einstellungen an
+### Rahmen-Anpassung
+- **Rahmensperrung**: sperre einen Rahmen, um versehentliche Bearbeitungen zu verhindern — Links, Embeds und Checkboxen bleiben funktionsfähig
+- **Schriftgröße**: passe die Textskalierung aller Rahmen (0,7× bis 1,5×) in den Plugin-Einstellungen an
+- **Benutzerdefinierte Farben**: weise jedem Rahmen eine Farbe zu — getönte Titelleiste und farbige Umrandung in der Board-Ansicht
 
 ![Agile Board – Rahmensperre](./Agile-Board-Lock-frame_c.gif)
 ![Agile Board – Schriftgröße](./Agile-Board-Font-Size-in-Board_c.gif)
 
-## 🌍 Mehrsprachige Unterstützung
-
-**NEU in v0.9.0**: Popout-Editor — Doppelklicken Sie auf einen Rahmentitel, um in einem separaten Fenster zu bearbeiten!
-
-- 🇺🇸 **English** – Referenzsprache  
-- 🇫🇷 **Français** – vollständige Übersetzung  
-- 🇪🇸 **Español** – vollständige Übersetzung  
-- 🇩🇪 **Deutsch** – vollständige Übersetzung  
-- 🇵🇹 **Português** – vollständige Übersetzung  
-- 🇨🇳 **中文 (简体)** – 完整翻译  
-
-Die Benutzeroberfläche passt sich automatisch an die Spracheinstellung von Obsidian an.  
-Alle UI-Elemente, Einstellungen, Meldungen und Tooltips sind mit **96 Übersetzungs-Schlüsseln** in allen Sprachen verfügbar.
-
-## ⚠️ Aktuelle Einschränkungen
-
-Der Board-Modus verwendet CodeMirror 6 für die Bearbeitung, enthält aber nicht alle erweiterten Funktionen von Obsidian:
-
-- **Link-Vorschläge**: Beim Tippen von `[[` werden keine Notizen vorgeschlagen (du kannst den vollständigen Link trotzdem manuell eingeben)
-- **Inline Plugin Calls**: Inline-Dataview-Abfragen (`= this.file.name`) oder Templater-Befehle (`<% tp.date.now() %>`) werden in Rahmen nicht ausgeführt
-
-### 📎 Embed-Unterstützung
-
-**NEU**: Embed-Vorschau wird jetzt im Board-Modus unterstützt!
-
-- **Bilder**: `![[image.png]]` wird korrekt im Vorschaumodus angezeigt
-- **Notizen**: `![[andere-notiz.md]]` rendert den Notizeninhalt
-- **Obsidian Bases**: `![[table.base]]` zeigt interaktive Datenbankansichten an
-
-**Persistente Ansichtsauswahl für Bases**: Um die Ansichtsauswahl in einer Base persistent zu machen, verwende die Fragment-Syntax:
-```markdown
-![[table.base#AnsichtsName]]
-```
-Dies stellt sicher, dass die angegebene Ansicht beim Laden der Notiz immer angezeigt wird.
-
-## 🔄 Zwei Anzeigemodi
-
-**🏢 Board-Modus**: Raster aus editierbaren Rahmen mit Live-Preview-Funktionen  
-**📄 Normaler Modus**: Klassisches Obsidian-Markdown-Editing  
-
-Wechsel zwischen den Modi über die Symbolleisten-Icons.
-
-![Agile Board – Eisenhower Example](./agile-board-eisenhower.gif)
-
-### 📋 Kontextmenü & Drucken
-
-Rechtsklick auf den Board-Tab für alle Standard-Obsidian-Optionen (teilen, umbenennen, verschieben, Lesezeichen, etc.) und drucke dein Board direkt aus.
+### Einbettungen & Plugin-Kompatibilität
+- **Bilder**: `![[bild.png]]` wird in der Board-Vorschau korrekt angezeigt
+- **Notizen**: `![[andere-notiz.md]]` bettet den Inhalt der Notiz direkt in den Rahmen ein
+- **Obsidian Bases**: `![[tabelle.base]]` zeigt interaktive Datenbankansichten; nutze `![[tabelle.base#AnsichtName]]`, um die gewählte Ansicht zu merken
+- **Dataview & Tasks**: Abfragen werden normal innerhalb der Rahmen berechnet und aktualisiert
+- **Kontextmenü & Drucken**: Rechtsklick auf den Board-Tab für alle Standard-Obsidian-Optionen sowie direktes Drucken des Boards
 
 ![Agile Board – Kontextmenü](./Agile-Board-Menu_c.gif)
 ![Agile Board – Board drucken](./Agile-Board-Print-Board_c.gif)
 
 ---
 
+## ⚠️ Bekannte Einschränkungen
+
+Der Rahmen-Editor verwendet CodeMirror 6, bildet jedoch nicht alle Obsidian-Bearbeitungsfunktionen nach:
+
+- **Link-Vorschläge**: das Tippen von `[[` schlägt keine Notizen vor — tippe den vollständigen Link manuell
+- **Inline-Plugin-Aufrufe**: Inline-Dataview-Abfragen (`= this.file.name`) und Templater-Befehle (`<% tp.date.now() %>`) werden in Rahmen nicht ausgeführt
+- **Nur Desktop**: Boards sind auf Mobilgeräten nicht verfügbar — deine Notizen bleiben auf Mobilgeräten als normales Markdown lesbar
+
+---
+
 ## 🚀 Installation
 
-### Option 1 – BRAT (Empfohlen)
+**Voraussetzungen**: Obsidian Desktop ≥ 0.15.0. Kompatibel mit Obsidian 1.13.0 (Catalyst) und späteren Versionen.
 
-Installation über [BRAT](https://github.com/TfTHacker/obsidian42-brat) für automatische Updates:
+### Option 1 — BRAT (Empfohlen)
 
-1. BRAT-Plugin installieren und aktivieren  
-2. `a198h/agile-board` als Beta-Plugin hinzufügen  
-3. BRAT installiert und aktualisiert das Plugin automatisch
+[BRAT](https://github.com/TfTHacker/obsidian42-brat) übernimmt automatische Updates:
 
-### Option 2 – Manuelle Installation
+1. Installiere und aktiviere das Community-Plugin **BRAT**
+2. Füge in den BRAT-Einstellungen `a198h/agile-board` hinzu
+3. BRAT installiert das Plugin und hält es automatisch aktuell
 
-1. `main.js`, `manifest.json` und `styles.css` von [GitHub Releases](https://github.com/a198h/agile-board/releases) herunterladen  
-2. In `.obsidian/plugins/agile-board/` kopieren  
-3. Obsidian neu starten und Plugin aktivieren  
-4. **5 Standard-Dispositionen sind enthalten**  
+### Option 2 — Manuelle Installation
 
----
+1. Lade `main.js`, `manifest.json` und `styles.css` aus dem [neuesten GitHub-Release](https://github.com/a198h/agile-board/releases/latest) herunter
+2. Kopiere die drei Dateien nach `.obsidian/plugins/agile-board/`
+3. Starte Obsidian neu und aktiviere **Agile Board** unter Einstellungen → Community-Plugins
 
-## 📱 Mobil
-
-Ihre Notizen werden auf Mobilgeräten normal als Standard-Markdown angezeigt. Agile Board ist ein reines Desktop-Plugin — Board-Layouts sind nur auf dem Desktop verfügbar.
+> **5 Standard-Layouts sind im Plugin enthalten** — kein zusätzlicher Download erforderlich.
 
 ---
 
-## 📝 Verwendung
+## 📝 Schnellstart
 
-### Konfiguration
+### 1. Layout auf einer Notiz aktivieren
 
-Um eine Disposition für eine Notiz zu aktivieren, füge diese Zeile zu den Eigenschaften (Frontmatter) hinzu:
+Füge die Eigenschaft `agile-board` in den Frontmatter der Notiz ein:
 
 ```yaml
 ---
@@ -120,76 +101,87 @@ agile-board: eisenhower
 ---
 ```
 
-**Verfügbare Dispositionen** (standardmäßig enthalten):
+Klicke auf das 🏢-Symbol in der Toolbar, um in den Board-Modus zu wechseln.
 
-- `eisenhower`: 4-Quadranten-Matrix wichtig/dringend  
-- `swot`: Situation analysieren  
-- `moscow`: Anforderungen priorisieren (Must/Should/Could/Won’t)  
-- `effort_impact`: Maßnahmen nach Aufwand und Wirkung beurteilen  
-- `cornell`: Aktives Mitschreiben  
+### 2. Verfügbare Layouts
 
-Das 🏢-Icon erscheint in der Symbolleiste. Klick zum Wechsel in den Board-Modus.
+| Layout | Beschreibung |
+|---|---|
+| `eisenhower` | 4-Quadranten-Matrix Wichtig / Dringend |
+| `swot` | Stärken, Schwächen, Chancen, Risiken |
+| `moscow` | Must / Should / Could / Won't Priorisierung |
+| `effort_impact` | Aktionspriorisierung nach Wirksamkeit |
+| `cornell` | Aktive Mitschreibemethode |
 
-### Bearbeitung
+### 3. Rahmen bearbeiten
 
-- **Klick auf einen Rahmen** → Bearbeitungsmodus  
-- **Intelligente Listen**: Aufzählungen und nummerierte Listen  
-- **Checkboxen**: Klick zum Abhaken/Entfernen, automatische Synchronisierung  
-- **Abfragen**: Query, Dataview, Tasks  
+- **Einfacher Klick** → Bearbeitungsmodus
+- **Doppelklick auf den Titel** → Im Popout-Fenster öffnen
+- Änderungen werden automatisch in der Markdown-Datei gespeichert
 
 ---
 
 ## ⚙️ Plugin-Einstellungen
 
-Über **Einstellungen → Community-Plugins → Agile Board** kannst du deine Dispositionen direkt in Obsidian verwalten.
+Öffne **Einstellungen → Community-Plugins → Agile Board**, um Layouts und Erscheinungsbild zu verwalten.
 
-![Agile Board – Config](./agile-board-customize-board.png)
+![Agile Board – Konfiguration](./agile-board-customize-board.png)
 
-### 📋 Dispositionsverwaltung
+### Layout-Verwaltung
 
-Die Liste der verfügbaren Dispositionen erscheint automatisch in den Einstellungen.  
-Jede Disposition entspricht einer `.json`-Datei im Ordner `layouts` des Plugins (Benutzer müssen diesen Ordner nicht manuell bearbeiten).
+Jedes Layout ist eine `.json`-Datei im `layouts/`-Ordner des Plugins. Im Einstellungsbereich:
 
-- **Disposition erstellen**: ➕-Button, Name eingeben  
-- **Disposition bearbeiten**: ✏️-Icon öffnet den visuellen Editor  
-- **Disposition duplizieren**: 📑-Icon  
-- **Export / Import**: ⬆️ und ⬇️-Icons zum Teilen oder Laden einer Konfiguration  
-- **Disposition löschen**: 🗑️-Icon  
+| Aktion | Steuerung |
+|---|---|
+| Erstellen | ➕-Schaltfläche — Namen eingeben |
+| Bearbeiten | ✏️-Symbol — öffnet den visuellen Editor |
+| Duplizieren | 📑-Symbol |
+| Exportieren / Importieren | ⬆️ / ⬇️-Symbole — Konfigurationen teilen oder laden |
+| Löschen | 🗑️-Symbol |
 
-### 🎨 Visueller Editor
+### Visueller Layout-Editor
 
-Der Dispositions-Editor zeigt ein **24×24-Raster**, auf dem du **Rahmen** platzieren kannst:
+Der Editor zeigt ein **24×24-Raster**, auf dem du **Boxes** (Rahmen) platzierst und ihre Größe änderst:
 
-- **Erstellen**: Klicken und ziehen  
-- **Verschieben**: Rahmen ziehen  
-- **Größe ändern**: Runde Griffe verwenden  
-- **Umbenennen**: Titel im Seitenpanel ändern  
-- **Löschen**: roter „🗑️“-Button  
-- **Alles löschen**: roter „🗑️ Clear all boxes“-Button unterhalb des Hilfebereichs  
+- **Erstellen**: auf einen leeren Bereich klicken und ziehen
+- **Verschieben**: eine Box ziehen, um sie neu zu positionieren
+- **Größe ändern**: die kreisförmigen Handles an den Ecken und Kanten der Box ziehen
+- **Umbenennen**: den Titel im Seitenbereich bearbeiten
+- **Farbe**: eine benutzerdefinierte Farbe im Seitenbereich wählen — **Zurücksetzen** klicken, um zur Palettenfarbe zurückzukehren
+- **Löschen**: 🗑️-Schaltfläche im Seitenbereich
+- **Alle löschen**: entfernt alle Boxes aus dem Layout (mit Bestätigung)
 
-Jeder Rahmen entspricht einem **Notizabschnitt**: einer **Überschrift Ebene 1** (`#`) gefolgt vom Inhalt.
+Jede Box entspricht einer **Überschrift der Ebene 1** (`#`) in der Notiz und dem darauf folgenden Inhalt.
 
 ---
 
-## ✨ Features
+## 🌍 Mehrsprachige Unterstützung
 
-- **Automatische Synchronisierung**: Änderungen in visuellen Rahmen werden direkt in der Markdown-Datei gespeichert  
-- **Automatische Abschnitte**: Fehlende Abschnitte werden unterstützt erstellt  
-- **Plugin-Kompatibilität**: Dataview, Tasks und Templater scheinen normal zu funktionieren (Bugs melden!); andere Plugins noch zu prüfen  
+Die Oberfläche passt sich automatisch an deine Obsidian-Sprache an. Alle UI-Elemente, Einstellungen, Meldungen und Tooltips sind in **7 Sprachen** verfügbar (96 Übersetzungsschlüssel):
+
+| Sprache | Status |
+|---|---|
+| 🇺🇸 English | Referenz |
+| 🇫🇷 Français | vollständig |
+| 🇪🇸 Español | vollständig |
+| 🇩🇪 Deutsch | vollständig |
+| 🇵🇹 Português | vollständig |
+| 🇨🇳 中文 (简体) | vollständig |
+| 🇷🇺 Русский | vollständig |
 
 ---
 
 ## 💡 Inspiration
 
-Dieses Plugin ist inspiriert von [Obsidian-Templify](https://github.com/Quorafind/Obsidian-Templify) und baut auf dem Konzept auf, Markdown-Notizen in visuelle Dispositionen zu verwandeln.
+Dieses Plugin ist von [Obsidian-Templify](https://github.com/Quorafind/Obsidian-Templify) inspiriert und baut auf der Idee auf, Markdown-Notizen in visuelle Layouts zu verwandeln.
 
 ---
 
-## 📂 Dein Beitrag zählt!
+## 📂 Mitwirken & Support
 
-- **Bugs/Issues**: [https://github.com/a198h/agile-board/issues](https://github.com/a198h/agile-board/issues)  
-- **Diskussionen**: [https://github.com/a198h/agile-board/discussions/8](https://github.com/a198h/agile-board/discussions/8)  
+- **Fehlerberichte & Funktionsanfragen**: [GitHub Issues](https://github.com/a198h/agile-board/issues)
+- **Diskussionen**: [GitHub Discussions](https://github.com/a198h/agile-board/discussions/8)
 
-## Unterstütze mich
-Wenn du meine Arbeit nützlich findest, kannst du mich hier unterstützen:  
+Wenn dir dieses Plugin nützlich ist, kannst du die Entwicklung unterstützen:
+
 [![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/a198h)
