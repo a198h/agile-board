@@ -13,6 +13,7 @@ export interface BoxState {
   isSelected: boolean;
   isDragging: boolean;
   isResizing: boolean;
+  defaultColor: string;  // Couleur palette calculée à la création (fallback)
 }
 
 /**
@@ -53,23 +54,26 @@ export class BoxManager {
     element.dataset.boxX = box.x.toString();
     element.dataset.boxY = box.y.toString();
     
-    // Attribution séquentielle des couleurs
+    // Attribution des couleurs : couleur personnalisée ou palette séquentielle
     const boxIndex = layout.boxes.findIndex(b => b.id === box.id);
     const colorIndex = boxIndex % COLOR_CONSTANTS.TOTAL_COLORS;
-    
-    const bgColor = DOMHelper.getColorFromPalette(colorIndex);
-    const borderColor = DOMHelper.getBorderColorFromPalette(colorIndex);
-    
+    const paletteColor = DOMHelper.getColorFromPalette(colorIndex);
+    const paletteBorderColor = DOMHelper.getBorderColorFromPalette(colorIndex);
+
+    const bgColor = box.color ?? paletteColor;
+    const borderColor = box.color ?? paletteBorderColor;
+
     this.applyBoxStyles(element, bgColor, borderColor);
     this.createBoxContent(element, box);
     this.addResizeHandles(element);
-    
+
     const boxState: BoxState = {
       box,
       element,
       isSelected: false,
       isDragging: false,
-      isResizing: false
+      isResizing: false,
+      defaultColor: paletteColor
     };
 
     this.boxes.set(box.id, boxState);
@@ -84,11 +88,11 @@ export class BoxManager {
     element.style.border = `1px solid ${borderColor}`;
     element.style.borderRadius = '12px';
     element.style.cursor = 'move';
-    element.style.display = 'flex';
-    element.style.flexDirection = 'column';
-    element.style.alignItems = 'center';
-    element.style.justifyContent = 'center';
-    element.style.overflow = 'hidden';
+    // overflow:visible is required so resize handles positioned at -5px outside
+    // the box can receive pointer events. Chromium changed overflow:hidden to
+    // properly clip pointer events per spec (regression in Obsidian 1.13.0+).
+    // Text clipping is handled by the inner .box-content wrapper instead.
+    element.style.overflow = 'visible';
     element.style.opacity = '0.95';
     element.style.transition = 'all 0.2s ease';
     element.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08)';
@@ -100,25 +104,38 @@ export class BoxManager {
    * Crée le contenu textuel d'une box.
    */
   private createBoxContent(element: HTMLElement, box: LayoutBox): void {
+    // Inner wrapper clips text to box bounds without affecting the handle hit area
+    const content = element.createDiv('box-content');
+    content.style.position = 'absolute';
+    content.style.top = '0';
+    content.style.left = '0';
+    content.style.right = '0';
+    content.style.bottom = '0';
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.alignItems = 'center';
+    content.style.justifyContent = 'center';
+    content.style.overflow = 'hidden';
+    content.style.borderRadius = '12px';
+    content.style.pointerEvents = 'none';
+
     // Titre
-    const title = element.createDiv('box-title');
+    const title = content.createDiv('box-title');
     title.textContent = box.title;
     title.style.color = 'white';
     title.style.fontSize = '12px';
     title.style.fontWeight = 'bold';
     title.style.textAlign = 'center';
-    title.style.pointerEvents = 'none';
     title.style.textShadow = '0 1px 2px rgba(0,0,0,0.5)';
 
     // Coordonnées
-    const coords = element.createDiv('box-coords');
+    const coords = content.createDiv('box-coords');
     coords.textContent = `${box.x + 1},${box.y + 1} (${box.w}×${box.h})`;
     coords.style.position = 'absolute';
     coords.style.bottom = '2px';
     coords.style.right = '4px';
     coords.style.color = 'rgba(255,255,255,0.7)';
     coords.style.fontSize = '9px';
-    coords.style.pointerEvents = 'none';
   }
 
   /**
@@ -259,20 +276,41 @@ export class BoxManager {
   private updateBoxColors(element: HTMLElement, hasCollision: boolean): void {
     if (hasCollision) {
       element.style.backgroundColor = 'var(--background-modifier-error)';
+      element.style.background = 'var(--background-modifier-error)';
       element.style.borderColor = 'var(--text-error)';
     } else {
-      // Restaurer la couleur d'origine
       const boxId = element.dataset.boxId || '';
       const layout = this.getCurrentLayout();
+      const box = layout.boxes.find(b => b.id === boxId);
       const boxIndex = layout.boxes.findIndex(b => b.id === boxId);
       const colorIndex = boxIndex % COLOR_CONSTANTS.TOTAL_COLORS;
-      
-      const bgColor = DOMHelper.getColorFromPalette(colorIndex);
-      const borderColor = DOMHelper.getBorderColorFromPalette(colorIndex);
-      
+
+      const bgColor = box?.color ?? DOMHelper.getColorFromPalette(colorIndex);
+      const borderColor = box?.color ?? DOMHelper.getBorderColorFromPalette(colorIndex);
+
+      element.style.background = `linear-gradient(135deg, ${bgColor}f0, ${bgColor}e0)`;
       element.style.backgroundColor = bgColor;
       element.style.borderColor = borderColor;
     }
+  }
+
+  /**
+   * Met à jour la couleur personnalisée d'une box.
+   * Passer undefined pour revenir à la couleur de palette.
+   */
+  updateBoxColor(boxId: string, color: string | undefined): void {
+    const boxState = this.boxes.get(boxId);
+    if (!boxState) return;
+
+    boxState.box = { ...boxState.box, color };
+
+    const element = boxState.element;
+    const bgColor = color ?? boxState.defaultColor;
+    const borderColor = color ?? boxState.defaultColor;
+
+    element.style.background = `linear-gradient(135deg, ${bgColor}f0, ${bgColor}e0)`;
+    element.style.backgroundColor = bgColor;
+    element.style.borderColor = borderColor;
   }
 
   /**

@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.9.0-blue)
+![version](https://img.shields.io/badge/version-0.9.1-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/%E5%B9%B3%E5%8F%B0-%E4%BB%85%E6%A1%8C%E9%9D%A2%E7%AB%AF-lightgrey)
 
 🌍 用其他语言阅读:
 [English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [Русский](README.ru.md)
@@ -7,112 +7,93 @@
 
 # Agile Board
 
-**Agile Board** 是一个 [Obsidian](https://obsidian.md) 插件，可以将你的笔记转换为可视化看板。  
-每个布局基于一个模板（如艾森豪威尔矩阵），定义在一个 24×24 的网格上。  
-各个部分显示为可编辑的框（“boxes”）：你可以在其中书写、插入任务、Dataview/Tasks 查询等。
+**Agile Board** 将您的 Obsidian 笔记转换为交互式可视化看板。您的章节将变为网格上排列的可编辑框架——同时在底层始终保持有效、可移植的 Markdown 格式。
 
-**注意**: 内容始终以经典 Markdown 格式保存在 `#` 标题下，确保与所有笔记兼容。
+![Agile Board – Eisenhower 示例](./agile-board-eisenhower.gif)
 
 ---
 
-## 🎯 功能
+## 🆕 最新动态
 
-将笔记转换为带有可编辑框的可视化仪表板。  
-每个框表示一个部分（一级标题），支持：
+### v0.9.1 — Obsidian 1.13.0 兼容性修复
+Obsidian v1.13.0 的 Chromium 升级导致布局编辑器中的调整大小手柄失效。此补丁在所有受支持的版本上完全恢复了可视化编辑器的功能。
 
-- **丰富的 Markdown**: `[[链接]]`, `- [ ] 任务`, 格式化
-- **智能编辑**: 自动延续列表，可点击的复选框
-- **插件兼容性**: Dataview, Tasks 等
-- **实时预览**: 与 Obsidian 接近的渲染效果（有少量限制）
-- **框架锁定**: 锁定任何框架以防止意外编辑 — 链接、嵌入和复选框在锁定时仍可使用
-- **字体大小**: 在插件设置中调整所有框架的文字大小（0.8× 到 1.5×）
+### v0.9.0 — 弹出式编辑器
+
+> 此前，编辑框架需要将整个笔记切换到编辑模式，这使得在保持看板可见的同时进行写作变得困难。
+
+**现在您可以双击任意框架标题，在专用窗口中打开其内容**，享受完整的 Obsidian Live Preview。窗口关闭时内容会自动同步回来。已锁定的框架无法在弹出窗口中打开。
+
+![Agile Board – 看板转 Markdown](./Agile-Board-Board-to-Markdown_c.gif)
+
+---
+
+## 🎯 功能特性
+
+### 看板与编辑
+- **两种显示模式**：在可视化看板（🏢）和经典 Markdown 编辑（📄）之间自由切换
+- **可编辑框架**：点击任意框架，使用 CodeMirror 6 进入编辑模式
+- **弹出式编辑器**：双击框架标题在独立窗口中编辑——在写作时保持看板可见
+- **智能编辑**：列表和标注块自动续行，可点击复选框即时同步
+- **丰富 Markdown**：`[[链接]]`、`- [ ] 任务`、格式化、代码块、水平线
+
+### 框架自定义
+- **框架锁定**：锁定框架以防止意外编辑——链接、嵌入内容和复选框仍可正常使用
+- **字体大小**：在插件设置中调整所有框架的文字缩放（0.7× 至 1.5×）
+- **自定义颜色**：为任意框架指定颜色——在看板视图中显示为着色标题栏和彩色边框
 
 ![Agile Board – 框架锁定](./Agile-Board-Lock-frame_c.gif)
 ![Agile Board – 字体大小](./Agile-Board-Font-Size-in-Board_c.gif)
 
-## 🌍 多语言支持
-
-**v0.9.0 新功能**: 弹出编辑器 — 双击框架标题即可在单独窗口中编辑！
-
-- 🇺🇸 **English** – 参考语言  
-- 🇫🇷 **Français** – 完整翻译  
-- 🇪🇸 **Español** – 完整翻译  
-- 🇩🇪 **Deutsch** – 完整翻译  
-- 🇵🇹 **Português** – 完整翻译  
-- 🇨🇳 **中文 (简体)** – 完整翻译  
-
-界面会根据 Obsidian 的语言设置自动适配。  
-所有界面元素、设置、消息和提示信息已在 **96 个翻译键** 下全部翻译。
-
-## ⚠️ 当前限制
-
-看板模式使用 CodeMirror 6 进行编辑，但不包含 Obsidian 的所有高级功能：
-
-- **链接提示**: 输入 `[[` 时，不会自动提示笔记（仍可手动输入完整链接）
-- **内联插件调用**: 内联 Dataview 查询 (`= this.file.name`) 或 Templater 命令 (`<% tp.date.now() %>`) 不会在框中执行
-
-### 📎 嵌入支持
-
-**新功能**: 看板模式现已支持嵌入预览！
-
-- **图片**: `![[image.png]]` 在预览模式下正确显示
-- **笔记**: `![[other-note.md]]` 渲染笔记内容
-- **Obsidian Bases**: `![[table.base]]` 显示交互式数据库视图
-
-**Bases 的持久视图选择**: 要使 base 中的视图选择持久化，请使用片段语法：
-```markdown
-![[table.base#视图名称]]
-```
-这确保在加载笔记时始终显示指定的视图。
-
-## 🔄 两种显示模式
-
-**🏢 看板模式**: 带有实时预览的可编辑框网格  
-**📄 普通模式**: 经典的 Obsidian Markdown 编辑  
-
-通过工具栏图标在两种模式之间切换。
-
-![Agile Board – Eisenhower Example](./agile-board-eisenhower.gif)
-
-### 📋 右键菜单与打印
-
-右键点击看板标签页，即可访问所有 Obsidian 标准选项（拆分、重命名、移动、书签等），并可直接打印看板。
+### 嵌入内容与插件兼容性
+- **图片**：`![[图片.png]]` 在看板预览中正确显示
+- **笔记**：`![[其他笔记.md]]` 将笔记内容直接嵌入框架
+- **Obsidian Bases**：`![[表格.base]]` 显示交互式数据库视图；使用 `![[表格.base#视图名称]]` 记住所选视图
+- **Dataview & Tasks**：查询在框架内正常计算和更新
+- **右键菜单与打印**：右键点击看板标签页获取所有标准 Obsidian 选项，以及直接打印看板
 
 ![Agile Board – 右键菜单](./Agile-Board-Menu_c.gif)
 ![Agile Board – 打印看板](./Agile-Board-Print-Board_c.gif)
 
 ---
 
+## ⚠️ 已知限制
+
+框架编辑器使用 CodeMirror 6，但并不完全复制 Obsidian 的所有编辑功能：
+
+- **链接建议**：输入 `[[` 不会建议您的笔记——请手动输入完整链接
+- **内联插件调用**：内联 Dataview 查询（`= this.file.name`）和 Templater 命令（`<% tp.date.now() %>`）在框架内不会执行
+- **仅限桌面端**：看板在移动端不可用——您的笔记在移动端仍可作为标准 Markdown 正常查看
+
+---
+
 ## 🚀 安装
 
-### 选项 1 – BRAT（推荐）
+**要求**：Obsidian 桌面版 ≥ 0.15.0。兼容 Obsidian 1.13.0（Catalyst）及更高版本。
 
-通过 [BRAT](https://github.com/TfTHacker/obsidian42-brat) 安装以获取自动更新：
+### 选项 1 — BRAT（推荐）
 
-1. 安装并启用 BRAT 插件  
-2. 添加 `a198h/agile-board` 作为 Beta 插件  
-3. BRAT 会自动安装和更新插件
+[BRAT](https://github.com/TfTHacker/obsidian42-brat) 自动处理更新：
 
-### 选项 2 – 手动安装
+1. 安装并启用社区插件 **BRAT**
+2. 在 BRAT 设置中添��� `a198h/agile-board`
+3. BRAT 会自动安装并保持插件更新
 
-1. 从 [GitHub releases](https://github.com/a198h/agile-board/releases) 下载 `main.js`、`manifest.json` 和 `styles.css`  
-2. 将它们复制到 `.obsidian/plugins/agile-board/`  
-3. 重启 Obsidian 并启用插件  
-4. **插件已内置 5 个默认布局**  
+### 选项 2 — 手动安装
 
----
+1. 从 [最新 GitHub 发布页](https://github.com/a198h/agile-board/releases/latest) 下载 `main.js`、`manifest.json` 和 `styles.css`
+2. 将三个文件复制到 `.obsidian/plugins/agile-board/`
+3. 重启 Obsidian，在设置 → 第三方插件中启用 **Agile Board**
 
-## 📱 移动端
-
-您的笔记在移动端以标准 markdown 正常显示。Agile Board 是仅限桌面端的插件 — board 布局仅在桌面端可用。
+> **5 个默认布局已内置**于插件中——无需额外下载。
 
 ---
 
-## 📝 使用方法
+## 📝 快速入门
 
-### 配置
+### 1. 在笔记上激活布局
 
-要在笔记中启用某个布局，请在属性 (frontmatter) 中添加：
+在笔记的 frontmatter 中添加 `agile-board` 属性：
 
 ```yaml
 ---
@@ -120,76 +101,87 @@ agile-board: eisenhower
 ---
 ```
 
-**默认提供的布局**：
+点击工具栏中的 🏢 图标切换到看板模式。
 
-- `eisenhower`: 4 象限重要/紧急矩阵  
-- `swot`: 情境分析  
-- `moscow`: 优先级排序 (Must/Should/Could/Won’t)  
-- `effort_impact`: 根据投入与效果决定行动  
-- `cornell`: 康奈尔笔记法  
+### 2. 可用布局
 
-工具栏中会显示 🏢 图标。点击切换到看板模式。
+| 布局 | 描述 |
+|---|---|
+| `eisenhower` | 重要 / 紧急四象限矩阵 |
+| `swot` | 优势、劣势、机会、威胁分析 |
+| `moscow` | Must / Should / Could / Won't 优先级排序 |
+| `effort_impact` | 按效果优先排列行动 |
+| `cornell` | 主动笔记系统 |
 
-### 编辑
+### 3. 编辑框架
 
-- **点击框** → 进入编辑模式  
-- **智能列表**: 支持项目符号和编号列表  
-- **复选框**: 点击勾选/取消勾选，自动同步  
-- **查询**: Query, Dataview, Tasks  
+- **单击** → 编辑模式
+- **双击标题** → 在弹出窗口中打开
+- 更改会自动保存到 Markdown 文件
 
 ---
 
 ## ⚙️ 插件设置
 
-通过 **设置 → 社区插件 → Agile Board** 可以直接在 Obsidian 中管理布局。
+打开**设置 → 第三方插件 → Agile Board** 管理布局和外观。
 
-![Agile Board – Config](./agile-board-customize-board.png)
+![Agile Board – 配置](./agile-board-customize-board.png)
 
-### 📋 布局管理
+### 布局管理
 
-可用的布局会在设置中自动列出。  
-每个布局对应插件 `layouts` 文件夹中的一个 `.json` 文件（用户无需手动修改该文件夹）。
+每个布局都是插件 `layouts/` 文件夹中的一个 `.json` 文件。在设置面板中：
 
-- **创建布局**: 点击 ➕ 按钮并输入名称  
-- **编辑布局**: 点击 ✏️ 图标打开可视化编辑器  
-- **复制布局**: 点击 📑 图标  
-- **导出 / 导入**: 使用 ⬆️ 和 ⬇️ 图标分享或加载配置  
-- **删除布局**: 点击 🗑️ 图标  
+| 操作 | 控件 |
+|---|---|
+| 创建 | ➕ 按钮——输入名称 |
+| 编辑 | ✏️ 图标——打开可视化编辑器 |
+| 复制 | 📑 图标 |
+| 导出 / 导入 | ⬆️ / ⬇️ 图标——分享或加载配置 |
+| 删除 | 🗑️ 图标 |
 
-### 🎨 可视化编辑器
+### 可视化布局编辑器
 
-布局编辑器显示一个 **24×24 网格**，你可以在上面放置 **框**：
+编辑器显示一个 **24×24 网格**，您在其上放置和调整 **box**（框架）大小：
 
-- **创建**: 点击并拖拽  
-- **移动**: 拖动框体  
-- **调整大小**: 使用圆形控制点  
-- **重命名**: 在侧边面板修改标题  
-- **删除**: 点击红色 “🗑️” 按钮  
-- **全部清除**: 点击红色 “🗑️ Clear all boxes” 按钮  
+- **创建**：在空白区域点击并拖动
+- **移动**：拖动 box 重新定位
+- **调整大小**：拖动 box 角和边上的圆形手柄
+- **重命名**：在侧边面板中编辑标题
+- **颜色**：在侧边面板中选择自定义颜色——点击**重置**恢复为调色板颜色
+- **删除**：侧边面板中的 🗑️ 按钮
+- **清除全部**：从布局中移除所有 box（需确认）
 
-每个框对应一个 **笔记部分**：一个 **一级标题** (`#`) 及其内容。
+每个 box 对应笔记中的一个**一级标题**（`#`）及其后续内容。
 
 ---
 
-## ✨ 特性
+## 🌍 多语言支持
 
-- **自动同步**: 框中的更改会自动保存到 Markdown 文件  
-- **自动生成部分**: 辅助创建缺失的部分  
-- **插件兼容性**: Dataview、Tasks 和 Templater 基本可用（请报告 bug！）；其他插件待验证  
+界面自动适应您的 Obsidian 语言设置。所有 UI 元素、设置、消息和提示均以 **7 种语言**提供（96 个翻译键）：
+
+| 语言 | 状态 |
+|---|---|
+| 🇺🇸 English | 参考语言 |
+| ��🇷 Français | 完整 |
+| 🇪🇸 Español | 完整 |
+| 🇩🇪 Deutsch | 完整 |
+| 🇵🇹 Português | 完整 |
+| 🇨🇳 中文 (简体) | 完整 |
+| 🇷🇺 Русский | 完整 |
 
 ---
 
 ## 💡 灵感来源
 
-该插件受到 [Obsidian-Templify](https://github.com/Quorafind/Obsidian-Templify) 的启发，基于将 Markdown 笔记转换为可视化布局的理念进行扩展。
+本插件受 [Obsidian-Templify](https://github.com/Quorafind/Obsidian-Templify) 启发，基于将 Markdown 笔记转换为可视化布局的理念构建。
 
 ---
 
-## 📂 你的贡献很重要！
+## 📂 贡献与支持
 
-- **Bugs/问题**: [https://github.com/a198h/agile-board/issues](https://github.com/a198h/agile-board/issues)  
-- **讨论**: [https://github.com/a198h/agile-board/discussions/8](https://github.com/a198h/agile-board/discussions/8)  
+- **错误报告与功能请求**：[GitHub Issues](https://github.com/a198h/agile-board/issues)
+- **讨论**：[GitHub Discussions](https://github.com/a198h/agile-board/discussions/8)
 
-## 支持我
-如果你觉得我的工作有用，可以在这里支持我：  
+如果您觉得此插件有用，欢迎支持其开发：
+
 [![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/a198h)

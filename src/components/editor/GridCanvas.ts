@@ -132,6 +132,24 @@ export class GridCanvas {
   }
 
   /**
+   * Convertit les coordonnées écran en coordonnées grille en clampant aux limites.
+   * Utilisé pour les poignées de resize qui peuvent déborder légèrement du bord de la grille.
+   */
+  screenToGridClamped(screenX: number, screenY: number): { x: number; y: number } {
+    const rect = this.gridInner.getBoundingClientRect();
+    const relativeX = screenX - rect.left;
+    const relativeY = screenY - rect.top;
+
+    const gridX = Math.floor((relativeX * this.GRID_SIZE) / 624);
+    const gridY = Math.floor((relativeY * this.GRID_SIZE) / 624);
+
+    return {
+      x: Math.max(0, Math.min(this.GRID_SIZE - 1, gridX)),
+      y: Math.max(0, Math.min(this.GRID_SIZE - 1, gridY))
+    };
+  }
+
+  /**
    * Retourne le container de grille interne.
    */
   getGridInner(): HTMLElement {

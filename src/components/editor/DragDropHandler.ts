@@ -43,12 +43,23 @@ export class DragDropHandler {
   private originalBoxState: LayoutBox | null = null;
   private pendingBoxState: BoxState | null = null;
 
+  // Stored as instance variables so cleanup() can remove the exact same references
+  private readonly boundMouseMove: (e: MouseEvent) => void;
+  private readonly boundMouseUp: (e: MouseEvent) => void;
+  // Use the ownerDocument of the grid element so events are captured in the
+  // correct window. In Obsidian 1.13.0+ the settings panel opens in a separate
+  // window, making the global `document` refer to the wrong window's document.
+  private readonly ownerDoc: Document;
+
   constructor(
     private gridCanvas: GridCanvas,
     private onDragStart: (type: 'move' | 'resize' | 'create', box?: BoxState, handle?: string) => void,
     private onDragMove: (deltaX: number, deltaY: number, type: 'move' | 'resize' | 'create') => void,
     private onDragEnd: (type: 'move' | 'resize' | 'create') => void
   ) {
+    this.ownerDoc = gridCanvas.getContainer().ownerDocument;
+    this.boundMouseMove = this.onMouseMove.bind(this);
+    this.boundMouseUp = this.onMouseUp.bind(this);
     this.setupGlobalEventListeners();
   }
 
@@ -56,8 +67,8 @@ export class DragDropHandler {
    * Configure les gestionnaires d'événements globaux.
    */
   private setupGlobalEventListeners(): void {
-    document.addEventListener('mousemove', this.onMouseMove.bind(this));
-    document.addEventListener('mouseup', this.onMouseUp.bind(this));
+    this.ownerDoc.addEventListener('mousemove', this.boundMouseMove);
+    this.ownerDoc.addEventListener('mouseup', this.boundMouseUp);
   }
 
   /**
@@ -110,8 +121,9 @@ export class DragDropHandler {
    * Démarre le redimensionnement depuis une poignée.
    */
   startResizeDrag(e: MouseEvent, handle: string, boxState: BoxState): void {
-    const gridPos = this.gridCanvas.screenToGrid(e.clientX, e.clientY);
-    if (!gridPos) return;
+    // Handles positioned at -5px can be outside the grid for edge boxes — clamp instead of bail
+    const gridPos = this.gridCanvas.screenToGrid(e.clientX, e.clientY)
+      ?? this.gridCanvas.screenToGridClamped(e.clientX, e.clientY);
 
     this.originalBoxState = { ...boxState.box };
 
@@ -154,8 +166,11 @@ export class DragDropHandler {
 
     if (!this.dragState.isActive) return;
 
-    const currentGridPos = this.gridCanvas.screenToGrid(e.clientX, e.clientY);
-    if (!currentGridPos) return;
+    // Clamp to grid bounds during active drag so resize/move continues
+    // smoothly when the mouse leaves the grid area (screenToGrid returns null
+    // for out-of-bounds positions, which would otherwise freeze the operation).
+    const currentGridPos = this.gridCanvas.screenToGrid(e.clientX, e.clientY)
+      ?? this.gridCanvas.screenToGridClamped(e.clientX, e.clientY);
 
     const deltaX = currentGridPos.x - this.dragState.gridStartX;
     const deltaY = currentGridPos.y - this.dragState.gridStartY;
@@ -428,8 +443,8 @@ export class DragDropHandler {
    * Nettoie les ressources.
    */
   cleanup(): void {
-    document.removeEventListener('mousemove', this.onMouseMove.bind(this));
-    document.removeEventListener('mouseup', this.onMouseUp.bind(this));
+    this.ownerDoc.removeEventListener('mousemove', this.boundMouseMove);
+    this.ownerDoc.removeEventListener('mouseup', this.boundMouseUp);
     
     if (this.resizePreview) {
       this.resizePreview.remove();
