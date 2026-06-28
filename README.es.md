@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.9.1-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/plataforma-escritorio-lightgrey)
+![version](https://img.shields.io/badge/version-0.9.2-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/plataforma-escritorio-lightgrey)
 
 🌍 Lee esto en otros idiomas:
 [English](README.md) | [Français](README.fr.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
@@ -14,6 +14,14 @@
 ---
 
 ## 🆕 Novedades
+
+### v0.9.2 — Impresión del tablero mejorada
+
+- **Escala de cuadrícula**: los marcos se adaptan al tamaño del papel (vertical u horizontal) sin desbordarse
+- **Encabezado y pie de página**: título del archivo arriba, versión del plugin abajo a la derecha
+- **Callouts**: correctamente estilizados en la impresión
+- **Obsidian Bases**: tarjetas y tablas se imprimen limpiamente — interfaz eliminada, fechas formateadas como `DD/MM/AAAA HH:MM:SS`, etiquetas de propiedades mostradas (excepto el redundante «name»)
+- **Listas de tareas**: casillas de verificación conservadas con espacio adecuado
 
 ### v0.9.1 — Parche de compatibilidad para Obsidian 1.13.0
 Los controladores de redimensionamiento del editor de layouts dejaron de funcionar tras la actualización de Chromium de Obsidian en v1.13.0. Este parche restaura completamente el editor visual en todas las versiones compatibles.

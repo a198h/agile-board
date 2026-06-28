@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.9.1-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/%E5%B9%B3%E5%8F%B0-%E4%BB%85%E6%A1%8C%E9%9D%A2%E7%AB%AF-lightgrey)
+![version](https://img.shields.io/badge/version-0.9.2-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/%E5%B9%B3%E5%8F%B0-%E4%BB%85%E6%A1%8C%E9%9D%A2%E7%AB%AF-lightgrey)
 
 🌍 用其他语言阅读:
 [English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [Русский](README.ru.md)
@@ -14,6 +14,14 @@
 ---
 
 ## 🆕 最新动态
+
+### v0.9.2 — 看板打印功能改进
+
+- **网格缩放**：框架自适应纸张大小（纵向或横向），不再溢出
+- **页眉和页脚**：文件标题显示在顶部，插件版本显示在右下角
+- **标注块**：打印时样式正确
+- **Obsidian Bases**：卡片和表格可干净打印——工具栏已移除，日期格式化为 `DD/MM/YYYY HH:MM:SS`，属性标签正常显示（冗余的 "name" 除外）
+- **任务列表**：复选框保留，并有适当间距
 
 ### v0.9.1 — Obsidian 1.13.0 兼容性修复
 Obsidian v1.13.0 的 Chromium 升级导致布局编辑器中的调整大小手柄失效。此补丁在所有受支持的版本上完全恢复了可视化编辑器的功能。

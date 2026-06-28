@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.9.1-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/Plattform-Desktop-lightgrey)
+![version](https://img.shields.io/badge/version-0.9.2-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/Plattform-Desktop-lightgrey)
 
 🌍 Lies dies in anderen Sprachen:
 [English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
@@ -14,6 +14,14 @@
 ---
 
 ## 🆕 Neuigkeiten
+
+### v0.9.2 — Verbesserte Board-Druckfunktion
+
+- **Rasterskalierung**: Rahmen passen sich der Papiergröße (Hoch- oder Querformat) an, ohne zu überlaufen
+- **Kopf- & Fußzeile**: Dateititel oben, Plugin-Version unten rechts
+- **Callouts**: korrekt gestylt beim Drucken
+- **Obsidian Bases**: Karten und Tabellen werden sauber gedruckt — UI entfernt, Datumsangaben als `TT.MM.JJJJ HH:MM:SS` formatiert, Eigenschaftsbeschriftungen angezeigt (außer dem redundanten «name»)
+- **Aufgabenlisten**: Kontrollkästchen mit korrektem Abstand erhalten
 
 ### v0.9.1 — Kompatibilitätspatch für Obsidian 1.13.0
 Die Größenänderungs-Handles des Layout-Editors funktionierten nach Obsidians Chromium-Aktualisierung in v1.13.0 nicht mehr. Dieser Patch stellt den visuellen Editor auf allen unterstützten Versionen vollständig wieder her.
