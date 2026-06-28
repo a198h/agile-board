@@ -482,65 +482,169 @@ export class AgileBoardView extends FileView {
   private printBoard(): void {
     if (!this.gridContainer) return;
 
-    const gridEl = this.gridContainer;
-    const gridStyles = window.getComputedStyle(gridEl);
+    const ownerDoc = this.containerEl.ownerDocument;
+    const fileTitle = this.file?.basename ?? '';
+    const version = this.plugin.manifest.version;
 
-    // Construire le HTML des frames
     let framesHtml = '';
-    const frames = gridEl.querySelectorAll('.agile-board-frame');
-    frames.forEach((frame) => {
+    this.gridContainer.querySelectorAll('.agile-board-frame').forEach((frame) => {
       const el = frame as HTMLElement;
-      const titleEl = el.querySelector('.frame-title');
+      const titleText = el.querySelector('.agile-board-frame-title-text')?.textContent?.trim() ?? '';
       const contentEl = el.querySelector('.frame-content');
-      const titleText = titleEl?.textContent?.replace(/[\n\r]/g, '').trim() ?? '';
-      const contentHtml = contentEl?.innerHTML ?? '';
+
+      let contentHtml = '';
+      if (contentEl) {
+        const clone = contentEl.cloneNode(true) as HTMLElement;
+
+        // Remove SVG icon elements — Lucide/Obsidian icons render as garbled
+        // text without Obsidian's icon CSS/fonts.
+        clone.querySelectorAll('svg').forEach(e => e.remove());
+
+        // Real data cards contain value elements (.bases-rendered-value or
+        // .bases-metadata-value). The "Fj" placeholder card has only icon
+        // spans with no value containers → it is excluded by this filter.
+        const cardItems = Array.from(clone.querySelectorAll('.bases-cards-item'))
+          .filter(card =>
+            card.querySelector('.bases-rendered-value, .bases-metadata-value, .bases-cards-value') !== null
+          );
+        const tableEl = clone.querySelector('.bases-table');
+
+        if (cardItems.length > 0) {
+          clone.innerHTML = '';
+          const wrap = ownerDoc.createElement('div');
+          wrap.className = 'bases-cards-print';
+          cardItems.forEach(card => {
+            (card as HTMLElement).removeAttribute('style');
+            // Remove the label element only for the "name" property —
+            // it's redundant (the file name speaks for itself). All other
+            // labels (e.g. "date de création") are kept for context.
+            card.querySelectorAll('.bases-cards-property').forEach(prop => {
+              const labelEl = Array.from(prop.children).find(
+                c => !c.classList.contains('bases-rendered-value') &&
+                     !c.classList.contains('bases-metadata-value')
+              );
+              if (labelEl?.textContent?.trim().toLowerCase() === 'name') {
+                labelEl.remove();
+              }
+            });
+            wrap.appendChild(card.cloneNode(true));
+          });
+          clone.appendChild(wrap);
+        } else if (tableEl) {
+          clone.innerHTML = '';
+          const wrap = ownerDoc.createElement('div');
+          wrap.className = 'bases-table-print';
+          (tableEl as HTMLElement).removeAttribute('style');
+          wrap.appendChild(tableEl.cloneNode(true));
+          clone.appendChild(wrap);
+        }
+
+        // Strip all inline styles from Bases elements — Obsidian sets margins,
+        // paddings and heights via JS that would override our iframe CSS reset.
+        clone.querySelectorAll('[class*="bases-"]').forEach(e => {
+          (e as HTMLElement).removeAttribute('style');
+        });
+
+        // Replace every <input> with a <span>.
+        // For date/datetime inputs, format as DD/MM/YYYY HH:MM:SS to match
+        // Obsidian Bases display format instead of the raw ISO input value.
+        clone.querySelectorAll('input').forEach(input => {
+          const inp = input as HTMLInputElement;
+          // Checkboxes render fine as disabled form controls — skip them.
+          if (inp.type === 'checkbox') return;
+          const span = ownerDoc.createElement('span');
+          let text = inp.value || inp.placeholder || '';
+          if (inp.value && (inp.type === 'datetime-local' || inp.type === 'date')) {
+            const d = new Date(inp.value);
+            if (!isNaN(d.getTime())) {
+              const p = (n: number) => String(n).padStart(2, '0');
+              text = inp.type === 'date'
+                ? `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`
+                : `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+            }
+          }
+          span.textContent = text;
+          span.className = 'print-input-value';
+          inp.replaceWith(span);
+        });
+
+        contentHtml = clone.innerHTML;
+      }
+
       framesHtml +=
-        `<div class="frame" style="grid-column: ${el.style.gridColumn}; grid-row: ${el.style.gridRow};">` +
-        `<div class="frame-title">${titleText}</div>` +
-        `<div class="frame-body">${contentHtml}</div></div>`;
+        `<div class="frame" style="grid-column:${el.style.gridColumn};grid-row:${el.style.gridRow}">` +
+        `<div class="ft">${titleText}</div>` +
+        `<div class="fb">${contentHtml}</div></div>`;
     });
 
+    // Isolated HTML document for print. fr units scale the grid to any paper
+    // size/orientation — computed px values would overflow on paper.
     const html = `<!DOCTYPE html>
-<html><head><meta charset="utf-8">
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 1rem; }
-  .grid {
-    display: grid;
-    grid-template-columns: ${gridStyles.gridTemplateColumns};
-    grid-template-rows: ${gridStyles.gridTemplateRows};
-    gap: ${gridStyles.gap};
-    width: 100%;
-    min-height: 90vh;
-  }
-  .frame { border: 1px solid #ccc; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
-  .frame-title { padding: 0.4em 0.6em; font-weight: 600; font-size: 0.95rem; background: #f3f4f6; border-bottom: 1px solid #ccc; }
-  .frame-body { padding: 0.5em 0.6em; font-size: 0.85rem; line-height: 1.5; }
-  h1, h2, h3 { margin: 0.3em 0; }
-  ul, ol { padding-left: 1.2em; }
-</style></head><body><div class="grid">${framesHtml}</div></body></html>`;
+<html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+@page{margin:1.5cm;size:auto}
+html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;flex-direction:column}
+header{font-size:1rem;font-weight:700;padding-bottom:.5em;border-bottom:2px solid #333;margin-bottom:.5em;flex-shrink:0}
+.grid{display:grid;grid-template-columns:repeat(24,1fr);grid-template-rows:repeat(24,1fr);gap:3px;width:100%;flex:1;min-height:0}
+footer{font-size:.65rem;color:#999;text-align:right;padding-top:.4em;margin-top:.4em;flex-shrink:0}
+.frame{border:1px solid #ccc;border-radius:4px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.ft{padding:.3em .5em;font-weight:600;font-size:.8rem;background:#f3f4f6;border-bottom:1px solid #ddd;flex-shrink:0}
+.fb{padding:.3em .5em;font-size:.72rem;line-height:1.4;overflow:hidden;flex:1;min-height:0}
+h1,h2,h3{margin:.2em 0;font-size:.85em}
+ul,ol{padding-left:1em;margin:.1em 0}
+li{margin:.05em 0}
+p{margin:.1em 0}
+input[type=checkbox]{pointer-events:none;margin-right:.3em}
+.callout{border-left:3px solid #888;background:#f8f8f8;border-radius:3px;margin:.2em 0;padding:.2em .4em}
+.callout-title{display:flex;align-items:center;font-weight:600;font-size:.8em;gap:.3em;margin-bottom:.15em}
+.callout-icon,.callout-fold{display:none}
+.callout-content{font-size:.75em}
+/* Bases — toolbar removed in JS (clone+remove), so no blank space from hidden elements.
+   Divs need explicit display:table-* since Obsidian CSS isn't loaded in the iframe. */
+.bases-view{display:block;width:100%;font-size:.72em}
+.bases-table{display:table;width:100%;border-collapse:collapse}
+.bases-thead{display:table-header-group;background:#f3f4f6}
+.bases-tbody{display:table-row-group}
+.bases-tr{display:table-row}
+.bases-td{display:table-cell;padding:.15em .3em;border:1px solid #ddd;vertical-align:top;font-size:.75em}
+.bases-table-header-name{font-weight:600;font-size:.78em}
+.bases-table-header-resizer,.bases-table-header-icon{display:none}
+/* Cards view: 2-column grid */
+.bases-cards-print{display:grid;grid-template-columns:1fr 1fr;gap:.3em;width:100%}
+.bases-cards-item{border:1px solid #ddd;border-radius:3px;padding:.3em .4em;box-sizing:border-box;font-size:.7em;min-width:0}
+/* Property labels: small gray text above value (except "name" removed in JS) */
+.bases-cards-property>*:not(.bases-rendered-value):not(.bases-metadata-value){display:block;font-size:.65em;color:#888;margin-top:.15em}
+.bases-rendered-value,.bases-metadata-value{display:block}
+.bases-cards-property{display:block;margin:.05em 0;line-height:1.3}
+.bases-cards-line{display:inline}
+/* Property labels in cards */
+.bases-property-label,.bases-label{font-size:.7em;color:#888;display:block}
+/* Input values replaced with span.print-input-value */
+.print-input-value{font-size:.75em;color:#444}
+table{width:100%;border-collapse:collapse;font-size:.7em}
+th{background:#f3f4f6;font-weight:600;padding:.15em .3em;border:1px solid #ddd;text-align:left}
+td{padding:.1em .3em;border:1px solid #eee}
+</style></head><body>
+<header>${fileTitle}</header>
+<div class="grid">${framesHtml}</div>
+<footer>Agile Board v${version}</footer>
+</body></html>`;
 
-    // Créer un iframe caché
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position: fixed; top: -10000px; left: -10000px; width: 1px; height: 1px;';
-    document.body.appendChild(iframe);
+    const iframe = ownerDoc.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;top:-10000px;left:-10000px;width:210mm;height:297mm';
+    ownerDoc.body.appendChild(iframe);
 
     const iframeDoc = iframe.contentDocument ?? iframe.contentWindow?.document;
-    if (!iframeDoc) {
-      iframe.remove();
-      return;
-    }
+    if (!iframeDoc) { iframe.remove(); return; }
 
     iframeDoc.open();
     iframeDoc.write(html);
     iframeDoc.close();
 
-    // Attendre le rendu puis imprimer
     setTimeout(() => {
       iframe.contentWindow?.print();
-      // Nettoyer après impression
       setTimeout(() => iframe.remove(), 1000);
-    }, 250);
+    }, 300);
   }
 
   /**

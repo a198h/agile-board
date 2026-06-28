@@ -19,6 +19,7 @@ export interface LayoutBox {
   readonly y: number;  // 0-23
   readonly w: number;  // 1-24
   readonly h: number;  // 1-24
+  readonly color?: string;  // optional custom hex color
 }
 
 /**
