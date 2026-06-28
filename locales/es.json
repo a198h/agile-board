@@ -82,9 +82,6 @@
     "toolbar": {
       "info": "{count} marco{plural} • Cuadrícula 24×24"
     },
-    "empty": {
-      "placeholder": "Haz clic para empezar a escribir..."
-    },
     "sidebar": {
       "selection": {
         "title": "Marco Seleccionado",

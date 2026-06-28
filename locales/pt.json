@@ -82,9 +82,6 @@
     "toolbar": {
       "info": "{count} moldura{plural} • Grade 24×24"
     },
-    "empty": {
-      "placeholder": "Clique para começar a escrever..."
-    },
     "sidebar": {
       "selection": {
         "title": "Moldura Selecionada",

@@ -82,9 +82,6 @@
     "toolbar": {
       "info": "{count} Rahmen{plural} • 24×24 Raster"
     },
-    "empty": {
-      "placeholder": "Klicken Sie hier, um zu schreiben..."
-    },
     "sidebar": {
       "selection": {
         "title": "Ausgewählter Rahmen",

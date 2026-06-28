@@ -82,9 +82,6 @@
     "toolbar": {
       "info": "{count} 个框架 • 24×24 网格"
     },
-    "empty": {
-      "placeholder": "点击开始输入..."
-    },
     "sidebar": {
       "selection": {
         "title": "选中的框架",

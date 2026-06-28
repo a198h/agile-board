@@ -82,9 +82,6 @@
     "toolbar": {
       "info": "{count} frame{plural} • 24×24 Grid"
     },
-    "empty": {
-      "placeholder": "Click to start writing..."
-    },
     "sidebar": {
       "selection": {
         "title": "Selected Frame",

@@ -313,14 +313,7 @@ export class MarkdownRenderer extends BaseUIComponent {
    * Affiche un placeholder quand le contenu est vide.
    */
   private renderPlaceholder(): void {
-    if (!this.containerEl) return;
-
-    const placeholder = this.containerEl.createDiv();
-    placeholder.textContent = "Cliquez pour commencer à écrire...";
-    placeholder.style.cssText = `
-      color: var(--text-muted);
-      font-style: italic;
-    `;
+    // Empty frame — no placeholder shown
   }
 
   /**

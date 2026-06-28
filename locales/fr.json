@@ -82,9 +82,6 @@
     "toolbar": {
       "info": "{count} cadre{plural} • Grille 24×24"
     },
-    "empty": {
-      "placeholder": "Cliquez pour commencer à écrire..."
-    },
     "sidebar": {
       "selection": {
         "title": "Cadre sélectionné",

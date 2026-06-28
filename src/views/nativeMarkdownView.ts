@@ -119,18 +119,7 @@ export class NativeMarkdownView {
   }
 
   private renderEmptyState(): void {
-    const placeholder = this.previewContainer.createDiv('empty-placeholder');
-    placeholder.style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      min-height: 80px;
-      color: var(--text-muted);
-      font-style: italic;
-      cursor: text;
-    `;
-    placeholder.textContent = "Cliquez pour commencer à écrire...";
+    // Empty frame — no placeholder shown
   }
 
   private renderFallback(): void {
