@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.9.1-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/platform-desktop-lightgrey)
+![version](https://img.shields.io/badge/version-0.9.2-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/platform-desktop-lightgrey)
 
 🌍 Read this in other languages:
 [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md) | [Русский](README.ru.md)
@@ -14,6 +14,14 @@
 ---
 
 ## 🆕 What's New
+
+### v0.9.2 — Improved print board
+
+- **Grid scaling**: frames scale to fit the paper size (portrait or landscape) without overflowing
+- **Header & footer**: file title at the top, plugin version at the bottom right
+- **Callouts**: correctly styled in print output
+- **Obsidian Bases**: cards and tables print cleanly — toolbar stripped, dates formatted as `DD/MM/YYYY HH:MM:SS`, property labels shown (except the redundant "name")
+- **Task lists**: checkboxes preserved with proper spacing
 
 ### v0.9.1 — Obsidian 1.13.0 compatibility fix
 Resize handles in the layout editor stopped working after Obsidian's Chromium upgrade in v1.13.0. This patch fully restores the visual editor on all supported versions.

@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-0.9.1-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/%D0%BF%D0%BB%D0%B0%D1%82%D1%84%D0%BE%D1%80%D0%BC%D0%B0-%D0%9F%D0%9A-lightgrey)
+![version](https://img.shields.io/badge/version-0.9.2-blue) ![Obsidian](https://img.shields.io/badge/Obsidian-%E2%89%A50.15.0-7C3AED) ![1.13+](https://img.shields.io/badge/1.13%2B-compatible-brightgreen) ![Desktop only](https://img.shields.io/badge/%D0%BF%D0%BB%D0%B0%D1%82%D1%84%D0%BE%D1%80%D0%BC%D0%B0-%D0%9F%D0%9A-lightgrey)
 
 🌍 Читать на других языках:
 [English](README.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português](README.pt.md) | [简体中文](README.zh-CN.md)
@@ -14,6 +14,14 @@
 ---
 
 ## 🆕 Что нового
+
+### v0.9.2 — Улучшенная печать доски
+
+- **Масштабирование сетки**: рамки адаптируются к размеру бумаги (книжная или альбомная) без переполнения
+- **Верхний и нижний колонтитулы**: название файла вверху, версия плагина внизу справа
+- **Выноски (Callouts)**: корректно стилизованы при печати
+- **Obsidian Bases**: карточки и таблицы печатаются чисто — интерфейс удалён, даты отформатированы как `ДД/ММ/ГГГГ ЧЧ:ММ:СС`, метки свойств отображаются (кроме избыточного «name»)
+- **Списки задач**: флажки сохранены с правильными отступами
 
 ### v0.9.1 — Исправление совместимости с Obsidian 1.13.0
 Маркеры изменения размера в редакторе макетов перестали работать после обновления Chromium в Obsidian v1.13.0. Этот патч полностью восстанавливает визуальный редактор на всех поддерживаемых версиях.
