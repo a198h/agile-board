@@ -496,6 +496,9 @@ export class AgileBoardView extends FileView {
       if (contentEl) {
         const clone = contentEl.cloneNode(true) as HTMLElement;
 
+        // Empty-frame placeholder has no place in print output.
+        clone.querySelectorAll('.agile-board-placeholder').forEach(e => e.remove());
+
         // Remove SVG icon elements — Lucide/Obsidian icons render as garbled
         // text without Obsidian's icon CSS/fonts.
         clone.querySelectorAll('svg').forEach(e => e.remove());

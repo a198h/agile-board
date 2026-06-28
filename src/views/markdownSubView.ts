@@ -301,20 +301,7 @@ export class MarkdownSubView {
   }
 
   private renderEmptyState(): void {
-    if (!this.previewEl) return;
-    
-    const placeholder = this.previewEl.createDiv("empty-frame");
-    placeholder.style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      min-height: 80px;
-      color: var(--text-muted);
-      font-style: italic;
-      cursor: text;
-    `;
-    placeholder.textContent = t('editor.empty.placeholder');
+    // Empty frame — no placeholder shown
   }
 
 

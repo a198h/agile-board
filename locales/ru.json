@@ -82,9 +82,6 @@
     "toolbar": {
       "info": "{count} фрейм{plural} • Сетка 24×24"
     },
-    "empty": {
-      "placeholder": "Нажмите, чтобы начать писать..."
-    },
     "sidebar": {
       "selection": {
         "title": "Выбранный фрейм",

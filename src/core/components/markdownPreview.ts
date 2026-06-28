@@ -106,12 +106,7 @@ export class MarkdownPreview extends BaseUIComponent {
    * Affiche l'état vide avec placeholder.
    */
   private renderEmptyState(): void {
-    if (!this.containerEl) return;
-    
-    const placeholder = ElementFactory.createEmptyPlaceholder(
-      "Cliquez pour commencer à écrire..."
-    );
-    this.containerEl.appendChild(placeholder);
+    // Empty frame — no placeholder shown
   }
 
   /**
