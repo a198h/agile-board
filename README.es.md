@@ -38,7 +38,13 @@ Los controladores de redimensionamiento del editor de layouts dejaron de funcion
 
 ### Tablero y Edición
 - **Dos modos de visualización**: cambia libremente entre el tablero visual (🏢) y la edición Markdown clásica (📄)
+
+![Agile Board – Tablero a Markdown](./Agile-Board-Board-to-Markdown_c.gif)
+
 - **Marcos editables**: haz clic en cualquier marco para entrar en el modo de edición con CodeMirror 6
+
+![Agile Board – Edición de un marco](./Agile-Board-Edit-Board_c.gif)
+
 - **Editor popout**: doble clic en el título de un marco para editarlo en una ventana separada — mantén el tablero visible mientras escribes
 - **Edición inteligente**: listas y callouts auto-continuados, casillas de verificación clicables con sincronización instantánea
 - **Markdown enriquecido**: `[[enlaces]]`, `- [ ] tareas`, formato, bloques de código, reglas horizontales

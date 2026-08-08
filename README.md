@@ -38,7 +38,13 @@ Resize handles in the layout editor stopped working after Obsidian's Chromium up
 
 ### Board & Editing
 - **Two display modes**: switch freely between the visual board (🏢) and classic Markdown editing (📄)
+
+![Agile Board – Board to Markdown](./Agile-Board-Board-to-Markdown_c.gif)
+
 - **Editable frames**: click any frame to enter edit mode with CodeMirror 6
+
+![Agile Board – Editing a Frame](./Agile-Board-Edit-Board_c.gif)
+
 - **Popout editor**: double-click a frame title to edit in a separate window — keep the board visible while writing
 - **Smart editing**: auto-continued lists and callouts, clickable checkboxes with instant sync
 - **Rich Markdown**: `[[links]]`, `- [ ] tasks`, formatting, code blocks, horizontal rules

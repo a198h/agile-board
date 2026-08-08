@@ -38,7 +38,13 @@ Obsidian v1.13.0 的 Chromium 升级导致布局编辑器中的调整大小手�
 
 ### 看板与编辑
 - **两种显示模式**：在可视化看板（🏢）和经典 Markdown 编辑（📄）之间自由切换
+
+![Agile Board – 看板转 Markdown](./Agile-Board-Board-to-Markdown_c.gif)
+
 - **可编辑框架**：点击任意框架，使用 CodeMirror 6 进入编辑模式
+
+![Agile Board – 编辑框架](./Agile-Board-Edit-Board_c.gif)
+
 - **弹出式编辑器**：双击框架标题在独立窗口中编辑——在写作时保持看板可见
 - **智能编辑**：列表和标注块自动续行，可点击复选框即时同步
 - **丰富 Markdown**：`[[链接]]`、`- [ ] 任务`、格式化、代码块、水平线

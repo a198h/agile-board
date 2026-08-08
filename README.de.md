@@ -38,7 +38,13 @@ Die Größenänderungs-Handles des Layout-Editors funktionierten nach Obsidians 
 
 ### Board & Bearbeitung
 - **Zwei Anzeigemodi**: wechsle frei zwischen dem visuellen Board (🏢) und der klassischen Markdown-Bearbeitung (📄)
+
+![Agile Board – Board zu Markdown](./Agile-Board-Board-to-Markdown_c.gif)
+
 - **Editierbare Rahmen**: klicke auf einen Rahmen, um den Bearbeitungsmodus mit CodeMirror 6 zu öffnen
+
+![Agile Board – Rahmen bearbeiten](./Agile-Board-Edit-Board_c.gif)
+
 - **Popout-Editor**: Doppelklick auf einen Rahmentitel öffnet ihn in einem separaten Fenster — halte das Board sichtbar während du schreibst
 - **Intelligente Bearbeitung**: automatisch fortgesetzte Listen und Callouts, anklickbare Checkboxen mit sofortiger Synchronisation
 - **Rich Markdown**: `[[Links]]`, `- [ ] Aufgaben`, Formatierung, Codeblöcke, horizontale Linien

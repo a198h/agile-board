@@ -38,7 +38,13 @@ Os controladores de redimensionamento do editor de layouts deixaram de funcionar
 
 ### Quadro & Edição
 - **Dois modos de visualização**: alterne livremente entre o quadro visual (🏢) e a edição Markdown clássica (📄)
+
+![Agile Board – Quadro para Markdown](./Agile-Board-Board-to-Markdown_c.gif)
+
 - **Molduras editáveis**: clique em qualquer moldura para entrar no modo de edição com CodeMirror 6
+
+![Agile Board – Edição de uma moldura](./Agile-Board-Edit-Board_c.gif)
+
 - **Editor popout**: duplo clique no título de uma moldura para editá-la numa janela separada — mantenha o quadro visível enquanto escreve
 - **Edição inteligente**: listas e callouts auto-continuados, caixas de verificação clicáveis com sincronização instantânea
 - **Markdown rico**: `[[ligações]]`, `- [ ] tarefas`, formatação, blocos de código, regras horizontais

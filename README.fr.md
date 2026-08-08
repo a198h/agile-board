@@ -38,7 +38,13 @@ Les poignées de redimensionnement de l'éditeur de layouts ne répondaient plus
 
 ### Board & Édition
 - **Deux modes d'affichage** : basculez librement entre le board visuel (🏢) et l'édition Markdown classique (📄)
+
+![Agile Board – Board vers Markdown](./Agile-Board-Board-to-Markdown_c.gif)
+
 - **Cadres éditables** : cliquez sur un cadre pour entrer en mode édition avec CodeMirror 6
+
+![Agile Board – Édition d'un cadre](./Agile-Board-Edit-Board_c.gif)
+
 - **Éditeur popout** : double-cliquez sur le titre d'un cadre pour l'éditer dans une fenêtre séparée — gardez le board visible pendant que vous écrivez
 - **Édition intelligente** : listes et callouts auto-continués, cases à cocher cliquables avec sync instantanée
 - **Markdown riche** : `[[liens]]`, `- [ ] tâches`, formatage, blocs de code, règles horizontales
