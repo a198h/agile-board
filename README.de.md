@@ -32,25 +32,30 @@ Die Größenänderungs-Handles des Layout-Editors funktionierten nach Obsidians 
 
 **Du kannst jetzt auf einen Rahmentitel doppelklicken, um den Inhalt in einem eigenen Fenster zu öffnen**, mit vollständiger Obsidian Live Preview. Der Inhalt wird beim Schließen des Fensters automatisch zurückgesynchronisiert. Gesperrte Rahmen können nicht im Popout geöffnet werden.
 
-![Agile Board – Board zu Markdown](./Agile-Board-Board-to-Markdown_c.gif)
-
 ---
 
 ## 🎯 Funktionen
 
 ### Board & Bearbeitung
 - **Zwei Anzeigemodi**: wechsle frei zwischen dem visuellen Board (🏢) und der klassischen Markdown-Bearbeitung (📄)
+
+![Agile Board – Board zu Markdown](./Agile-Board-Board-to-Markdown_c.gif)
+
 - **Editierbare Rahmen**: klicke auf einen Rahmen, um den Bearbeitungsmodus mit CodeMirror 6 zu öffnen
+
+![Agile Board – Rahmen bearbeiten](./Agile-Board-Edit-Board_c.gif)
+
 - **Popout-Editor**: Doppelklick auf einen Rahmentitel öffnet ihn in einem separaten Fenster — halte das Board sichtbar während du schreibst
 - **Intelligente Bearbeitung**: automatisch fortgesetzte Listen und Callouts, anklickbare Checkboxen mit sofortiger Synchronisation
 - **Rich Markdown**: `[[Links]]`, `- [ ] Aufgaben`, Formatierung, Codeblöcke, horizontale Linien
 
 ### Rahmen-Anpassung
 - **Rahmensperrung**: sperre einen Rahmen, um versehentliche Bearbeitungen zu verhindern — Links, Embeds und Checkboxen bleiben funktionsfähig
-- **Schriftgröße**: passe die Textskalierung aller Rahmen (0,7× bis 1,5×) in den Plugin-Einstellungen an
-- **Benutzerdefinierte Farben**: weise jedem Rahmen eine Farbe zu — getönte Titelleiste und farbige Umrandung in der Board-Ansicht
 
 ![Agile Board – Rahmensperre](./Agile-Board-Lock-frame_c.gif)
+
+- **Schriftgröße**: passe die Textskalierung aller Rahmen (0,7× bis 1,5×) in den Plugin-Einstellungen an
+
 ![Agile Board – Schriftgröße](./Agile-Board-Font-Size-in-Board_c.gif)
 
 ### Einbettungen & Plugin-Kompatibilität
@@ -69,9 +74,9 @@ Die Größenänderungs-Handles des Layout-Editors funktionierten nach Obsidians 
 
 Der Rahmen-Editor verwendet CodeMirror 6, bildet jedoch nicht alle Obsidian-Bearbeitungsfunktionen nach:
 
-- **Link-Vorschläge**: das Tippen von `[[` schlägt keine Notizen vor — tippe den vollständigen Link manuell
+- **Link-Vorschläge**: das Tippen von `[[` schlägt keine Notizen vor — tippe den vollständigen Link manuell, **oder doppelklicke auf den Rahmen, um ihn im Live-Preview-Modus zu öffnen**.
 - **Inline-Plugin-Aufrufe**: Inline-Dataview-Abfragen (`= this.file.name`) und Templater-Befehle (`<% tp.date.now() %>`) werden in Rahmen nicht ausgeführt
-- **Nur Desktop**: Boards sind auf Mobilgeräten nicht verfügbar — deine Notizen bleiben auf Mobilgeräten als normales Markdown lesbar
+- **Nur Desktop**: Boards sind auf Mobilgeräten nicht verfügbar, aber deine Notizen bleiben auf Mobilgeräten als normales Markdown lesbar
 
 ---
 

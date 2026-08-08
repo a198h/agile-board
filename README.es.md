@@ -32,25 +32,30 @@ Los controladores de redimensionamiento del editor de layouts dejaron de funcion
 
 **Ahora puedes hacer doble clic en el título de cualquier marco para abrirlo en una ventana dedicada**, con el Live Preview completo de Obsidian. El contenido se sincroniza automáticamente al cerrar la ventana. Los marcos bloqueados no se pueden abrir en popout.
 
-![Agile Board – Tablero a Markdown](./Agile-Board-Board-to-Markdown_c.gif)
-
 ---
 
 ## 🎯 Funcionalidades
 
 ### Tablero y Edición
 - **Dos modos de visualización**: cambia libremente entre el tablero visual (🏢) y la edición Markdown clásica (📄)
+
+![Agile Board – Tablero a Markdown](./Agile-Board-Board-to-Markdown_c.gif)
+
 - **Marcos editables**: haz clic en cualquier marco para entrar en el modo de edición con CodeMirror 6
+
+![Agile Board – Edición de un marco](./Agile-Board-Edit-Board_c.gif)
+
 - **Editor popout**: doble clic en el título de un marco para editarlo en una ventana separada — mantén el tablero visible mientras escribes
 - **Edición inteligente**: listas y callouts auto-continuados, casillas de verificación clicables con sincronización instantánea
 - **Markdown enriquecido**: `[[enlaces]]`, `- [ ] tareas`, formato, bloques de código, reglas horizontales
 
 ### Personalización de marcos
 - **Bloqueo de marco**: bloquea un marco para evitar ediciones accidentales — los enlaces, embeds y casillas de verificación siguen funcionando
-- **Tamaño de fuente**: ajusta la escala del texto en todos los marcos (0,7× a 1,5×) desde la configuración del plugin
-- **Colores personalizados**: asigna un color a cualquier marco — barra de título tintada y borde de color en la vista del tablero
 
 ![Agile Board – Bloqueo de marco](./Agile-Board-Lock-frame_c.gif)
+
+- **Tamaño de fuente**: ajusta la escala del texto en todos los marcos (0,7× a 1,5×) desde la configuración del plugin
+
 ![Agile Board – Tamaño de fuente](./Agile-Board-Font-Size-in-Board_c.gif)
 
 ### Embeds y Compatibilidad con plugins
@@ -69,9 +74,9 @@ Los controladores de redimensionamiento del editor de layouts dejaron de funcion
 
 El editor de marcos usa CodeMirror 6 pero no replica todas las funciones de edición de Obsidian:
 
-- **Sugerencias de enlaces**: escribir `[[` no sugiere tus notas — escribe el enlace completo manualmente
+- **Sugerencias de enlaces**: escribir `[[` no sugiere tus notas — escribe el enlace completo manualmente, **o haz doble clic en el marco para abrirlo en modo Live Preview**.
 - **Llamadas inline de plugins**: las consultas Dataview inline (`= this.file.name`) y los comandos Templater (`<% tp.date.now() %>`) no se ejecutan dentro de los marcos
-- **Solo escritorio**: los tableros no están disponibles en móvil — tus notas siguen siendo legibles como Markdown estándar en móvil
+- **Solo escritorio**: los tableros no están disponibles en móvil, pero tus notas siguen siendo legibles como Markdown estándar en móvil
 
 ---
 
