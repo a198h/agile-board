@@ -32,8 +32,6 @@ Die Größenänderungs-Handles des Layout-Editors funktionierten nach Obsidians 
 
 **Du kannst jetzt auf einen Rahmentitel doppelklicken, um den Inhalt in einem eigenen Fenster zu öffnen**, mit vollständiger Obsidian Live Preview. Der Inhalt wird beim Schließen des Fensters automatisch zurückgesynchronisiert. Gesperrte Rahmen können nicht im Popout geöffnet werden.
 
-![Agile Board – Board zu Markdown](./Agile-Board-Board-to-Markdown_c.gif)
-
 ---
 
 ## 🎯 Funktionen
@@ -47,10 +45,11 @@ Die Größenänderungs-Handles des Layout-Editors funktionierten nach Obsidians 
 
 ### Rahmen-Anpassung
 - **Rahmensperrung**: sperre einen Rahmen, um versehentliche Bearbeitungen zu verhindern — Links, Embeds und Checkboxen bleiben funktionsfähig
-- **Schriftgröße**: passe die Textskalierung aller Rahmen (0,7× bis 1,5×) in den Plugin-Einstellungen an
-- **Benutzerdefinierte Farben**: weise jedem Rahmen eine Farbe zu — getönte Titelleiste und farbige Umrandung in der Board-Ansicht
 
 ![Agile Board – Rahmensperre](./Agile-Board-Lock-frame_c.gif)
+
+- **Schriftgröße**: passe die Textskalierung aller Rahmen (0,7× bis 1,5×) in den Plugin-Einstellungen an
+
 ![Agile Board – Schriftgröße](./Agile-Board-Font-Size-in-Board_c.gif)
 
 ### Einbettungen & Plugin-Kompatibilität
@@ -69,9 +68,9 @@ Die Größenänderungs-Handles des Layout-Editors funktionierten nach Obsidians 
 
 Der Rahmen-Editor verwendet CodeMirror 6, bildet jedoch nicht alle Obsidian-Bearbeitungsfunktionen nach:
 
-- **Link-Vorschläge**: das Tippen von `[[` schlägt keine Notizen vor — tippe den vollständigen Link manuell
+- **Link-Vorschläge**: das Tippen von `[[` schlägt keine Notizen vor — tippe den vollständigen Link manuell, **oder doppelklicke auf den Rahmen, um ihn im Live-Preview-Modus zu öffnen**.
 - **Inline-Plugin-Aufrufe**: Inline-Dataview-Abfragen (`= this.file.name`) und Templater-Befehle (`<% tp.date.now() %>`) werden in Rahmen nicht ausgeführt
-- **Nur Desktop**: Boards sind auf Mobilgeräten nicht verfügbar — deine Notizen bleiben auf Mobilgeräten als normales Markdown lesbar
+- **Nur Desktop**: Boards sind auf Mobilgeräten nicht verfügbar, aber deine Notizen bleiben auf Mobilgeräten als normales Markdown lesbar
 
 ---
 

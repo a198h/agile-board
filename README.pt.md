@@ -32,8 +32,6 @@ Os controladores de redimensionamento do editor de layouts deixaram de funcionar
 
 **Agora pode fazer duplo clique no título de qualquer moldura para a abrir numa janela dedicada**, com o Live Preview completo do Obsidian. O conteúdo é sincronizado automaticamente ao fechar a janela. As molduras bloqueadas não podem ser abertas em popout.
 
-![Agile Board – Quadro para Markdown](./Agile-Board-Board-to-Markdown_c.gif)
-
 ---
 
 ## 🎯 Funcionalidades
@@ -47,10 +45,11 @@ Os controladores de redimensionamento do editor de layouts deixaram de funcionar
 
 ### Personalização de molduras
 - **Bloqueio de moldura**: bloqueie uma moldura para evitar edições acidentais — ligações, embeds e caixas de verificação continuam a funcionar
-- **Tamanho de fonte**: ajuste a escala do texto em todas as molduras (0,7× a 1,5×) nas definições do plugin
-- **Cores personalizadas**: atribua uma cor a qualquer moldura — barra de título colorida e borda colorida na vista do quadro
 
 ![Agile Board – Bloqueio de moldura](./Agile-Board-Lock-frame_c.gif)
+
+- **Tamanho de fonte**: ajuste a escala do texto em todas as molduras (0,7× a 1,5×) nas definições do plugin
+
 ![Agile Board – Tamanho de fonte](./Agile-Board-Font-Size-in-Board_c.gif)
 
 ### Embeds & Compatibilidade com plugins
@@ -69,9 +68,9 @@ Os controladores de redimensionamento do editor de layouts deixaram de funcionar
 
 O editor de molduras usa CodeMirror 6, mas não replica todas as funcionalidades de edição do Obsidian:
 
-- **Sugestões de ligações**: escrever `[[` não sugere as suas notas — escreva a ligação completa manualmente
+- **Sugestões de ligações**: escrever `[[` não sugere as suas notas — escreva a ligação completa manualmente, **ou faça duplo clique na moldura para a abrir em modo Live Preview**.
 - **Chamadas inline de plugins**: consultas Dataview inline (`= this.file.name`) e comandos Templater (`<% tp.date.now() %>`) não são executados dentro das molduras
-- **Apenas desktop**: os quadros não estão disponíveis em dispositivos móveis — as suas notas continuam legíveis como Markdown padrão em mobile
+- **Apenas desktop**: os quadros não estão disponíveis em dispositivos móveis, mas as suas notas continuam legíveis como Markdown padrão em mobile
 
 ---
 

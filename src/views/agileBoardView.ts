@@ -590,7 +590,7 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
 header{font-size:1rem;font-weight:700;padding-bottom:.5em;border-bottom:2px solid #333;margin-bottom:.5em;flex-shrink:0}
 .grid{display:grid;grid-template-columns:repeat(24,1fr);grid-template-rows:repeat(24,1fr);gap:3px;width:100%;flex:1;min-height:0}
 footer{font-size:.65rem;color:#999;text-align:right;padding-top:.4em;margin-top:.4em;flex-shrink:0}
-.frame{border:1px solid #ccc;border-radius:4px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.frame{border:2px solid #aaa;border-radius:4px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
 .ft{padding:.3em .5em;font-weight:600;font-size:.8rem;background:#f3f4f6;border-bottom:1px solid #ddd;flex-shrink:0}
 .fb{padding:.3em .5em;font-size:.72rem;line-height:1.4;overflow:hidden;flex:1;min-height:0}
 h1,h2,h3{margin:.2em 0;font-size:.85em}
@@ -620,9 +620,7 @@ input[type=checkbox]{pointer-events:none;margin-right:.3em}
 .bases-rendered-value,.bases-metadata-value{display:block}
 .bases-cards-property{display:block;margin:.05em 0;line-height:1.3}
 .bases-cards-line{display:inline}
-/* Property labels in cards */
 .bases-property-label,.bases-label{font-size:.7em;color:#888;display:block}
-/* Input values replaced with span.print-input-value */
 .print-input-value{font-size:.75em;color:#444}
 table{width:100%;border-collapse:collapse;font-size:.7em}
 th{background:#f3f4f6;font-weight:600;padding:.15em .3em;border:1px solid #ddd;text-align:left}

@@ -32,8 +32,6 @@ Resize handles in the layout editor stopped working after Obsidian's Chromium up
 
 **You can now double-click any frame title to open its content in a dedicated window**, with full Obsidian Live Preview. The content syncs back automatically when the window is closed. Locked frames cannot be opened in popout.
 
-![Agile Board – Board to Markdown](./Agile-Board-Board-to-Markdown_c.gif)
-
 ---
 
 ## 🎯 Features
@@ -47,10 +45,12 @@ Resize handles in the layout editor stopped working after Obsidian's Chromium up
 
 ### Frame Customization
 - **Frame lock**: lock a frame to prevent accidental edits — links, embeds and checkboxes still work when locked
-- **Font size**: adjust text scale across all frames (0.7× to 1.5×) from plugin settings
-- **Custom colors**: assign a color to any frame — tinted title bar and colored border in the board view
 
 ![Agile Board – Lock Frame](./Agile-Board-Lock-frame_c.gif)
+
+
+- **Font size**: adjust text scale across all frames (0.7× to 1.5×) from plugin settings
+
 ![Agile Board – Font Size](./Agile-Board-Font-Size-in-Board_c.gif)
 
 ### Embeds & Plugin Compatibility
@@ -69,9 +69,9 @@ Resize handles in the layout editor stopped working after Obsidian's Chromium up
 
 The frame editor uses CodeMirror 6 but does not replicate every Obsidian editing feature:
 
-- **Link suggestions**: typing `[[` does not suggest your notes — type the full link manually
+- **Link suggestions**: typing `[[` does not suggest your notes — type the full link manually, **or double-click the frame to open it in Live Preview mode**.
 - **Inline plugin calls**: inline Dataview queries (`= this.file.name`) and Templater commands (`<% tp.date.now() %>`) do not execute inside frames
-- **Desktop only**: boards are not available on mobile — your notes remain readable as standard Markdown on mobile
+- **Desktop only**: boards are not available on mobile but your notes remain readable as standard Markdown on mobile
 
 ---
 

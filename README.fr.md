@@ -32,8 +32,6 @@ Les poignées de redimensionnement de l'éditeur de layouts ne répondaient plus
 
 **Vous pouvez désormais double-cliquer sur le titre d'un cadre pour l'ouvrir dans une fenêtre dédiée**, avec le plein Live Preview d'Obsidian. Le contenu se resynchronise automatiquement à la fermeture. Les cadres verrouillés ne peuvent pas être ouverts en popout.
 
-![Agile Board – Board vers Markdown](./Agile-Board-Board-to-Markdown_c.gif)
-
 ---
 
 ## 🎯 Fonctionnalités
@@ -47,10 +45,12 @@ Les poignées de redimensionnement de l'éditeur de layouts ne répondaient plus
 
 ### Personnalisation des cadres
 - **Verrouillage** : verrouillez un cadre pour empêcher les modifications accidentelles — liens, embeds et cases à cocher restent fonctionnels
-- **Taille de police** : ajustez l'échelle du texte de tous les cadres (0,7× à 1,5×) depuis les paramètres du plugin
-- **Couleurs personnalisées** : assignez une couleur à chaque cadre — barre de titre teintée et bordure colorée dans le board
+
 
 ![Agile Board – Verrouillage de cadre](./Agile-Board-Lock-frame_c.gif)
+
+- **Taille de police** : ajustez l'échelle du texte de tous les cadres (0,7× à 1,5×) depuis les paramètres du plugin 
+
 ![Agile Board – Taille de police](./Agile-Board-Font-Size-in-Board_c.gif)
 
 ### Embeds & Compatibilité plugins
@@ -69,9 +69,9 @@ Les poignées de redimensionnement de l'éditeur de layouts ne répondaient plus
 
 L'éditeur des cadres utilise CodeMirror 6 mais ne reproduit pas toutes les fonctionnalités d'édition d'Obsidian :
 
-- **Suggestions de liens** : taper `[[` ne propose pas vos notes — saisissez le lien complet manuellement
+- **Suggestions de liens** : taper `[[` ne propose pas vos notes — saisissez le lien complet manuellement, **ou double-cliquez sur le cadre pour l'ouvrir en mode Live preview**.
 - **Appels inline de plugins** : les requêtes Dataview inline (`= this.file.name`) et les commandes Templater (`<% tp.date.now() %>`) ne s'exécutent pas dans les cadres
-- **Desktop uniquement** : les boards ne sont pas disponibles sur mobile — vos notes restent consultables normalement en Markdown standard sur mobile
+- **Desktop uniquement** : les boards ne sont pas disponibles sur mobile mais vos notes restent consultables normalement en Markdown standard sur mobile
 
 ---
 
